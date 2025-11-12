@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Carrito - CHOCCO Heladería Artesanal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- link de font awesome-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link href="/Assets/Cs/Less/styles.css" rel="stylesheet">
+     <link href="/Assets/Cs/navbar-styles.css" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <header>        
+        <nav class="navbar section-content">
+            <a href="index.html" class="nav-logo">
+                <h2 class="logo-text">CHOCCO</h2>
+            </a>
+            <ul class="nav-menu">   
+                <button id="menu-close-button" class="fas fa-times"></button>
+                <li class="nav-item"><a href="index.html" class="nav-link">Inicio</a></li>
+                <li class="nav-item"><a href="index.html#menu" class="nav-link">Menú</a></li>
+                <li class="nav-item"><a href="index.html#promociones" class="nav-link">Promociones</a></li>
+                <li class="nav-item"><a href="index.html#contact" class="nav-link">Contáctanos</a></li>
+            </ul>
+            
+            <button id="menu-open-button" class="fas fa-bars"></button>
+            
+            <a href="carrito.html" class="cart-link">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-count">0</span>
+            </a>    
+        </nav>
+    </header>
+
+    <main>
+        <section class="cart-section">
+            <div class="section-content">
+                <h2 class="section-title">Tu Carrito de Compras</h2>
+                <div class="cart-container">
+                    <div class="cart-items">
+                        <!-- Los elementos del carrito se cargarán aquí con JavaScript -->
+                    </div>
+                    <div class="cart-summary">
+                        <h3>Resumen del Pedido</h3>
+                        <div class="cart-total">
+                            <p>Total: <span class="total-price">S/ 0.00</span></p>
+                        </div>
+                        <button class="checkout-button">Proceder al Pago</button>
+                        <a href="index.html" class="continue-shopping">Continuar Comprando</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer-section"> 
+        <div class="section-content">
+            <p class="copyright-text">@ CHOCCO - Heladería Artesanal</p>
+        </div>
+        <div class="social-link-list">
+            <a href="#" class="social-link"> <i class="fa-brands fa-facebook"></i></a>
+            <a href="#" class="social-link"> <i class="fa-brands fa-instagram"></i></a>
+            <a href="#" class="social-link"> <i class="fa-brands fa-x-twitter"></i></a> 
+        </div>
+        <p class="Policy-text">
+            <a href="#" class="policy-link">Privacy Policy</a>
+            <span class="separator">.</span>
+            <a href="#" class="policy-link">Refund Policy</a>
+        </p>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="Assets\Js\carrito.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const menuOpenButton = document.querySelector("#menu-open-button");
+            const menuCloseButton = document.querySelector("#menu-close-button");
+
+            menuOpenButton.addEventListener("click", () => {
+                document.body.classList.add("show-mobile-menu");
+            });
+
+            menuCloseButton.addEventListener("click", () => {
+                document.body.classList.remove("show-mobile-menu");
+            });
+
+            cargarCarrito();
+            actualizarContadorCarrito();
+        });
+
+        function cargarCarrito() {
+            const carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+            const contenedorCarrito = document.querySelector(".cart-items");
+            const totalPrecio = document.querySelector(".total-price");
+            
+            contenedorCarrito.innerHTML = "";
+            
+            if (carrito.length === 0) {
+                contenedorCarrito.innerHTML = "<p>Tu carrito está vacío</p>";
+                totalPrecio.textContent = "S/ 0.00";
+                return;
+            }
+            
+            let total = 0;
+            
+            carrito.forEach(item => {
+                const subtotal = item.price * item.quantity;
+                total += subtotal;
+                
+                const itemCarrito = document.createElement("div");
+                itemCarrito.className = "cart-item";
+                itemCarrito.innerHTML = `
+                    <div class="cart-item-image">
+                        <img src="${item.image}" alt="${item.name}">
+                    </div>
+                    <div class="cart-item-details">
+                        <h3>${item.name}</h3>
+                        <p>Precio: S/ ${item.price.toFixed(2)}</p>
+                        <p>Cantidad: ${item.quantity}</p>
+                        <p>Subtotal: S/ ${subtotal.toFixed(2)}</p>
+                    </div>
+                    <div class="cart-item-actions">
+                        <button class="remove-item" data-name="${item.name}">Eliminar</button>
+                    </div>
+                `;
+                
+                contenedorCarrito.appendChild(itemCarrito);
+            });
+            
+            totalPrecio.textContent = `S/ ${total.toFixed(2)}`;
+            
+            // Agregar eventos a los botones de eliminar
+            document.querySelectorAll(".remove-item").forEach(boton => {
+                boton.addEventListener("click", () => {
+                    const nombreProducto = boton.dataset.name;
+                    eliminarDelCarrito(nombreProducto);
+                });
+            });
+        }
+
+        function eliminarDelCarrito(nombreProducto) {
+            let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+            carrito = carrito.filter(item => item.name !== nombreProducto);
+            localStorage.setItem("carrito", JSON.stringify(carrito));
+            cargarCarrito();
+            actualizarContadorCarrito();
+        }
+
+        // Evento para el botón de checkout
+        document.addEventListener("DOMContentLoaded", () => {
+            const checkoutButton = document.querySelector(".checkout-button");
+            
+            if (checkoutButton) {
+                checkoutButton.addEventListener("click", () => {
+                    alert("Gracias por tu compra! En una aplicación real, aquí se procesaría el pago.");
+                    localStorage.removeItem("carrito");
+                    cargarCarrito();
+                    actualizarContadorCarrito();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
