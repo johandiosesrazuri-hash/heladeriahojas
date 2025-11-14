@@ -31,6 +31,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         // 🧠 Excluir rutas públicas del filtro JWT
         if (path.startsWith("/api/auth") ||
+            path.startsWith("/api/contacto") ||
             path.startsWith("/api/productos") ||
             path.startsWith("/api/promociones") ||
             path.startsWith("/img")) {

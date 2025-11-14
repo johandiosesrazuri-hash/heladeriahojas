@@ -7,16 +7,10 @@ import Register from './components/Register'
 import Menu from './components/Menu'
 import Carrito from './components/Carrito'
 import Promociones from './components/Promociones'
+import Contacto from './components/Contacto'
 import Pedido from './components/Pedido'
 import './App.css'
-
-// Componentes para rutas no implementadas aún
-const Contacto = () => (
-  <div style={{ padding: '40px 20px', textAlign: 'center', minHeight: 'calc(100vh - 80px)' }}>
-    <h2>📞 Contacto</h2>
-    <p>Próximamente habilitaremos nuestro formulario de contacto</p>
-  </div>
-)
+import Footer from './components/Footer'
 
 function App() {
   return (
@@ -36,6 +30,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </CartProvider>
+        <Footer />
       </AuthProvider>
     </Router>
   )

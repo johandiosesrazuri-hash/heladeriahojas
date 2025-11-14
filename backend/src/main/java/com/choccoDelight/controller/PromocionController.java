@@ -48,24 +48,24 @@ public class PromocionController {
         return ResponseEntity.ok(convertToDTO(promo));
     }
 
-    /**
-     * Convertir entidad Promocion a DTO.
-     */
+   
     private PromocionDTO convertToDTO(Promocion p) {
-        PromocionDTO dto = new PromocionDTO();
-        dto.setId(p.getId());
-        dto.setNombrePromo(p.getProducto().getNombre());
-        dto.setDescripcion(p.getDescripcion());
+    PromocionDTO dto = new PromocionDTO();
+    dto.setId(p.getId());
+    dto.setNombrePromo(p.getProducto().getNombre());
+    dto.setDescripcion(p.getDescripcion());
 
-        // Cálculo de precio con descuento usando BigDecimal
-        BigDecimal precio = p.getProducto().getPrecio();
-        BigDecimal descuento = BigDecimal.valueOf(p.getDescuento())
-                                         .divide(BigDecimal.valueOf(100));
-        BigDecimal precioConDescuento = precio.multiply(BigDecimal.ONE.subtract(descuento));
+    // Cálculo de precio con descuento usando BigDecimal
+    BigDecimal precio = p.getProducto().getPrecio();
+    BigDecimal descuento = BigDecimal.valueOf(p.getDescuento())
+                                     .divide(BigDecimal.valueOf(100));
+    BigDecimal precioConDescuento = precio.multiply(BigDecimal.ONE.subtract(descuento));
 
-        dto.setDescuento(p.getDescuento());
-        dto.setPrecio(precioConDescuento);
-        dto.setImagen(p.getProducto().getImagen());
-        return dto;
-    }
+    // Si el tipo en DTO es Double, convierte BigDecimal a Double
+    dto.setPrecio(precioConDescuento.doubleValue());  // Convertir BigDecimal a Double
+    dto.setDescuento(p.getDescuento());
+    dto.setImagen(p.getProducto().getImagen());
+    return dto;
+}
+
 }
