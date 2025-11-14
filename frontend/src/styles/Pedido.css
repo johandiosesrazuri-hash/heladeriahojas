@@ -100,12 +100,23 @@
   border-radius: 8px;
   font-family: var(--font-body);
   transition: all 0.3s ease;
+  background-color: white; /* ✅ FIX */
+  color: #333; /* ✅ FIX */
 }
 
 .pedido-section .pedido-form .form-group input:focus,
 .pedido-section .pedido-form .form-group textarea:focus {
   outline: none;
   border-color: var(--pastel-brown);
+}
+
+/* ✅ FIX para autocompletado del navegador */
+.pedido-section .pedido-form .form-group input:-webkit-autofill,
+.pedido-section .pedido-form .form-group input:-webkit-autofill:hover,
+.pedido-section .pedido-form .form-group input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px white inset !important;
+  -webkit-text-fill-color: #333 !important;
+  border: 2px solid var(--medium-gray) !important;
 }
 
 .pedido-section .pedido-form .form-group textarea {
@@ -153,4 +164,73 @@
   .pedido-section .pedido-container {
     padding: 1rem;
   }
+}
+
+.form-group select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid var(--medium-gray);
+  border-radius: 8px;
+  font-family: var(--font-body);
+  transition: all 0.3s ease;
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+}
+
+.form-group select:focus {
+  outline: none;
+  border-color: var(--pastel-brown);
+}
+
+.payment-info {
+  background: #e8f5e9;
+  border-left: 4px solid #4caf50;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.payment-info p {
+  margin: 0.5rem 0;
+  color: #2e7d32;
+  font-size: 0.95rem;
+}
+
+.payment-info.disabled {
+  background: #fff3e0;
+  border-left-color: #ff9800;
+}
+
+.payment-info.disabled p {
+  color: #e65100;
+}
+
+.confirm-button:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.confirm-button:disabled:hover {
+  background: #ccc;
+  transform: none;
+}
+
+.empty-cart {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: white;
+  border-radius: 15px;
+  box-shadow: var(--shadow-md);
+}
+
+.empty-cart h2 {
+  color: var(--chocolate-dark);
+  margin-bottom: 1rem;
+}
+
+.empty-cart p {
+  color: #666;
+  margin-bottom: 2rem;
 }

@@ -3,6 +3,7 @@ package com.choccoDelight.entity;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "pedidos")
 public class Pedido {
@@ -24,6 +25,13 @@ public class Pedido {
     @Column(nullable = false)
     private EstadoPedido estado;
 
+    // ✅ AGREGAR ESTAS DOS LÍNEAS
+    @Column(name = "metodo_pago", nullable = false)
+    private String metodoPago = "efectivo";
+
+    @Column(nullable = false)
+    private Boolean pagado = false;
+
     @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL)
     private Delivery delivery;
 
@@ -37,6 +45,7 @@ public class Pedido {
 
     public enum EstadoPedido {
         PENDIENTE,
+        PENDIENTE_PAGO,  // ✅ AGREGAR ESTE
         CONFIRMADO,
         EN_PREPARACION,
         EN_CAMINO,
@@ -47,14 +56,26 @@ public class Pedido {
     // Getters and setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+    
     public Usuario getUsuario() { return usuario; }
     public void setUsuario(Usuario usuario) { this.usuario = usuario; }
+    
     public LocalDateTime getFecha() { return fecha; }
     public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
+    
     public BigDecimal getTotal() { return total; }
     public void setTotal(BigDecimal total) { this.total = total; }
+    
     public EstadoPedido getEstado() { return estado; }
     public void setEstado(EstadoPedido estado) { this.estado = estado; }
+    
     public Delivery getDelivery() { return delivery; }
     public void setDelivery(Delivery delivery) { this.delivery = delivery; }
+
+    // ✅ AGREGAR ESTOS GETTERS Y SETTERS
+    public String getMetodoPago() { return metodoPago; }
+    public void setMetodoPago(String metodoPago) { this.metodoPago = metodoPago; }
+
+    public Boolean getPagado() { return pagado; }
+    public void setPagado(Boolean pagado) { this.pagado = pagado; }
 }

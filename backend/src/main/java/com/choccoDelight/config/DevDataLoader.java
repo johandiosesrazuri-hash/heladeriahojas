@@ -49,7 +49,7 @@ public class DevDataLoader implements CommandLineRunner {
         cliente.setNombre("Cliente Local");
         cliente.setEmail("cliente@local");
         cliente.setPassword(passwordEncoder.encode("cliente123"));
-        cliente.setRol(Usuario.Role.USER);
+        cliente.setRol(Usuario.Role.CLIENTE);
         usuarioRepository.save(cliente);
 
         Producto p1 = new Producto();

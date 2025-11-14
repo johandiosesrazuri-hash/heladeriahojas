@@ -6,17 +6,11 @@ import Login from './components/Login'
 import Register from './components/Register'
 import Menu from './components/Menu'
 import Carrito from './components/Carrito'
+import Promociones from './components/Promociones'
 import Pedido from './components/Pedido'
 import './App.css'
 
 // Componentes para rutas no implementadas aún
-const Promociones = () => (
-  <div style={{ padding: '40px 20px', textAlign: 'center', minHeight: 'calc(100vh - 80px)' }}>
-    <h2>🎉 Promociones</h2>
-    <p>Próximamente tendremos promociones especiales para ti</p>
-  </div>
-)
-
 const Contacto = () => (
   <div style={{ padding: '40px 20px', textAlign: 'center', minHeight: 'calc(100vh - 80px)' }}>
     <h2>📞 Contacto</h2>

@@ -22,14 +22,16 @@ const Menu = () => {
   }, []);
 
   const handleAddToCart = (producto) => {
-    addItem({
-      id: producto.id,
-      name: producto.nombre,
-      price: producto.precio,
-      image: producto.imagen,
-      quantity: 1
-    });
-  };
+  addItem({
+    id: `menu-${producto.id}`,           // ✅ prefijo para evitar colisiones
+    productoId: producto.id,             // ✅ para enviar al backend
+    name: producto.nombre,
+    price: Number(producto.precio) || 0,
+    image: `http://localhost:8080${producto.imagen}` || '/img/default.png',  // ✅ URL completa
+    quantity: 1
+  });
+};
+
 
   return (
     <section className="menu-section">
@@ -38,10 +40,10 @@ const Menu = () => {
         <div className="menu-list">
           {productos.map(producto => (
             <div key={producto.id} className="menu-item">
-              <img src={producto.imagen} alt={producto.nombre} className="menu-image" />
+              <img src={`http://localhost:8080${producto.imagen}`} alt={producto.nombre} className="menu-image" />
               <h3 className="name">{producto.nombre}</h3>
               <p className="text">{producto.descripcion}</p>
-              <p className="price">${producto.precio.toFixed(2)}</p>
+              <p className="price">${Number(producto.precio).toFixed(2)}</p>
               <button 
                 className="add-to-cart"
                 onClick={() => handleAddToCart(producto)}

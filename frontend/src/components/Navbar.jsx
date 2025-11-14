@@ -24,7 +24,7 @@ const Navbar = () => {
 
       <div className="nav-actions">
         <Link to="/carrito" className="cart-link">
-          <i className="fas fa-shopping-cart"></i>
+          <span className="cart-icon">🛒</span>
           {totalItems > 0 && <span className="cart-count">{totalItems}</span>}
         </Link>
         

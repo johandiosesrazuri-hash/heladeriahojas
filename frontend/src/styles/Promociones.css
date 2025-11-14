@@ -1,0 +1,106 @@
+:root {
+  --chocolate-dark: #5d4037;
+  --dark-brown: #8b5a3c;
+  --pastel-brown: #d4a373;
+  --fruit-punch: #ff6b6b;
+  --shadow-md: 0 5px 15px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.12);
+  --font-title: 'Pacifico', cursive;
+  --font-accent: 'Quicksand', sans-serif;
+}
+
+.promociones {
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, rgba(255, 235, 210, 0.6), rgba(255, 205, 180, 0.6));
+  text-align: center;
+}
+
+.promociones h2 {
+  font-family: var(--font-title);
+  font-size: 2.8rem;
+  color: var(--dark-brown);
+  margin-bottom: 2.5rem;
+  position: relative;
+}
+
+.promociones h2::after {
+  content: '';
+  width: 80px;
+  height: 3px;
+  background: var(--pastel-brown);
+  position: absolute;
+  left: 50%;
+  bottom: -10px;
+  transform: translateX(-50%);
+}
+
+.promociones-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.promocion-card {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  padding-bottom: 1rem;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.promocion-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+}
+
+.promocion-imagen {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.promocion-card h3 {
+  margin: 1rem 0 0.4rem;
+  font-family: var(--font-accent);
+  font-size: 1.4rem;
+  color: var(--chocolate-dark);
+}
+
+.promocion-card p {
+  padding: 0 1rem;
+  color: var(--dark-brown);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.precio {
+  background: rgba(255, 107, 107, 0.15);
+  padding: 0.4rem 1rem;
+  border-radius: 10px;
+  font-weight: bold;
+  color: var(--fruit-punch);
+  font-size: 1.1rem;
+}
+
+.add-to-cart-promo {
+  margin-top: 1rem;
+  padding: 0.7rem 1.5rem;
+  background: var(--pastel-brown);
+  color: white;
+  border: none;
+  width: 80%;
+  border-radius: 25px;
+  cursor: pointer;
+  font-family: var(--font-accent);
+  font-weight: bold;
+  transition: 0.3s ease;
+}
+
+.add-to-cart-promo:hover {
+  background: var(--dark-brown);
+  transform: translateY(-2px);
+}

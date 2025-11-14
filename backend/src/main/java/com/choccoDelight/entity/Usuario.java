@@ -36,8 +36,7 @@ public class Usuario implements UserDetails {
     }
 
     public enum Role {
-        USER,
-        ADMIN
+        ADMIN, CLIENTE
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
