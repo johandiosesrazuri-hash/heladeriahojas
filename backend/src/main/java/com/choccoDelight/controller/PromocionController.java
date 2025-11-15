@@ -49,23 +49,24 @@ public class PromocionController {
     }
 
    
-    private PromocionDTO convertToDTO(Promocion p) {
+   private PromocionDTO convertToDTO(Promocion p) {
     PromocionDTO dto = new PromocionDTO();
     dto.setId(p.getId());
-    dto.setNombrePromo(p.getProducto().getNombre());
+    dto.setNombrePromo(p.getNombre());  // Aquí asignamos el nombre de la promoción (nombre de la entidad)
     dto.setDescripcion(p.getDescripcion());
-
+    
     // Cálculo de precio con descuento usando BigDecimal
     BigDecimal precio = p.getProducto().getPrecio();
     BigDecimal descuento = BigDecimal.valueOf(p.getDescuento())
                                      .divide(BigDecimal.valueOf(100));
     BigDecimal precioConDescuento = precio.multiply(BigDecimal.ONE.subtract(descuento));
-
-    // Si el tipo en DTO es Double, convierte BigDecimal a Double
+    
     dto.setPrecio(precioConDescuento.doubleValue());  // Convertir BigDecimal a Double
     dto.setDescuento(p.getDescuento());
-    dto.setImagen(p.getProducto().getImagen());
+    dto.setImagen(p.getProducto().getImagen());  // Obtener la imagen del producto
     return dto;
 }
+
+
 
 }

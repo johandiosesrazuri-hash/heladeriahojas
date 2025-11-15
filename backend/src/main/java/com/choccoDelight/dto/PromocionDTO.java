@@ -2,12 +2,13 @@ package com.choccoDelight.dto;
 
 public class PromocionDTO {
     private Long id;
-    private String nombrePromo;
+    private String nombrePromo;  // Este campo debe ser el que contenga el nombre de la promoción
     private String descripcion;
     private Double precio;
     private Double descuento;
     private String imagen;
 
+    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
