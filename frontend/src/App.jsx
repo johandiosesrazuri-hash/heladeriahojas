@@ -11,6 +11,8 @@ import Contacto from './components/Contacto'
 import Pedido from './components/Pedido'
 import './App.css'
 import Footer from './components/Footer'
+import Testimonios from './components/Testimonios'
+import SobreNosotros from './components/SobreNosotros'
 
 function App() {
   return (
@@ -26,6 +28,8 @@ function App() {
             <Route path="/pedidos" element={<Pedido />} />
             <Route path="/promociones" element={<Promociones />} />
             <Route path="/contacto" element={<Contacto />} />
+            <Route path="/testimonios" element={<Testimonios />} />
+            <Route path="/sobre-nosotros" element={<SobreNosotros />} />
             <Route path="/" element={<Menu />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

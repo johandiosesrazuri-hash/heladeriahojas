@@ -1,90 +1,47 @@
 package com.choccoDelight.entity;
 
 import jakarta.persistence.*;
-
-import java.sql.Timestamp;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "testimonios")
 public class Testimonio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;  // Relación con la entidad Usuario
+    private Usuario usuario;
 
     @Column(nullable = false)
-    private String mensaje;  // Mensaje del testimonio
+    private Integer calificacion; // 1 a 5 estrellas
 
-    @Column(nullable = false)
-    private int calificacion;  // Calificación del testimonio
+    @Column(nullable = false, length = 1000)
+    private String comentario;
 
-    @Column(nullable = false)
-    private Timestamp fecha;  // Fecha en que se dejó el testimonio
-    
-    // Constructor
-    public Testimonio() {
-    }
+    @Column(name = "fecha_creacion", nullable = false)
+    private LocalDateTime fecha;
 
-    public Testimonio(Usuario usuario, String mensaje, int calificacion, Timestamp fecha) {
-        this.usuario = usuario;
-        this.mensaje = mensaje;
-        this.calificacion = calificacion;
-        this.fecha = fecha;
+    @PrePersist
+    protected void onCreate() {
+        fecha = LocalDateTime.now();
     }
 
     // Getters y Setters
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Usuario getUsuario() { return usuario; }
+    public void setUsuario(Usuario usuario) { this.usuario = usuario; }
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
+    public Integer getCalificacion() { return calificacion; }
+    public void setCalificacion(Integer calificacion) { this.calificacion = calificacion; }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
+    public String getComentario() { return comentario; }
+    public void setComentario(String comentario) { this.comentario = comentario; }
 
-    public String getMensaje() {
-        return mensaje;
-    }
-
-    public void setMensaje(String mensaje) {
-        this.mensaje = mensaje;
-    }
-
-    public int getCalificacion() {
-        return calificacion;
-    }
-
-    public void setCalificacion(int calificacion) {
-        this.calificacion = calificacion;
-    }
-
-    public Timestamp getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(Date fecha) {
-        this.fecha = new Timestamp(fecha.getTime());
-    }
-
-    @Override
-    public String toString() {
-        return "Testimonio{" +
-                "id=" + id +
-                ", usuario=" + usuario.getUsername() + // Asumiendo que la entidad Usuario tiene un método getNombre()
-                ", mensaje='" + mensaje + '\'' +
-                ", calificacion=" + calificacion +
-                ", fecha=" + fecha +
-                '}';
-    }
+    public LocalDateTime getFecha() { return fecha; }
+    public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
 }

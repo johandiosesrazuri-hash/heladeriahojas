@@ -12,26 +12,29 @@ export const AuthProvider = ({ children }) => {
   });
   const [token, setToken] = useState(localStorage.getItem('token'));
 
-  const login = async (email, password) => {
-    try {
-      const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      const response = await axios.post(`${api}/api/auth/login`, {
-        email,
-        password
-      });
-      const data = response.data;
-      const tokenResp = data.token;
-      const userResp = { email: data.email, nombre: data.nombre, rol: data.rol };
-      localStorage.setItem('token', tokenResp);
-      localStorage.setItem('user', JSON.stringify(userResp));
-      setToken(tokenResp);
-      setUser(userResp);
-      return true;
-    } catch (error) {
-      console.error('Error during login:', error);
-      throw error;
-    }
-  };
+ const login = async (email, password) => {
+  try {
+    const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+    const response = await axios.post(`${api}/api/auth/login`, {
+      email,
+      password
+    });
+    const data = response.data;
+    const tokenResp = data.token;
+    const userResp = { id: data.id, email: data.email, nombre: data.nombre, rol: data.rol };
+    
+    console.log('🔵 Token guardado:', tokenResp); // ✅ DEBUG
+    
+    localStorage.setItem('token', tokenResp);
+    localStorage.setItem('user', JSON.stringify(userResp));
+    setToken(tokenResp);
+    setUser(userResp);
+    return true;
+  } catch (error) {
+    console.error('Error during login:', error);
+    throw error;
+  }
+};
 
   const register = async (userData) => {
     try {
@@ -41,7 +44,7 @@ export const AuthProvider = ({ children }) => {
       // If backend returns token, save and set user (auto-login after register)
       if (data && data.token) {
         const tokenResp = data.token;
-        const userResp = { email: data.email, nombre: data.nombre, rol: data.rol };
+        const userResp = { id: data.id, email: data.email, nombre: data.nombre, rol: data.rol };
         localStorage.setItem('token', tokenResp);
         localStorage.setItem('user', JSON.stringify(userResp));
         setToken(tokenResp);

@@ -1,84 +1,37 @@
 package com.choccoDelight.dto;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 public class TestimonioDTO {
-
     private Long id;
-    private String mensaje;
-    private Long usuarioId;
     private String nombreUsuario;
-    private String imagenUsuario;
-    private Timestamp fecha;
-    private Integer calificacion;  // Nuevo campo de calificación (puede ser Double si es una calificación decimal)
+    private String mensaje;
+    private Integer calificacion;
+    private LocalDateTime fecha;
 
-    public TestimonioDTO(Long id, String mensaje, Long usuarioId, String nombreUsuario, String imagenUsuario, Timestamp fecha, Integer calificacion) {
+    public TestimonioDTO() {}
+
+    public TestimonioDTO(Long id, String nombreUsuario, String mensaje, Integer calificacion, LocalDateTime fecha) {
         this.id = id;
-        this.mensaje = mensaje;
-        this.usuarioId = usuarioId;
         this.nombreUsuario = nombreUsuario;
-        this.imagenUsuario = imagenUsuario;
-        this.fecha = fecha;
-        this.calificacion = calificacion;  // Inicialización de calificación
-    }
-
-    public TestimonioDTO() {
-    }
-    
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getMensaje() {
-        return mensaje;
-    }
-
-    public void setMensaje(String mensaje) {
         this.mensaje = mensaje;
-    }
-
-    public Long getUsuarioId() {
-        return usuarioId;
-    }
-
-    public void setUsuarioId(Long usuarioId) {
-        this.usuarioId = usuarioId;
-    }
-
-    public String getNombreUsuario() {
-        return nombreUsuario;
-    }
-
-    public void setNombreUsuario(String nombreUsuario) {
-        this.nombreUsuario = nombreUsuario;
-    }
-
-    public String getImagenUsuario() {
-        return imagenUsuario;
-    }
-
-    public void setImagenUsuario(String imagenUsuario) {
-        this.imagenUsuario = imagenUsuario;
-    }
-
-    public Timestamp getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(Timestamp fecha) {
+        this.calificacion = calificacion;
         this.fecha = fecha;
     }
 
-    public Integer getCalificacion() {
-        return calificacion;  // Método getter de calificación
-    }
+    // Getters y Setters
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setCalificacion(Integer calificacion) {
-        this.calificacion = calificacion;  // Método setter de calificación
-    }
+    public String getNombreUsuario() { return nombreUsuario; }
+    public void setNombreUsuario(String nombreUsuario) { this.nombreUsuario = nombreUsuario; }
+
+    public String getMensaje() { return mensaje; }
+    public void setMensaje(String mensaje) { this.mensaje = mensaje; }
+
+    public Integer getCalificacion() { return calificacion; }
+    public void setCalificacion(Integer calificacion) { this.calificacion = calificacion; }
+
+    public LocalDateTime getFecha() { return fecha; }
+    public void setFecha(LocalDateTime fecha) { this.fecha = fecha; }
 }

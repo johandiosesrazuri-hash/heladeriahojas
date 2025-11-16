@@ -40,6 +40,7 @@ public class AuthService {
 
     AuthResponse resp = new AuthResponse();
     resp.setToken(token);
+    resp.setId(usuario.getId());
     resp.setEmail(usuario.getEmail());
     resp.setNombre(usuario.getNombre());
     resp.setRol(usuario.getRol().name());
@@ -63,6 +64,7 @@ public class AuthService {
 
     AuthResponse resp = new AuthResponse();
     resp.setToken(token);
+    resp.setId(usuario.getId());
     resp.setEmail(usuario.getEmail());
     resp.setNombre(usuario.getNombre());
     // Devolvemos el role con prefijo ROLE_ para mantener compatibilidad con Spring Security

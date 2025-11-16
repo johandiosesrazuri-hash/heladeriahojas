@@ -9,10 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface TestimonioRepository extends JpaRepository<Testimonio, Long> {
-
-    // Método para obtener testimonios de un usuario por su ID
-    List<Testimonio> findByUsuario_Id(Long usuarioId);
-
-    // Método para obtener un testimonio por su ID
-    Optional<Testimonio> findById(Long id);
+    List<Testimonio> findByUsuarioIdOrderByFechaDesc(Long usuarioId);
+    Optional<Testimonio> findByUsuarioId(Long usuarioId);
 }

@@ -18,7 +18,7 @@ const Carrito = () => {
       alert('Tu carrito está vacío');
       return;
     }
-    navigate('/finalizar-pedido');
+    navigate('/pedidos');
   };
 
   const handleQuantityChange = (itemId, newQuantity) => {

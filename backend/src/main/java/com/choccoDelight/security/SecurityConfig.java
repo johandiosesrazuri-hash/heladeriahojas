@@ -2,6 +2,7 @@ package com.choccoDelight.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -15,6 +16,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 public class SecurityConfig {
@@ -51,14 +54,23 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authorizeHttpRequests(auth -> auth
+                // Rutas públicas
                 .requestMatchers(
-                "/api/auth/**",
-                "/api/productos/**",
-                "/api/promociones/**",
-                "/img/**",
-                "/api/contacto/**",
-                "/api/testimonios/**"
-            ).permitAll()
+                    "/api/auth/**",
+                    "/api/productos/**",
+                    "/api/promociones/**",
+                    "/img/**",
+                    "/api/contacto/**",
+                    "/api/sobre-nosotros/**"
+                ).permitAll()
+                
+                // ✅ Testimonios: GET público, POST/DELETE requieren login
+                .requestMatchers(HttpMethod.GET, "/api/testimonios").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/testimonios").authenticated()
+                .requestMatchers(HttpMethod.DELETE, "/api/testimonios/**").authenticated()
+                .requestMatchers("/api/testimonios/mis-testimonios").authenticated()
+                
+                // Todo lo demás requiere autenticación
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -73,10 +85,27 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.addAllowedOrigin("http://localhost:5173");
         config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
+        config.addAllowedMethod("GET");
+        config.addAllowedMethod("POST");
+        config.addAllowedMethod("PUT");
+        config.addAllowedMethod("DELETE");
         config.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
     }
+    
+    @Configuration
+public class WebConfig implements WebMvcConfigurer {
+
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/api/**")  // Asegúrate de que la ruta de tu API esté incluida
+                .allowedOrigins("http://localhost:5173")  // Origen de tu frontend
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedHeaders("*")
+                .allowCredentials(true);
+    }
+}
+
 }

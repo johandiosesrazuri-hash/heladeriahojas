@@ -3,6 +3,7 @@ package com.choccoDelight.dto;
 public class AuthResponse {
     private String token;
     private String email;
+    private Long id;      
     private String nombre;
     private String rol;
 
@@ -23,4 +24,6 @@ public class AuthResponse {
     public void setNombre(String nombre) { this.nombre = nombre; }
     public String getRol() { return rol; }
     public void setRol(String rol) { this.rol = rol; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 }

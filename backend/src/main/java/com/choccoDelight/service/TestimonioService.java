@@ -1,13 +1,12 @@
 package com.choccoDelight.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.choccoDelight.dto.TestimonioDTO;
 import com.choccoDelight.entity.Testimonio;
 import com.choccoDelight.entity.Usuario;
 import com.choccoDelight.repository.TestimonioRepository;
 import com.choccoDelight.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,38 +20,41 @@ public class TestimonioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    // Método para guardar un testimonio usando TestimonioDTO
-    public Testimonio guardarTestimonio(TestimonioDTO testimonioDTO) {
-    // Verificar si el usuario existe
-    Optional<Usuario> usuario = usuarioRepository.findById(testimonioDTO.getUsuarioId());
-if (usuario.isPresent()) {
-    Testimonio testimonio = new Testimonio();
-    testimonio.setUsuario(usuario.get());  // Asocia el usuario encontrado
-    testimonio.setMensaje(testimonioDTO.getMensaje());
-    testimonio.setFecha(new java.util.Date());  // Establecer la fecha actual
-    testimonio.setCalificacion(testimonioDTO.getCalificacion());  // Establecer la calificación
-    return testimonioRepository.save(testimonio);  // Guardar el testimonio con el usuario
-} else {
-    throw new RuntimeException("Usuario no encontrado");
-}
+    @Transactional
+    public Testimonio crearTestimonio(Long usuarioId, Integer calificacion, String comentario) {
+        // Validar usuario
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-}
+        // Validar calificación
+        if (calificacion < 1 || calificacion > 5) {
+            throw new RuntimeException("La calificación debe estar entre 1 y 5");
+        }
 
+        // Validar que no tenga testimonio previo (opcional)
+        Optional<Testimonio> existente = testimonioRepository.findByUsuarioId(usuarioId);
+        if (existente.isPresent()) {
+            throw new RuntimeException("Ya has dejado un testimonio anteriormente");
+        }
 
+        // Crear nuevo testimonio
+        Testimonio testimonio = new Testimonio();
+        testimonio.setUsuario(usuario);
+        testimonio.setCalificacion(calificacion);
+        testimonio.setComentario(comentario);
 
-
-    // Método para obtener todos los testimonios
-    public List<Testimonio> obtenerTodosLosTestimonios() {
-        return testimonioRepository.findAll();  // Asegúrate de que el repositorio esté devolviendo los datos
+        return testimonioRepository.save(testimonio);
     }
 
-    // Método para obtener un testimonio por ID
-    public Testimonio obtenerTestimonioPorId(Long id) {
-    return testimonioRepository.findById(id).orElse(null);  // Esto debe devolver el testimonio si existe
-}
+    public List<Testimonio> listarTodos() {
+        return testimonioRepository.findAll();
+    }
 
-    // Método para eliminar un testimonio por ID
-    public void eliminarTestimonio(Long id) {
-        testimonioRepository.deleteById(id);
+    public List<Testimonio> listarPorUsuario(Long usuarioId) {
+        return testimonioRepository.findByUsuarioIdOrderByFechaDesc(usuarioId);
+    }
+
+    public Optional<Testimonio> obtenerPorUsuario(Long usuarioId) {
+        return testimonioRepository.findByUsuarioId(usuarioId);
     }
 }

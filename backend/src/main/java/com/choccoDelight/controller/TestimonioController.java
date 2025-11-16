@@ -1,51 +1,57 @@
 package com.choccoDelight.controller;
 
-import com.choccoDelight.dto.TestimonioDTO;
+import com.choccoDelight.dto.TestimonioRequest;
 import com.choccoDelight.entity.Testimonio;
 import com.choccoDelight.service.TestimonioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/testimonios")
+@CrossOrigin(origins = "http://localhost:5173")
 public class TestimonioController {
 
     @Autowired
     private TestimonioService testimonioService;
 
-    // Obtener todos los testimonios
+    /**
+     * Obtener todos los testimonios (público)
+     */
     @GetMapping
-    public ResponseEntity<List<Testimonio>> obtenerTodosTestimonios() {
-        List<Testimonio> testimonios = testimonioService.obtenerTodosLosTestimonios();
-        if (testimonios.isEmpty()) {
-            return ResponseEntity.noContent().build();  // No hay testimonios
-        }
-        return ResponseEntity.ok(testimonios);
+    public ResponseEntity<List<Testimonio>> listarTodos() {
+        return ResponseEntity.ok(testimonioService.listarTodos());
     }
 
-    // Obtener testimonio por ID
-    @GetMapping("/{id}")
-public ResponseEntity<Testimonio> obtenerTestimonioPorId(@PathVariable Long id) {
-    Testimonio testimonio = testimonioService.obtenerTestimonioPorId(id);
-    if (testimonio != null) {
-        return ResponseEntity.ok(testimonio);
-    } else {
-        return ResponseEntity.status(404).body(null);
+    /**
+     * Obtener testimonio de un usuario específico
+     */
+    @GetMapping("/usuario/{usuarioId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Testimonio> obtenerPorUsuario(@PathVariable Long usuarioId) {
+        return testimonioService.obtenerPorUsuario(usuarioId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
-}
+
+    /**
+     * Crear un nuevo testimonio (requiere autenticación)
+     */
     @PostMapping
-    public ResponseEntity<Testimonio> guardarTestimonio(@RequestBody TestimonioDTO testimonioDTO) {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> crearTestimonio(@RequestBody TestimonioRequest request) {
         try {
-            Testimonio testimonioGuardado = testimonioService.guardarTestimonio(testimonioDTO);
-            return ResponseEntity.ok(testimonioGuardado);
+            Testimonio testimonio = testimonioService.crearTestimonio(
+                    request.getUsuarioId(),
+                    request.getCalificacion(),
+                    request.getComentario()
+            );
+            return ResponseEntity.ok(testimonio);
         } catch (RuntimeException e) {
-            // En caso de error, devolver un error 404 si no se encuentra el usuario
-            return ResponseEntity.status(404).body(null);
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
 }
