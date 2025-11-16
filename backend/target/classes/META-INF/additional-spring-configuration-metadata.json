@@ -1,0 +1,34 @@
+{
+  "properties": [
+    {
+      "name": "jwt.secret",
+      "type": "java.lang.String",
+      "description": "Clave secreta usada para firmar los tokens JWT (propiedad custom)."
+    },
+    {
+      "name": "jwt.expiration",
+      "type": "java.lang.Long",
+      "description": "Tiempo de expiración del token JWT en milisegundos (propiedad custom)."
+    },
+    {
+      "name": "spring.web.cors.allowed-origins",
+      "type": "java.lang.String",
+      "description": "Orígenes permitidos para CORS. Ejemplo: http://localhost:5173"
+    },
+    {
+      "name": "spring.web.cors.allowed-methods",
+      "type": "java.lang.String",
+      "description": "Métodos HTTP permitidos para CORS. Ejemplo: GET,POST,PUT,DELETE,OPTIONS"
+    },
+    {
+      "name": "spring.web.cors.allowed-headers",
+      "type": "java.lang.String",
+      "description": "Cabeceras permitidas para CORS. Ejemplo: *"
+    },
+    {
+      "name": "spring.web.cors.allow-credentials",
+      "type": "java.lang.Boolean",
+      "description": "Indica si se permiten credenciales (cookies/authorization) en CORS."
+    }
+  ]
+}
