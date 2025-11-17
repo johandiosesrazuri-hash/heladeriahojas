@@ -1,29 +1,60 @@
 package com.choccoDelight.dto;
 
 public class PromocionDTO {
+
     private Long id;
-    private String nombrePromo;  // Este campo debe ser el que contenga el nombre de la promoción
+    private String nombrePromo;
     private String descripcion;
     private Double precio;
     private Double descuento;
-    private String imagen;
+    private String imagenUrl;  // Aquí se guarda la URL de la imagen de la promoción
 
-    // Getters y Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    // Getters y setters
+    public Long getId() {
+        return id;
+    }
 
-    public String getNombrePromo() { return nombrePromo; }
-    public void setNombrePromo(String nombrePromo) { this.nombrePromo = nombrePromo; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getDescripcion() { return descripcion; }
-    public void setDescripcion(String descripcion) { this.descripcion = descripcion; }
+    public String getNombrePromo() {
+        return nombrePromo;
+    }
 
-    public Double getPrecio() { return precio; }
-    public void setPrecio(Double precio) { this.precio = precio; }
+    public void setNombrePromo(String nombrePromo) {
+        this.nombrePromo = nombrePromo;
+    }
 
-    public Double getDescuento() { return descuento; }
-    public void setDescuento(Double descuento) { this.descuento = descuento; }
+    public String getDescripcion() {
+        return descripcion;
+    }
 
-    public String getImagen() { return imagen; }
-    public void setImagen(String imagen) { this.imagen = imagen; }
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public Double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(Double precio) {
+        this.precio = precio;
+    }
+
+    public Double getDescuento() {
+        return descuento;
+    }
+
+    public void setDescuento(Double descuento) {
+        this.descuento = descuento;
+    }
+
+    public String getImagenUrl() {
+        return imagenUrl;
+    }
+
+    public void setImagenUrl(String imagenUrl) {
+        this.imagenUrl = imagenUrl;
+    }
 }

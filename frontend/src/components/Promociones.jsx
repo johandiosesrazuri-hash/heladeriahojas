@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext';
 const Promociones = () => {
   const [promociones, setPromociones] = useState([]);
   const [notification, setNotification] = useState({ show: false, message: '' });
-  const [loading, setLoading] = useState(true);  // Estado de carga
+  const [loading, setLoading] = useState(true);
   const { addItem } = useCart();
 
   // ✅ Cargar las promociones desde el backend
@@ -38,13 +38,13 @@ const Promociones = () => {
 
     fetchPromos();
   }, []);
-
+  // ✅ Manejar la adición de una promoción al carrito
   const handleAddPromo = (promo) => {
     addItem({
       id: `promo-${promo.id}`,
       name: promo.nombrePromo,
       price: Number(promo.precio) || 0,
-      image: promo.imagenUrl || "/img/promociones/default.png",  // Usar URL de la promoción
+      image: promo.imagenUrl || "/img/promociones/default.png",
       quantity: 1
     });
 
@@ -63,8 +63,7 @@ const Promociones = () => {
       {/* Fondo decorativo */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#fef7f0] via-[#fef9f4] to-[#fefcf8]"></div>
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,...')] opacity-20"></div>
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,...')] opacity-30"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-transparent via-white/40 to-transparent opacity-30"></div>
       </div>
 
       {/* Notificación temporal */}
@@ -113,12 +112,8 @@ const Promociones = () => {
                 <div key={promo.id} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden group border border-[#f5f0e8]" style={{ animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both` }}>
                   {/* Imagen del Producto */}
                   <div className="relative overflow-hidden bg-gradient-to-br from-[#fef7f0] to-[#fef9f4] h-48 md:h-56">
-                    <img
-                      src={promo.imagenUrl || "/img/promociones/default.png"}
-                      alt={promo.nombrePromo}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      onError={(e) => { e.target.src = "/img/promociones/default.png"; }}
-                    />
+                    <img src={`http://localhost:8080${promo.imagenUrl}`} alt={promo.nombrePromo} onError={(e) => e.target.src = "/img/promociones/default.png"} />
+
                     
                     {/* Badge de Descuento */}
                     <div className="absolute top-3 right-3 bg-[#dbbba6] text-[#5d4037] px-4 py-2 rounded-full shadow-lg font-bold text-sm transform rotate-3 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110">
@@ -158,7 +153,7 @@ const Promociones = () => {
       </div>
 
       {/* Estilos de Animación */}
-      <style jsx>{`
+      <style>{`
         @keyframes fadeInUp {
           from {
             opacity: 0;

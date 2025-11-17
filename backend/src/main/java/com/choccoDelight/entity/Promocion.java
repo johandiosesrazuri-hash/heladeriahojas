@@ -25,6 +25,9 @@ public class Promocion {
 
     private Boolean activo = true;
 
+    // Nuevo campo para la URL de la imagen de la promoción
+    private String imagenUrl;  // Este es el nuevo atributo
+
     // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -43,4 +46,13 @@ public class Promocion {
 
     public Boolean getActivo() { return activo; }
     public void setActivo(Boolean activo) { this.activo = activo; }
+
+    // Getter y setter para la imagen de la promoción
+    public String getImagenUrl() {
+        return imagenUrl;
+    }
+
+    public void setImagenUrl(String imagenUrl) {
+        this.imagenUrl = imagenUrl;
+    }
 }
