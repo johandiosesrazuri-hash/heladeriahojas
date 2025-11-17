@@ -60,12 +60,11 @@ const Navbar = () => {
             <div className="hidden md:flex items-center space-x-8">
               <ul className="flex space-x-6">
                 {[
-                  { name: 'Inicio', path: '/' },
+                  { name: 'Inicio', path: '/sobre-nosotros' },
                   { name: 'Menú', path: '/menu' },
                   { name: 'Promociones', path: '/promociones' },
                   { name: 'Contacto', path: '/contacto' },
                   { name: 'Testimonios', path: '/testimonios' },
-                  { name: 'Sobre Nosotros', path: '/sobre-nosotros' }
                 ].map((item) => (
                   <li key={item.name}>
                     <Link 

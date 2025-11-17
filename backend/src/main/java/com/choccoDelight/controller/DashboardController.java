@@ -3,7 +3,9 @@ package com.choccoDelight.controller;
 import com.choccoDelight.entity.*;
 import com.choccoDelight.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.*;
@@ -16,6 +18,7 @@ public class DashboardController {
 
     @Autowired private UsuarioRepository usuarioRepository;
     @Autowired private ProductoRepository productoRepository;
+    @Autowired private PromocionRepository promocionRepository;
     @Autowired private PedidoRepository pedidoRepository;
     @Autowired private ContactoRepository contactoRepository;
 
@@ -112,26 +115,53 @@ public class DashboardController {
         return productoRepository.save(existente);
     }
 
+   @DeleteMapping("/productos/{id}")
+@Transactional  // Asegura que el método se ejecute dentro de una transacción
+public ResponseEntity<Map<String, String>> eliminarProducto(@PathVariable Long id, @RequestParam("cantidad") int cantidad) {
+    System.out.println("🗑️ DELETE /api/admin/dashboard/productos/" + id + " (Cantidad a eliminar: " + cantidad + ")");
     
-    @DeleteMapping("/productos/{id}")
-    public Map<String, String> eliminarProducto(@PathVariable Long id) {
-        System.out.println("🗑️ DELETE /api/admin/dashboard/productos/" + id);
-        
+    try {
         // Verificar que existe
-        Producto producto = obtenerProductoPorId(id);
-        System.out.println("📦 Eliminando producto: " + producto.getNombre() + 
-                         " (Stock: " + producto.getStockDisponible() + ")");
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con ID: " + id));
         
-        // Eliminar
-        productoRepository.deleteById(id);
+        // Verificar si hay suficiente stock para eliminar
+        if (producto.getStockDisponible() < cantidad) {
+            throw new RuntimeException("No hay suficiente stock para eliminar. Stock disponible: " + producto.getStockDisponible());
+        }
+
+        System.out.println("📦 Eliminando " + cantidad + " unidades del producto: " + producto.getNombre() + 
+                         " (Stock inicial: " + producto.getStockDisponible() + ")");
         
-        System.out.println("✅ Producto eliminado correctamente");
-        return Map.of(
-            "mensaje", "Producto eliminado correctamente", 
+        // Actualizar el stock del producto
+        producto.setStockDisponible(producto.getStockDisponible() - cantidad);
+        productoRepository.save(producto);
+        
+        // Eliminar las promociones asociadas si el stock llega a 0
+        if (producto.getStockDisponible() == 0) {
+            promocionRepository.deleteByProductoId(id);
+            System.out.println("🔥 Promociones asociadas eliminadas");
+        }
+
+        System.out.println("✅ Producto actualizado correctamente");
+        
+        return ResponseEntity.ok(Map.of(
+            "mensaje", "Stock actualizado correctamente", 
             "id", id.toString(),
-            "producto", producto.getNombre()
-        );
+            "producto", producto.getNombre(),
+            "stockRestante", String.valueOf(producto.getStockDisponible())
+        ));
+    } catch (Exception e) {
+        System.err.println("❌ Error eliminando producto: " + e.getMessage());
+        e.printStackTrace();
+        return ResponseEntity.status(500).body(Map.of(
+            "error", "Error al eliminar el producto",
+            "mensaje", e.getMessage()
+        ));
     }
+}
+
+
 
     // ========================================
     // 📦 GESTIÓN DE PEDIDOS

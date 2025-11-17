@@ -89,7 +89,6 @@ public class SecurityConfig {
                 .requestMatchers("/api/delivery/**").authenticated()
                 .requestMatchers("/api/usuarios/**").authenticated()
                 
-                // ✅ TODO LO DEMÁS REQUIERE AUTENTICACIÓN
                 .anyRequest().authenticated()
             )
             

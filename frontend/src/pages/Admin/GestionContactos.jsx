@@ -31,24 +31,31 @@ const GestionContactos = () => {
     fetchContactos();
   }, []);
 
-  const fetchContactos = async () => {
-    try {
-      const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      const response = await axios.get(`${api}/api/admin/contactos`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setContactos(response.data);
-    } catch (error) {
-      console.error('Error cargando contactos:', error);
-      setNotification({
-        show: true,
-        message: "Error al cargar los contactos. Inténtalo de nuevo.",
-        type: "error"
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+ const fetchContactos = async () => {
+  try {
+    setLoading(true);  // Activar el loading mientras se realiza la solicitud.
+    const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+    const response = await axios.get(`${api}/api/admin/contactos`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    setContactos(response.data);
+  } catch (error) {
+    console.error('Error cargando contactos:', error);
+
+    // Mejorar el manejo de errores y mensajes para el usuario
+    const errorMessage = error.response?.data?.message || 'Error al cargar los contactos. Inténtalo de nuevo.';
+
+    setNotification({
+      show: true,
+      message: errorMessage,
+      type: "error"
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleDeleteContacto = async (id) => {
     try {
@@ -100,19 +107,6 @@ const GestionContactos = () => {
 
         {/* Estilos de Animación y Fuentes */}
         <style jsx global>{`
-          @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap');
-          
-          .font-cinzel {
-            font-family: 'Cinzel', serif;
-          }
-          
-          .font-montserrat {
-            font-family: 'Montserrat', sans-serif;
-          }
-          
-          .font-quicksand {
-            font-family: 'Quicksand', sans-serif;
-          }
           
           .gradient-hero {
             background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);

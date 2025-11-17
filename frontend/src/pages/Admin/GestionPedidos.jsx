@@ -127,19 +127,6 @@ const GestionPedidos = () => {
 
         {/* Estilos de Animación y Fuentes */}
         <style jsx global>{`
-          @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap');
-          
-          .font-cinzel {
-            font-family: 'Cinzel', serif;
-          }
-          
-          .font-montserrat {
-            font-family: 'Montserrat', sans-serif;
-          }
-          
-          .font-quicksand {
-            font-family: 'Quicksand', sans-serif;
-          }
           
           .gradient-hero {
             background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
