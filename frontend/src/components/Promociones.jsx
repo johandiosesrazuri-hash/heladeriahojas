@@ -5,27 +5,34 @@ import { useCart } from '../context/CartContext';
 const Promociones = () => {
   const [promociones, setPromociones] = useState([]);
   const [notification, setNotification] = useState({ show: false, message: '' });
+  const [loading, setLoading] = useState(true);  // Estado de carga
   const { addItem } = useCart();
 
-  // ✅ Mapeo de imágenes locales por ID de promoción
-  const imagenesPorId = {
-    1: "/img/promociones/fresa2x1.png",
-    2: "/img/promociones/fresachoco.png",
-    3: "/img/promociones/mentacremo.png",
-    4: "/img/promociones/vainillachoco.png",
-    5: "/img/promociones/bananamilk.png",
-    6: "/img/promociones/cremofrape.png",
-    7: "/img/promociones/frape2x1.png",
-  };
-
+  // ✅ Cargar las promociones desde el backend
   useEffect(() => {
     const fetchPromos = async () => {
       try {
         const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
         const response = await axios.get(`${api}/api/promociones`);
-        setPromociones(response.data);
+
+        if (response.data && Array.isArray(response.data)) {
+          // Verificar si las promociones contienen la URL de la imagen
+          const validPromos = response.data.map((promo) => ({
+            ...promo,
+            imagenUrl: promo.imagenUrl || "/img/promociones/default.png", // Asignar imagen predeterminada si no hay URL
+          }));
+
+          setPromociones(validPromos);  // Aquí se setean las promociones con la URL de la imagen
+        }
       } catch (error) {
         console.error("Error al cargar promociones:", error);
+        setNotification({
+          show: true,
+          message: "Error al cargar promociones. Inténtalo de nuevo.",
+          type: "error",
+        });
+      } finally {
+        setLoading(false);  // Detener el estado de carga
       }
     };
 
@@ -33,24 +40,19 @@ const Promociones = () => {
   }, []);
 
   const handleAddPromo = (promo) => {
-    // ✅ Usar imagen local en lugar de la del backend
-    const imagenLocal = imagenesPorId[promo.id] || "/img/promociones/default.png";
-
     addItem({
       id: `promo-${promo.id}`,
       name: promo.nombrePromo,
       price: Number(promo.precio) || 0,
-      image: imagenLocal,
+      image: promo.imagenUrl || "/img/promociones/default.png",  // Usar URL de la promoción
       quantity: 1
     });
-    
-    // Mostrar notificación
+
     setNotification({
       show: true,
       message: `${promo.nombrePromo} agregado al carrito`
     });
-    
-    // Ocultar notificación después de 3 segundos
+
     setTimeout(() => {
       setNotification({ show: false, message: '' });
     }, 3000);
@@ -61,8 +63,8 @@ const Promociones = () => {
       {/* Fondo decorativo */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#fef7f0] via-[#fef9f4] to-[#fefcf8]"></div>
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmNWYwZTAiIGZpbGwtb3BhY2l0eT0iMC4zIiBkPSJNMzYgMzRjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC00LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS00LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDgwIDgwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmOGU1ZDAiIGZpbGwtb3BhY2l0eT0iMC4yIiBkPSJNNDAgNDBjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC00LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS00LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-30"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,...')] opacity-20"></div>
+        <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,...')] opacity-30"></div>
       </div>
 
       {/* Notificación temporal */}
@@ -80,57 +82,42 @@ const Promociones = () => {
       {/* Contenido principal */}
       <div className="relative z-10 max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h2 
-            className="text-4xl md:text-5xl text-[#3e2723] text-center font-bold mb-4 relative pb-4"
-            style={{ fontFamily: "'Pacifico', cursive" }}
-          >
+          <h2 className="text-4xl md:text-5xl text-[#3e2723] text-center font-bold mb-4 relative pb-4" style={{ fontFamily: "'Pacifico', cursive" }}>
             Promociones Especiales
             <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#d4af37] to-[#e8b4b8] rounded-full"></span>
           </h2>
-          
-          <p 
-            className="text-center text-[#6d4c41] mb-12 text-lg"
-            style={{ fontFamily: "'Quicksand', sans-serif" }}
-          >
+
+          <p className="text-center text-[#6d4c41] mb-12 text-lg" style={{ fontFamily: "'Quicksand', sans-serif" }}>
             ¡Aprovecha nuestras increíbles ofertas!
           </p>
         </div>
 
         {/* Contenedor de Promociones */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-          {promociones.length === 0 ? (
+          {loading ? (
             <div className="col-span-full text-center py-12">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#dbbba6] border-t-transparent"></div>
-              <p 
-                className="mt-4 text-[#6d4c41] text-lg"
-                style={{ fontFamily: "'Quicksand', sans-serif" }}
-              >
+              <p className="mt-4 text-[#6d4c41] text-lg" style={{ fontFamily: "'Quicksand', sans-serif" }}>
                 Cargando promociones...
+              </p>
+            </div>
+          ) : promociones.length === 0 ? (
+            <div className="col-span-full text-center py-12">
+              <p className="mt-4 text-[#6d4c41] text-lg" style={{ fontFamily: "'Quicksand', sans-serif" }}>
+                No hay promociones disponibles.
               </p>
             </div>
           ) : (
             promociones.map((promo, index) => {
-              // ✅ Obtener imagen local
-              const imagenLocal = imagenesPorId[promo.id] || "/img/promociones/default.png";
-
               return (
-                <div
-                  key={promo.id}
-                  className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden group border border-[#f5f0e8]"
-                  style={{
-                    animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
-                  }}
-                >
+                <div key={promo.id} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden group border border-[#f5f0e8]" style={{ animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both` }}>
                   {/* Imagen del Producto */}
                   <div className="relative overflow-hidden bg-gradient-to-br from-[#fef7f0] to-[#fef9f4] h-48 md:h-56">
                     <img
-                      src={imagenLocal}
+                      src={promo.imagenUrl || "/img/promociones/default.png"}
                       alt={promo.nombrePromo}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                      onError={(e) => {
-                        console.error("❌ Error cargando imagen:", imagenLocal);
-                        e.target.src = "/img/promociones/default.png";
-                      }}
+                      onError={(e) => { e.target.src = "/img/promociones/default.png"; }}
                     />
                     
                     {/* Badge de Descuento */}
@@ -141,38 +128,25 @@ const Promociones = () => {
 
                   {/* Contenido de la Tarjeta */}
                   <div className="p-5">
-                    <h3 
-                      className="text-xl font-bold text-[#3e2723] mb-2 transition-colors duration-300 group-hover:text-[#6d4c41]"
-                      style={{ fontFamily: "'Montserrat', sans-serif" }}
-                    >
+                    <h3 className="text-xl font-bold text-[#3e2723] mb-2 transition-colors duration-300 group-hover:text-[#6d4c41]" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                       {promo.nombrePromo}
                     </h3>
-                    
-                    <p 
-                      className="text-[#6d4c41] text-sm mb-4 line-clamp-2"
-                      style={{ fontFamily: "'Quicksand', sans-serif" }}
-                    >
+
+                    <p className="text-[#6d4c41] text-sm mb-4 line-clamp-2" style={{ fontFamily: "'Quicksand', sans-serif" }}>
                       {promo.descripcion}
                     </p>
 
                     {/* Precio */}
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-baseline gap-2">
-                        <span 
-                          className="text-3xl font-bold text-[#6d4c41]"
-                          style={{ fontFamily: "'Montserrat', sans-serif" }}
-                        >
+                        <span className="text-3xl font-bold text-[#6d4c41]" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                           S/ {Number(promo.precio).toFixed(2)}
                         </span>
                       </div>
                     </div>
 
                     {/* Botón Agregar */}
-                    <button
-                      onClick={() => handleAddPromo(promo)}
-                      className="w-full px-6 py-3 bg-[#dbbba6] hover:bg-[#d0aa96] text-[#5d4037] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform"
-                      style={{ fontFamily: "'Montserrat', sans-serif" }}
-                    >
+                    <button onClick={() => handleAddPromo(promo)} className="w-full px-6 py-3 bg-[#dbbba6] hover:bg-[#d0aa96] text-[#5d4037] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform" style={{ fontFamily: "'Montserrat', sans-serif" }}>
                       Agregar al Carrito
                     </button>
                   </div>
