@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
@@ -8,43 +8,62 @@ export const AuthProvider = ({ children }) => {
     try {
       const u = localStorage.getItem('user');
       return u ? JSON.parse(u) : null;
-    } catch { return null; }
+    } catch { 
+      return null; 
+    }
   });
-  const [token, setToken] = useState(localStorage.getItem('token'));
+  const [token, setToken] = useState(() => localStorage.getItem('token'));
 
- const login = async (email, password) => {
-  try {
-    const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-    const response = await axios.post(`${api}/api/auth/login`, {
-      email,
-      password
-    });
-    const data = response.data;
-    const tokenResp = data.token;
-    const userResp = { id: data.id, email: data.email, nombre: data.nombre, rol: data.rol };
-    
-    console.log('🔵 Token guardado:', tokenResp); // ✅ DEBUG
-    
-    localStorage.setItem('token', tokenResp);
-    localStorage.setItem('user', JSON.stringify(userResp));
-    setToken(tokenResp);
-    setUser(userResp);
-    return true;
-  } catch (error) {
-    console.error('Error during login:', error);
-    throw error;
-  }
-};
+  const login = async (email, password) => {
+    try {
+      const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+      const response = await axios.post(`${api}/api/auth/login`, {
+        email,
+        password
+      });
+      
+      const data = response.data;
+      console.log('✅ Respuesta del login:', data);
+      
+      const tokenResp = data.token;
+      const userResp = { 
+        id: data.id, 
+        email: data.email, 
+        nombre: data.nombre, 
+        rol: data.rol 
+      };
+      
+      console.log('🔵 Token guardado:', tokenResp);
+      console.log('👤 Usuario guardado:', userResp);
+      
+      localStorage.setItem('token', tokenResp);
+      localStorage.setItem('user', JSON.stringify(userResp));
+      
+      setToken(tokenResp);
+      setUser(userResp);
+      
+      return true;
+    } catch (error) {
+      console.error('❌ Error during login:', error);
+      throw error;
+    }
+  };
 
   const register = async (userData) => {
     try {
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       const response = await axios.post(`${api}/api/auth/register`, userData);
       const data = response.data;
-      // If backend returns token, save and set user (auto-login after register)
+      
       if (data && data.token) {
         const tokenResp = data.token;
-        const userResp = { id: data.id, email: data.email, nombre: data.nombre, rol: data.rol };
+        const userResp = { 
+          id: data.id, 
+          email: data.email, 
+          nombre: data.nombre, 
+          rol: data.rol 
+        };
+        
         localStorage.setItem('token', tokenResp);
         localStorage.setItem('user', JSON.stringify(userResp));
         setToken(tokenResp);
@@ -52,13 +71,15 @@ export const AuthProvider = ({ children }) => {
       }
       return data;
     } catch (error) {
-      console.error('Error during registration:', error);
+      console.error('❌ Error during registration:', error);
       throw error;
     }
   };
 
   const logout = () => {
+    console.log('🔴 Logout ejecutado');
     localStorage.removeItem('token');
+    localStorage.removeItem('user');
     setToken(null);
     setUser(null);
   };
@@ -73,7 +94,7 @@ export const AuthProvider = ({ children }) => {
       setUser(response.data);
       localStorage.setItem('user', JSON.stringify(response.data));
     } catch (error) {
-      console.error('Error checking auth:', error);
+      console.error('❌ Error checking auth:', error);
       logout();
     }
   };

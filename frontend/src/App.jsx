@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
-import { AuthProvider } from './context/AuthContext'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import Navbar from './components/Navbar'
@@ -17,7 +17,7 @@ import Testimonios from './components/Testimonios'
 import SobreNosotros from './components/SobreNosotros'
 
 // Páginas Admin
-import AdminDashboard from './pages/Admin/Dashboard'
+import AdminDashboard from './pages/Admin/AdminDashboard'
 import GestionUsuarios from './pages/Admin/GestionUsuarios'
 import GestionProductos from './pages/Admin/GestionProductos'
 import GestionPedidos from './pages/Admin/GestionPedidos'
@@ -25,11 +25,20 @@ import GestionContactos from './pages/Admin/GestionContactos'
 
 import './App.css'
 
+// Componente para debug
+function AuthDebug() {
+  const { user, token } = useAuth();
+  console.log('🔍 AuthDebug - Token:', !!token);
+  console.log('🔍 AuthDebug - User:', user);
+  return null;
+}
+
 function App() {
   return (
     <Router>
       <AuthProvider>
         <CartProvider>
+          <AuthDebug />
           <Navbar />
           <Routes>
             {/* Rutas públicas */}
@@ -47,23 +56,43 @@ function App() {
             {/* Rutas protegidas - Admin */}
             <Route 
               path="/admin/dashboard" 
-              element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} 
+              element={
+                <ProtectedRoute requiredRole="ADMIN">
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } 
             />
             <Route 
               path="/admin/usuarios" 
-              element={<ProtectedRoute><GestionUsuarios /></ProtectedRoute>} 
+              element={
+                <ProtectedRoute requiredRole="ADMIN">
+                  <GestionUsuarios />
+                </ProtectedRoute>
+              } 
             />
             <Route 
               path="/admin/productos" 
-              element={<ProtectedRoute><GestionProductos /></ProtectedRoute>} 
+              element={
+                <ProtectedRoute requiredRole="ADMIN">
+                  <GestionProductos />
+                </ProtectedRoute>
+              } 
             />
             <Route 
               path="/admin/pedidos" 
-              element={<ProtectedRoute><GestionPedidos /></ProtectedRoute>} 
+              element={
+                <ProtectedRoute requiredRole="ADMIN">
+                  <GestionPedidos />
+                </ProtectedRoute>
+              } 
             />
             <Route 
               path="/admin/contactos" 
-              element={<ProtectedRoute><GestionContactos /></ProtectedRoute>} 
+              element={
+                <ProtectedRoute requiredRole="ADMIN">
+                  <GestionContactos />
+                </ProtectedRoute>
+              } 
             />
 
             {/* Ruta por defecto */}

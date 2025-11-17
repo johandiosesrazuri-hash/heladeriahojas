@@ -1,21 +1,34 @@
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-const ProtectedRoute = ({ children, requiredRole = 'ROLE_ADMIN' }) => {
+const ProtectedRoute = ({ children, requiredRole = 'ADMIN' }) => {
   const { user, token } = useAuth();
-  const location = useLocation();  // Utilizado para redirigir a la página de destino después de login
+  const location = useLocation();
 
-  // Verifica si el token no está presente, redirige al login con el estado de la ubicación actual
+  console.log('🔒 ProtectedRoute - Token:', !!token);
+  console.log('🔒 ProtectedRoute - User:', user);
+  console.log('🔒 ProtectedRoute - Required Role:', requiredRole);
+
+  // Verifica si el token no está presente
   if (!token) {
+    console.warn('⚠️ Sin token, redirigiendo a login');
     return <Navigate to="/login" state={{ from: location }} />;
   }
 
-  // Verifica si el usuario no tiene el rol requerido, redirige a la página principal
-  if (user?.rol !== requiredRole) {
+  // Verifica si no hay usuario
+  if (!user) {
+    console.warn('⚠️ Sin usuario, redirigiendo a login');
+    return <Navigate to="/login" state={{ from: location }} />;
+  }
+
+  // Verifica si el usuario no tiene el rol requerido
+  if (user.rol !== requiredRole) {
+    console.warn(`❌ Rol insuficiente. Requerido: ${requiredRole}, Actual: ${user.rol}`);
     return <Navigate to="/" />;
   }
 
-  return children;  // Si pasa las condiciones, muestra el contenido protegido
+  console.log('✅ Acceso permitido');
+  return children;
 };
 
 export default ProtectedRoute;

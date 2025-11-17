@@ -11,7 +11,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api/admin/dashboard")
 @CrossOrigin(origins = "http://localhost:5173")
-@PreAuthorize("hasRole('ADMIN')")
+@PreAuthorize("hasRole('ADMIN')")  // ✅ TODOS los endpoints requieren ADMIN
 public class DashboardController {
 
     @Autowired private UsuarioRepository usuarioRepository;
@@ -22,75 +22,183 @@ public class DashboardController {
     // 📊 Estadísticas generales
     @GetMapping("/stats")
     public Map<String, Object> getStats() {
+        System.out.println("📊 GET /api/admin/dashboard/stats");
+        
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalUsuarios", usuarioRepository.count());
         stats.put("totalProductos", productoRepository.count());
         stats.put("totalPedidos", pedidoRepository.count());
         stats.put("ingresosTotales", calcularIngresos());
+        
+        System.out.println("✅ Stats: " + stats);
         return stats;
     }
 
-    // 👥 Gestión de Usuarios
+    // ========================================
+    // 👥 GESTIÓN DE USUARIOS
+    // ========================================
+    
     @GetMapping("/usuarios")
     public List<Usuario> obtenerUsuarios() {
-        return usuarioRepository.findAll();
+        System.out.println("📝 GET /api/admin/dashboard/usuarios");
+        List<Usuario> usuarios = usuarioRepository.findAll();
+        System.out.println("✅ Usuarios encontrados: " + usuarios.size());
+        return usuarios;
+    }
+
+    @GetMapping("/usuarios/{id}")
+    public Usuario obtenerUsuarioPorId(@PathVariable Long id) {
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+    @PutMapping("/usuarios/{id}")
+    public Usuario actualizarUsuario(@PathVariable Long id, @RequestBody Usuario usuario) {
+        Usuario existente = obtenerUsuarioPorId(id);
+        existente.setNombre(usuario.getNombre());
+        existente.setEmail(usuario.getEmail());
+        existente.setRol(usuario.getRol());
+        return usuarioRepository.save(existente);
     }
 
     @DeleteMapping("/usuarios/{id}")
-    public void eliminarUsuario(@PathVariable Long id) {
+    public Map<String, String> eliminarUsuario(@PathVariable Long id) {
+        System.out.println("🗑️ DELETE /api/admin/dashboard/usuarios/" + id);
         usuarioRepository.deleteById(id);
+        System.out.println("✅ Usuario eliminado: " + id);
+        return Map.of("mensaje", "Usuario eliminado correctamente", "id", id.toString());
     }
 
-    // 🍦 Gestión de Productos
+    // ========================================
+    // 🍦 GESTIÓN DE PRODUCTOS
+    // ========================================
+    
     @GetMapping("/productos")
     public List<Producto> obtenerProductos() {
-        return productoRepository.findAll();
+        System.out.println("📦 GET /api/admin/dashboard/productos");
+        List<Producto> productos = productoRepository.findAll();
+        System.out.println("✅ Productos encontrados: " + productos.size());
+        for (Producto p : productos) {
+            System.out.println("  - ID: " + p.getId() + 
+                             ", Nombre: " + p.getNombre() + 
+                             ", Stock: " + p.getStockDisponible() +
+                             ", Precio: " + p.getPrecio());
+        }
+        return productos;
+    }
+
+    @GetMapping("/productos/{id}")
+    public Producto obtenerProductoPorId(@PathVariable Long id) {
+        return productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
     }
 
     @PostMapping("/productos")
     public Producto crearProducto(@RequestBody Producto producto) {
+        System.out.println("➕ POST /api/admin/dashboard/productos - " + producto.getNombre());
         return productoRepository.save(producto);
     }
 
     @PutMapping("/productos/{id}")
     public Producto actualizarProducto(@PathVariable Long id, @RequestBody Producto producto) {
-        producto.setId(id);
-        return productoRepository.save(producto);
+        Producto existente = obtenerProductoPorId(id);
+        existente.setNombre(producto.getNombre());
+        existente.setDescripcion(producto.getDescripcion());
+        existente.setPrecio(producto.getPrecio());
+        existente.setImagen(producto.getImagen());
+        existente.setStockDisponible(producto.getStockDisponible());
+        existente.setCategoria(producto.getCategoria());
+        existente.setActivo(producto.getActivo());
+        return productoRepository.save(existente);
     }
 
+    
     @DeleteMapping("/productos/{id}")
-    public void eliminarProducto(@PathVariable Long id) {
+    public Map<String, String> eliminarProducto(@PathVariable Long id) {
+        System.out.println("🗑️ DELETE /api/admin/dashboard/productos/" + id);
+        
+        // Verificar que existe
+        Producto producto = obtenerProductoPorId(id);
+        System.out.println("📦 Eliminando producto: " + producto.getNombre() + 
+                         " (Stock: " + producto.getStockDisponible() + ")");
+        
+        // Eliminar
         productoRepository.deleteById(id);
+        
+        System.out.println("✅ Producto eliminado correctamente");
+        return Map.of(
+            "mensaje", "Producto eliminado correctamente", 
+            "id", id.toString(),
+            "producto", producto.getNombre()
+        );
     }
 
-    // 📦 Gestión de Pedidos
+    // ========================================
+    // 📦 GESTIÓN DE PEDIDOS
+    // ========================================
+    
     @GetMapping("/pedidos")
     public List<Pedido> obtenerPedidos() {
-        return pedidoRepository.findAll();
+        System.out.println("📋 GET /api/admin/dashboard/pedidos");
+        List<Pedido> pedidos = pedidoRepository.findAll();
+        System.out.println("✅ Pedidos encontrados: " + pedidos.size());
+        return pedidos;
+    }
+
+    @GetMapping("/pedidos/{id}")
+    public Pedido obtenerPedidoPorId(@PathVariable Long id) {
+        return pedidoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
     }
 
     @PutMapping("/pedidos/{id}/estado")
     public Pedido actualizarEstadoPedido(
             @PathVariable Long id,
             @RequestParam String nuevoEstado) {
-        Pedido pedido = pedidoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
-        pedido.setEstado(Pedido.EstadoPedido.valueOf(nuevoEstado));
-        return pedidoRepository.save(pedido);
+        System.out.println("🔄 PUT /api/admin/dashboard/pedidos/" + id + "/estado - " + nuevoEstado);
+        
+        Pedido pedido = obtenerPedidoPorId(id);
+        try {
+            pedido.setEstado(Pedido.EstadoPedido.valueOf(nuevoEstado));
+            Pedido actualizado = pedidoRepository.save(pedido);
+            System.out.println("✅ Estado actualizado a: " + nuevoEstado);
+            return actualizado;
+        } catch (IllegalArgumentException e) {
+            System.out.println("❌ Estado inválido: " + nuevoEstado);
+            throw new RuntimeException("Estado de pedido inválido: " + nuevoEstado);
+        }
     }
 
-    // 📧 Gestión de Contactos
+    // ========================================
+    // 📧 GESTIÓN DE CONTACTOS
+    // ========================================
+    
     @GetMapping("/contactos")
     public List<Contacto> obtenerContactos() {
-        return contactoRepository.findAll();
+        System.out.println("📧 GET /api/admin/dashboard/contactos");
+        List<Contacto> contactos = contactoRepository.findAll();
+        System.out.println("✅ Contactos encontrados: " + contactos.size());
+        return contactos;
+    }
+
+    @GetMapping("/contactos/{id}")
+    public Contacto obtenerContactoPorId(@PathVariable Long id) {
+        return contactoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contacto no encontrado"));
     }
 
     @DeleteMapping("/contactos/{id}")
-    public void eliminarContacto(@PathVariable Long id) {
+    public Map<String, String> eliminarContacto(@PathVariable Long id) {
+        System.out.println("🗑️ DELETE /api/admin/dashboard/contactos/" + id);
         contactoRepository.deleteById(id);
+        System.out.println("✅ Contacto eliminado: " + id);
+        return Map.of("mensaje", "Contacto eliminado correctamente", "id", id.toString());
     }
 
-    // 📊 Ingresos totales
+    // ========================================
+    // 💰 UTILIDADES
+    // ========================================
+    
     private BigDecimal calcularIngresos() {
         return pedidoRepository.findAll().stream()
                 .filter(p -> p.getEstado() == Pedido.EstadoPedido.ENTREGADO)
