@@ -1,5 +1,6 @@
 package com.choccoDelight.controller;
 
+import com.choccoDelight.dto.PedidoDTO;
 import com.choccoDelight.entity.*;
 import com.choccoDelight.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api/admin/dashboard")
@@ -164,66 +167,72 @@ public ResponseEntity<Map<String, String>> eliminarProducto(@PathVariable Long i
 
 
     // ========================================
-    // 📦 GESTIÓN DE PEDIDOS
-    // ========================================
+// 📦 GESTIÓN DE PEDIDOS
+// ========================================
+
+@GetMapping("/pedidos")
+public List<PedidoDTO> obtenerPedidos() {
+    System.out.println("📋 GET /api/admin/dashboard/pedidos");
+    List<Pedido> pedidos = pedidoRepository.findAll();
+    System.out.println("✅ Pedidos encontrados: " + pedidos.size());
     
-    @GetMapping("/pedidos")
-    public List<Pedido> obtenerPedidos() {
-        System.out.println("📋 GET /api/admin/dashboard/pedidos");
-        List<Pedido> pedidos = pedidoRepository.findAll();
-        System.out.println("✅ Pedidos encontrados: " + pedidos.size());
-        return pedidos;
-    }
+    // Convertir a DTOs para evitar referencias circulares
+    return pedidos.stream()
+            .map(PedidoDTO::new)
+            .collect(Collectors.toList());
+}
 
-    @GetMapping("/pedidos/{id}")
-    public Pedido obtenerPedidoPorId(@PathVariable Long id) {
-        return pedidoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
-    }
+@GetMapping("/pedidos/{id}")
+public PedidoDTO obtenerPedidoPorId(@PathVariable Long id) {
+    Pedido pedido = pedidoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+    return new PedidoDTO(pedido);
+}
 
-    @PutMapping("/pedidos/{id}/estado")
-    public Pedido actualizarEstadoPedido(
-            @PathVariable Long id,
-            @RequestParam String nuevoEstado) {
-        System.out.println("🔄 PUT /api/admin/dashboard/pedidos/" + id + "/estado - " + nuevoEstado);
-        
-        Pedido pedido = obtenerPedidoPorId(id);
-        try {
-            pedido.setEstado(Pedido.EstadoPedido.valueOf(nuevoEstado));
-            Pedido actualizado = pedidoRepository.save(pedido);
-            System.out.println("✅ Estado actualizado a: " + nuevoEstado);
-            return actualizado;
-        } catch (IllegalArgumentException e) {
-            System.out.println("❌ Estado inválido: " + nuevoEstado);
-            throw new RuntimeException("Estado de pedido inválido: " + nuevoEstado);
-        }
-    }
-
-    // ========================================
-    // 📧 GESTIÓN DE CONTACTOS
-    // ========================================
+@PutMapping("/pedidos/{id}/estado")
+public PedidoDTO actualizarEstadoPedido(
+        @PathVariable Long id,
+        @RequestParam String nuevoEstado) {
+    System.out.println("🔄 PUT /api/admin/dashboard/pedidos/" + id + "/estado - " + nuevoEstado);
     
-    @GetMapping("/contactos")
-    public List<Contacto> obtenerContactos() {
-        System.out.println("📧 GET /api/admin/dashboard/contactos");
-        List<Contacto> contactos = contactoRepository.findAll();
-        System.out.println("✅ Contactos encontrados: " + contactos.size());
-        return contactos;
+    Pedido pedido = pedidoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+    
+    try {
+        pedido.setEstado(Pedido.EstadoPedido.valueOf(nuevoEstado));
+        Pedido actualizado = pedidoRepository.save(pedido);
+        System.out.println("✅ Estado actualizado a: " + nuevoEstado);
+        return new PedidoDTO(actualizado);
+    } catch (IllegalArgumentException e) {
+        System.out.println("❌ Estado inválido: " + nuevoEstado);
+        throw new RuntimeException("Estado de pedido inválido: " + nuevoEstado);
     }
+}
+// ========================================
+// 📧 GESTIÓN DE CONTACTOS
+// ========================================
 
-    @GetMapping("/contactos/{id}")
-    public Contacto obtenerContactoPorId(@PathVariable Long id) {
-        return contactoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Contacto no encontrado"));
-    }
+@GetMapping("/contactos")
+public List<Contacto> obtenerContactos() {
+    System.out.println("📧 GET /api/admin/dashboard/contactos");
+    List<Contacto> contactos = contactoRepository.findAll();
+    System.out.println("✅ Contactos encontrados: " + contactos.size());
+    return contactos;
+}
 
-    @DeleteMapping("/contactos/{id}")
-    public Map<String, String> eliminarContacto(@PathVariable Long id) {
-        System.out.println("🗑️ DELETE /api/admin/dashboard/contactos/" + id);
-        contactoRepository.deleteById(id);
-        System.out.println("✅ Contacto eliminado: " + id);
-        return Map.of("mensaje", "Contacto eliminado correctamente", "id", id.toString());
-    }
+@GetMapping("/contactos/{id}")
+public Contacto obtenerContactoPorId(@PathVariable Long id) {
+    return contactoRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Contacto no encontrado"));
+}
+
+@DeleteMapping("/contactos/{id}")
+public Map<String, String> eliminarContacto(@PathVariable Long id) {
+    System.out.println("🗑️ DELETE /api/admin/dashboard/contactos/" + id);
+    contactoRepository.deleteById(id);
+    System.out.println("✅ Contacto eliminado: " + id);
+    return Map.of("mensaje", "Contacto eliminado correctamente", "id", id.toString());
+}
 
     // ========================================
     // 💰 UTILIDADES

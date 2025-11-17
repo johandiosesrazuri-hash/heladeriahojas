@@ -33,17 +33,15 @@ const GestionContactos = () => {
 
  const fetchContactos = async () => {
   try {
-    setLoading(true);  // Activar el loading mientras se realiza la solicitud.
+    setLoading(true);
     const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-    const response = await axios.get(`${api}/api/admin/contactos`, {
+    const response = await axios.get(`${api}/api/admin/dashboard/contactos`, {
       headers: { Authorization: `Bearer ${token}` }
     });
 
     setContactos(response.data);
   } catch (error) {
     console.error('Error cargando contactos:', error);
-
-    // Mejorar el manejo de errores y mensajes para el usuario
     const errorMessage = error.response?.data?.message || 'Error al cargar los contactos. Inténtalo de nuevo.';
 
     setNotification({
@@ -60,8 +58,8 @@ const GestionContactos = () => {
   const handleDeleteContacto = async (id) => {
     try {
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      await axios.delete(`${api}/api/admin/contactos/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
+      await axios.delete(`${api}/api/admin/dashboard/contactos/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
       });
       setContactos(contactos.filter(c => c.id !== id));
       setNotification({
@@ -307,7 +305,7 @@ const GestionContactos = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-[#6d4c41] font-quicksand">Nombre</p>
-                      <p className="font-semibold text-[#3e2723] font-montserrat">{detallesModal.nombre}</p>
+                      <p className="font-semibold text-[#3e2723] font-montserrat">{detallesModal.nombreU}</p>
                     </div>
                     <div>
                       <p className="text-sm text-[#6d4c41] font-quicksand">Email</p>

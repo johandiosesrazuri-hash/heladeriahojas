@@ -33,7 +33,8 @@ const GestionPedidos = () => {
   const fetchPedidos = async () => {
     try {
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      const response = await axios.get(`${api}/api/admin/pedidos`, {
+      // ✅ CORRECTO: sin /{id} para obtener todos los pedidos
+      const response = await axios.get(`${api}/api/admin/dashboard/pedidos`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPedidos(response.data);
@@ -53,7 +54,7 @@ const GestionPedidos = () => {
     try {
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       await axios.put(
-        `${api}/api/admin/pedidos/${id}/estado?nuevoEstado=${nuevoEstado}`,
+        `${api}/api/admin/dashboard/pedidos/${id}/estado?nuevoEstado=${nuevoEstado}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -113,8 +114,6 @@ const GestionPedidos = () => {
         {/* Fondo decorativo */}
         <div className="absolute inset-0 z-0">
           <div className="absolute top-0 left-0 w-full h-full gradient-hero"></div>
-          <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmNWYwZTAiIGZpbGwtb3BhY2l0eT0iMC4zIiBkPSJNMzYgMzRjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC40LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS40LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
-          <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDgwIDgwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmOGU1ZDAiIGZpbGwtb3BhY2l0eT0iMC4yIiBkPSJNNDAgNDBjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC40LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS40LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-30"></div>
         </div>
 
         {/* Contenido principal */}
@@ -125,9 +124,7 @@ const GestionPedidos = () => {
           </div>
         </div>
 
-        {/* Estilos de Animación y Fuentes */}
-        <style jsx global>{`
-          
+        <style>{`
           .gradient-hero {
             background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
           }
@@ -141,8 +138,6 @@ const GestionPedidos = () => {
       {/* Fondo decorativo */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-0 left-0 w-full h-full gradient-hero"></div>
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmNWYwZTAiIGZpbGwtb3BhY2l0eT0iMC4zIiBkPSJNMzYgMzRjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC40LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS40LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
-          <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDgwIDgwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmOGU1ZDAiIGZpbGwtb3BhY2l0eT0iMC4yIiBkPSJNNDAgNDBjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC40LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS40LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-30"></div>
       </div>
 
       {/* Notificación temporal */}
@@ -266,8 +261,8 @@ const GestionPedidos = () => {
                       <td className="px-6 py-4 font-semibold text-[#6d4c41] font-montserrat">#{pedido.id}</td>
                       <td className="px-6 py-4">
                         <div>
-                          <p className="font-semibold text-[#3e2723] font-montserrat">{pedido.usuario?.nombre}</p>
-                          <p className="text-sm text-[#6d4c41] font-quicksand">{pedido.usuario?.email}</p>
+                          <p className="font-semibold text-[#3e2723] font-montserrat">{pedido.usuarioNombre}</p>
+                          <p className="text-sm text-[#6d4c41] font-quicksand">{pedido.usuarioEmail}</p>
                         </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-[#6d4c41] font-quicksand">
@@ -344,11 +339,11 @@ const GestionPedidos = () => {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-sm text-[#6d4c41] font-quicksand">Nombre</p>
-                      <p className="font-semibold text-[#3e2723] font-montserrat">{detallesModal.usuario?.nombre}</p>
+                      <p className="font-semibold text-[#3e2723] font-montserrat">{detallesModal.usuarioNombre}</p>
                     </div>
                     <div>
                       <p className="text-sm text-[#6d4c41] font-quicksand">Email</p>
-                      <p className="font-semibold text-[#3e2723] font-montserrat">{detallesModal.usuario?.email}</p>
+                      <p className="font-semibold text-[#3e2723] font-montserrat">{detallesModal.usuarioEmail}</p>
                     </div>
                   </div>
                 </div>
@@ -432,9 +427,8 @@ const GestionPedidos = () => {
         )}
       </div>
 
-      {/* Estilos de Animación y Fuentes */}
-      <style jsx global>{`
-
+      {/* Estilos - SIN jsx ni global */}
+      <style>{`
         .gradient-hero {
           background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
         }
