@@ -483,7 +483,7 @@ const Testimonios = () => {
       </div>
 
       {/* Estilos de Animación y Fuentes */}
-      <style jsx global>{`
+      <style jsx>{`
          
         @keyframes fadeInUp {
           from {

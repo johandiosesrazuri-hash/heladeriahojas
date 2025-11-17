@@ -213,7 +213,7 @@ const Login = () => {
       </div>
 
       {/* Estilos de Animación y Fuentes */}
-      <style jsx global>{`
+      <style jsx>{`
 
         
         .gradient-hero {

@@ -43,6 +43,7 @@ com\choccoDelight\service\DeliveryService.class
 com\choccoDelight\service\UsuarioService.class
 com\choccoDelight\entity\Usuario.class
 com\choccoDelight\repository\GaleriaEmpresaRepository.class
+com\choccoDelight\controller\AdminUsuarioController.class
 com\choccoDelight\dto\PedidoRequest$ItemRequest.class
 com\choccoDelight\repository\ContactoRepository.class
 com\choccoDelight\repository\PedidoRepository.class
@@ -59,5 +60,6 @@ com\choccoDelight\dto\LoginRequest.class
 com\choccoDelight\entity\Contacto.class
 com\choccoDelight\security\JwtTokenUtil.class
 com\choccoDelight\dto\TestimonioRequest.class
+com\choccoDelight\controller\DashboardController.class
 com\choccoDelight\controller\PedidoController$PedidoRequest.class
 com\choccoDelight\service\ContactoService.class

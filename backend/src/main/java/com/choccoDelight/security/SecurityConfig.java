@@ -7,17 +7,17 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.Arrays;
 
 @Configuration
 public class SecurityConfig {
@@ -51,61 +51,102 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            // 🔴 DESHABILITAR CSRF
             .csrf(csrf -> csrf.disable())
+            
+            // 🟢 CONFIGURAR CORS PRIMERO
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            
+            // 🟢 AUTORIZACIÓN
             .authorizeHttpRequests(auth -> auth
-                // Rutas públicas
-                .requestMatchers(
-                    "/api/auth/**",
-                    "/api/productos/**",
-                    "/api/promociones/**",
-                    "/img/**",
-                    "/api/contacto/**",
-                    "/api/sobre-nosotros/**"
-                ).permitAll()
+                // ✅ PERMITIR /api/auth/** SIN AUTENTICACIÓN
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/auth/login").permitAll()
+                .requestMatchers("/api/auth/register").permitAll()
                 
-                // ✅ Testimonios: GET público, POST/DELETE requieren login
+                // ✅ PERMITIR PRODUCTOS Y PROMOCIONES
+                .requestMatchers(HttpMethod.GET, "/api/productos").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/promociones").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/promociones/**").permitAll()
+                
+                // ✅ PERMITIR CONTACTO Y INFO
+                .requestMatchers(HttpMethod.POST, "/api/contacto").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/contacto/**").permitAll()
+                .requestMatchers("/api/sobre-nosotros/**").permitAll()
+                .requestMatchers("/img/**").permitAll()
+                
+                // ✅ TESTIMONIOS
                 .requestMatchers(HttpMethod.GET, "/api/testimonios").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/testimonios").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/testimonios/**").authenticated()
-                .requestMatchers("/api/testimonios/mis-testimonios").authenticated()
                 
-                // Todo lo demás requiere autenticación
+                // ✅ ADMIN SOLO
+                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                
+                // ✅ USUARIO AUTENTICADO
+                .requestMatchers("/api/pedidos/**").authenticated()
+                .requestMatchers("/api/delivery/**").authenticated()
+                .requestMatchers("/api/usuarios/**").authenticated()
+                
+                // ✅ TODO LO DEMÁS REQUIERE AUTENTICACIÓN
                 .anyRequest().authenticated()
             )
+            
+            // 🟢 SESIONES STATELESS
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            
+            // 🟢 AUTENTICACIÓN
             .authenticationProvider(authenticationProvider())
+            
+            // 🟢 AGREGAR JWT FILTER ANTES QUE USERNAMEPASSWORD
             .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
+    // 🟢 CONFIGURACIÓN CORS CORRECTA
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("http://localhost:5173");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("GET");
-        config.addAllowedMethod("POST");
-        config.addAllowedMethod("PUT");
-        config.addAllowedMethod("DELETE");
-        config.setAllowCredentials(true);
+        CorsConfiguration configuration = new CorsConfiguration();
+        
+        // ✅ PERMITIR ORÍGENES
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "http://127.0.0.1:5173"
+        ));
+        
+        // ✅ PERMITIR MÉTODOS
+        configuration.setAllowedMethods(Arrays.asList(
+            "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"
+        ));
+        
+        // ✅ PERMITIR HEADERS
+        configuration.setAllowedHeaders(Arrays.asList(
+            "Content-Type",
+            "Authorization",
+            "X-Requested-With",
+            "Accept",
+            "Origin"
+        ));
+        
+        // ✅ EXPONER HEADERS
+        configuration.setExposedHeaders(Arrays.asList(
+            "Authorization",
+            "Content-Type"
+        ));
+        
+        // ✅ PERMITIR CREDENCIALES
+        configuration.setAllowCredentials(true);
+        
+        // ✅ TIEMPO MÁXIMO
+        configuration.setMaxAge(3600L);
+        
+        // ✅ REGISTRAR PARA TODAS LAS RUTAS
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration("/**", configuration);
+        
         return source;
     }
-    
-    @Configuration
-public class WebConfig implements WebMvcConfigurer {
-
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/api/**")  // Asegúrate de que la ruta de tu API esté incluida
-                .allowedOrigins("http://localhost:5173")  // Origen de tu frontend
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                .allowedHeaders("*")
-                .allowCredentials(true);
-    }
-}
-
 }
