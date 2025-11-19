@@ -18,17 +18,11 @@ public class TestimonioController {
     @Autowired
     private TestimonioService testimonioService;
 
-    /**
-     * Obtener todos los testimonios (público)
-     */
     @GetMapping
     public ResponseEntity<List<Testimonio>> listarTodos() {
         return ResponseEntity.ok(testimonioService.listarTodos());
     }
 
-    /**
-     * Obtener testimonio de un usuario específico
-     */
     @GetMapping("/usuario/{usuarioId}")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Testimonio> obtenerPorUsuario(@PathVariable Long usuarioId) {
@@ -37,9 +31,6 @@ public class TestimonioController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    /**
-     * Crear un nuevo testimonio (requiere autenticación)
-     */
     @PostMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<?> crearTestimonio(@RequestBody TestimonioRequest request) {

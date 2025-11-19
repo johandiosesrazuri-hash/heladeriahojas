@@ -40,10 +40,8 @@ public class DashboardController {
         return stats;
     }
 
-    // ========================================
-    // 👥 GESTIÓN DE USUARIOS
-    // ========================================
-    
+    //  GESTIÓN DE USUARIOS
+  
     @GetMapping("/usuarios")
     public List<Usuario> obtenerUsuarios() {
         System.out.println("📝 GET /api/admin/dashboard/usuarios");
@@ -75,9 +73,8 @@ public class DashboardController {
         return Map.of("mensaje", "Usuario eliminado correctamente", "id", id.toString());
     }
 
-    // ========================================
-    // 🍦 GESTIÓN DE PRODUCTOS
-    // ========================================
+    //  GESTIÓN DE PRODUCTOS
+
     
     @GetMapping("/productos")
     public List<Producto> obtenerProductos() {
@@ -164,11 +161,7 @@ public ResponseEntity<Map<String, String>> eliminarProducto(@PathVariable Long i
     }
 }
 
-
-
-    // ========================================
-// 📦 GESTIÓN DE PEDIDOS
-// ========================================
+//  GESTIÓN DE PEDIDOS
 
 @GetMapping("/pedidos")
 public List<PedidoDTO> obtenerPedidos() {
@@ -208,9 +201,7 @@ public PedidoDTO actualizarEstadoPedido(
         throw new RuntimeException("Estado de pedido inválido: " + nuevoEstado);
     }
 }
-// ========================================
-// 📧 GESTIÓN DE CONTACTOS
-// ========================================
+// GESTIÓN DE CONTACTOS
 
 @GetMapping("/contactos")
 public List<Contacto> obtenerContactos() {
@@ -234,9 +225,7 @@ public Map<String, String> eliminarContacto(@PathVariable Long id) {
     return Map.of("mensaje", "Contacto eliminado correctamente", "id", id.toString());
 }
 
-    // ========================================
-    // 💰 UTILIDADES
-    // ========================================
+    // UTILIDADES
     
     private BigDecimal calcularIngresos() {
         return pedidoRepository.findAll().stream()

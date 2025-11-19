@@ -95,19 +95,6 @@ const AdminDashboard = () => {
 
         {/* Estilos de Animación y Fuentes */}
         <style jsx global>{`
-          @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Montserrat:wght@400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap');
-          
-          .font-cinzel {
-            font-family: 'Cinzel', serif;
-          }
-          
-          .font-montserrat {
-            font-family: 'Montserrat', sans-serif;
-          }
-          
-          .font-quicksand {
-            font-family: 'Quicksand', sans-serif;
-          }
           
           .gradient-hero {
             background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
@@ -160,7 +147,6 @@ const AdminDashboard = () => {
 
         {/* Estilos de Animación y Fuentes */}
         <style jsx global>{`
-
           .gradient-hero {
             background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
           }
@@ -321,8 +307,8 @@ const StatCard = ({ title, value, icon, color, delay }) => {
       </div>
       
       <div className="text-4xl mb-3 relative z-10">{icon}</div>
-      <p className="text-sm opacity-90 font-quicksand relative z-10">{title}</p>
-      <p className="text-3xl font-bold font-montserrat relative z-10">{value}</p>
+      <p className="text-sm font-bold text-black px-2 py-1 rounded-md inline-block mb-2 font-quicksand relative z-10">{title}</p>
+      <p className="text-3xl font-bold text-black font-montserrat relative z-10">{value}</p>
     </div>
   );
 };

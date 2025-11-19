@@ -51,40 +51,39 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // 🔴 DESHABILITAR CSRF
+            // DESHABILITAR CSRF
             .csrf(csrf -> csrf.disable())
             
-            // 🟢 CONFIGURAR CORS PRIMERO
+            // CONFIGURAR CORS PRIMERO
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             
-            // 🟢 AUTORIZACIÓN
             .authorizeHttpRequests(auth -> auth
-                // ✅ PERMITIR /api/auth/** SIN AUTENTICACIÓN
+                // PERMITIR /api/auth/** SIN AUTENTICACIÓN
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/auth/register").permitAll()
                 
-                // ✅ PERMITIR PRODUCTOS Y PROMOCIONES
+                // PERMITIR PRODUCTOS Y PROMOCIONES
                 .requestMatchers(HttpMethod.GET, "/api/productos").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/promociones").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/promociones/**").permitAll()
                 
-                // ✅ PERMITIR CONTACTO Y INFO
+                // PERMITIR CONTACTO Y INFO
                 .requestMatchers(HttpMethod.POST, "/api/contacto").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/contacto/**").permitAll()
                 .requestMatchers("/api/sobre-nosotros/**").permitAll()
                 .requestMatchers("/img/**").permitAll()
                 
-                // ✅ TESTIMONIOS
+                // TESTIMONIOS
                 .requestMatchers(HttpMethod.GET, "/api/testimonios").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/testimonios").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/testimonios/**").authenticated()
                 
-                // ✅ ADMIN SOLO
+                // ADMIN SOLO
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 
-                // ✅ USUARIO AUTENTICADO
+                // USUARIO AUTENTICADO
                 .requestMatchers("/api/pedidos/**").authenticated()
                 .requestMatchers("/api/delivery/**").authenticated()
                 .requestMatchers("/api/usuarios/**").authenticated()
@@ -92,34 +91,27 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             )
             
-            // 🟢 SESIONES STATELESS
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             
-            // 🟢 AUTENTICACIÓN
             .authenticationProvider(authenticationProvider())
             
-            // 🟢 AGREGAR JWT FILTER ANTES QUE USERNAMEPASSWORD
             .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    // 🟢 CONFIGURACIÓN CORS CORRECTA
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // ✅ PERMITIR ORÍGENES
         configuration.setAllowedOrigins(Arrays.asList(
             "http://localhost:5173"
         ));
         
-        // ✅ PERMITIR MÉTODOS
         configuration.setAllowedMethods(Arrays.asList(
             "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"
         ));
         
-        // ✅ PERMITIR HEADERS
         configuration.setAllowedHeaders(Arrays.asList(
             "Content-Type",
             "Authorization",
@@ -128,19 +120,15 @@ public class SecurityConfig {
             "Origin"
         ));
         
-        // ✅ EXPONER HEADERS
         configuration.setExposedHeaders(Arrays.asList(
             "Authorization",
             "Content-Type"
         ));
         
-        // ✅ PERMITIR CREDENCIALES
         configuration.setAllowCredentials(true);
         
-        // ✅ TIEMPO MÁXIMO
         configuration.setMaxAge(3600L);
         
-        // ✅ REGISTRAR PARA TODAS LAS RUTAS
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         

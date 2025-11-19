@@ -48,9 +48,7 @@ const Navbar = () => {
             <div className="flex-shrink-0">
               <Link to="/" className="flex items-center">
                 <div className="w-10 h-10 bg-[#dbbba6] rounded-full flex items-center justify-center mr-3">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#5d4037]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-                  </svg>
+                      <img alt="LOGO" className="h-6 w-6" src="/img/ice-cream.png" />
                 </div>
                 <span className="text-2xl font-bold text-[#3e2723] font-cinzel">ChoccoDelight</span>
               </Link>

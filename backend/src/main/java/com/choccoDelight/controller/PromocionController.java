@@ -42,7 +42,6 @@ public ResponseEntity<List<PromocionDTO>> listarPromociones() {
                                          .map(this::convertToDTO)
                                          .collect(Collectors.toList());
     
-    // 🔍 AGREGAR LOG TEMPORAL
     System.out.println("📦 Devolviendo " + dtos.size() + " promociones");
     dtos.forEach(dto -> System.out.println("🖼️ ImagenUrl: " + dto.getImagenUrl()));
     
@@ -63,7 +62,6 @@ private PromocionDTO convertToDTO(Promocion p) {
     dto.setPrecio(precioConDescuento.doubleValue());
     dto.setDescuento(p.getDescuento());
     
-    // 🔍 VERIFICA QUE ESTO NO SEA NULL
     String imagenUrl = p.getImagenUrl();
     System.out.println("🖼️ ImagenUrl de la BD: " + imagenUrl);
     dto.setImagenUrl(imagenUrl != null ? imagenUrl : "/img/promociones/default.png");

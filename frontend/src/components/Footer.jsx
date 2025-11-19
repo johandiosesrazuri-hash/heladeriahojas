@@ -9,9 +9,7 @@ const Footer = () => {
           <div className="lg:col-span-1">
             <div className="flex items-center mb-6">
               <div className="w-12 h-12 bg-[#dbbba6] rounded-full flex items-center justify-center mr-3">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-[#5d4037]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-                </svg>
+                <img alt="LOGO" className="h-6 w-6" src="/img/ice-cream.png" />
               </div>
               <span className="text-2xl font-bold font-cinzel">ChoccoDelight</span>
             </div>
@@ -24,8 +22,8 @@ const Footer = () => {
                 { icon: 'M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zM5.838 12a6.162 6.162 0 1112.324 0 6.162 6.162 0 01-12.324 0zM12 16a4 4 0 110-8 4 4 0 010 8zm4.965-10.405a1.44 1.44 0 112.881.001 1.44 1.44 0 01-2.881-.001z', color: '#E4405F' },
                 { icon: 'M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.5-5.71-.04-1.16.14-2.32.57-3.4.41-1.04 1.15-1.93 2.09-2.53 1.11-.69 2.44-1.03 3.75-1.01.05 1.46-.05 2.92-.03 4.38-.87-.13-1.83-.2-2.65.2-.8.39-1.28 1.24-1.31 2.12-.02.86.35 1.74.96 2.33.66.63 1.58.97 2.49.92 1.34-.06 2.64-.68 3.42-1.79.8-1.14.88-2.59.84-3.94-.01-2.92-.01-5.84 0-8.75z' }
               ].map((social, index) => (
-                <a 
-                  key={index} 
+                <a
+                  key={index}
                   href="https://www.instagram.com/universidadutp?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
                   className="w-10 h-10 rounded-full bg-[#5d4037] flex items-center justify-center hover:bg-[#dbbba6] transition-colors duration-300"
                   aria-label={`Red social ${index + 1}`}
@@ -50,8 +48,8 @@ const Footer = () => {
                 { name: 'Testimonios', path: '/testimonios' }
               ].map((item) => (
                 <li key={item.name}>
-                  <a 
-                    href={item.path} 
+                  <a
+                    href={item.path}
                     className="text-[#d7ccc8] hover:text-[#dbbba6] transition-colors duration-300 font-quicksand flex items-center"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -107,13 +105,13 @@ const Footer = () => {
             </p>
             <form className="mb-4">
               <div className="flex">
-                <input 
-                  type="email" 
-                  placeholder="Tu email" 
+                <input
+                  type="email"
+                  placeholder="Tu email"
                   className="px-4 py-2 w-full rounded-l-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#dbbba6] font-quicksand"
                 />
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="bg-[#dbbba6] hover:bg-[#d0aa96] text-[#5d4037] px-4 py-2 rounded-r-lg font-semibold transition-colors duration-300 font-montserrat"
                 >
                   Enviar

@@ -150,7 +150,7 @@ const SobreNosotros = () => {
                 </h2>
               </div>
               
-              <p className="text-lg text-gray-700 leading-relaxed font-accent">
+              <p className="text-lg text-black leading-relaxed font-sans ">
                 {informacionPrincipal.descripcionPrincipal}
               </p>
 
@@ -188,12 +188,12 @@ const SobreNosotros = () => {
 
                 <div className="mt-6 p-6 bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg">
                   {activeTab === 'mision' && (
-                    <p className="text-gray-700 font-accent leading-relaxed animate-fade-in">
+                    <p className="text-black font-sans leading-relaxed animate-fade-in">
                       {informacionPrincipal.mision}
                     </p>
                   )}
                   {activeTab === 'vision' && (
-                    <p className="text-gray-700 font-accent leading-relaxed animate-fade-in">
+                    <p className="text-black font-sans leading-relaxed animate-fade-in">
                       {informacionPrincipal.vision}
                     </p>
                   )}

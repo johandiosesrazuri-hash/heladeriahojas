@@ -51,11 +51,9 @@ public class PedidoController {
         Pedido pedido = new Pedido();
         pedido.setUsuario(usuario);
 
-        // ✅ AGREGAR ESTA SECCIÓN - Configurar método de pago
         String metodoPago = body.getMetodoPago() != null ? body.getMetodoPago() : "efectivo";
         pedido.setMetodoPago(metodoPago);
 
-        // Configurar estado según método de pago
         switch (metodoPago) {
             case "efectivo":
                 pedido.setEstado(Pedido.EstadoPedido.PENDIENTE);
@@ -73,7 +71,6 @@ public class PedidoController {
                 pedido.setEstado(Pedido.EstadoPedido.PENDIENTE);
                 pedido.setPagado(false);
         }
-        // ✅ FIN DE LA SECCIÓN NUEVA
 
         List<DetallePedido> detalles = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
@@ -118,12 +115,12 @@ public class PedidoController {
         return ResponseEntity.ok(creado);
     }
 
-    @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<Pedido>> listarPorUsuario(@PathVariable Long usuarioId) {
-        return ResponseEntity.ok(pedidoService.listarPedidosPorUsuario(usuarioId));
+    @GetMapping("/usuario/{usuarioIdd}")
+    public ResponseEntity<List<Pedido>> listarPorUsuario(@PathVariable Long usuarioIdd) {
+        return ResponseEntity.ok(pedidoService.listarPedidosPorUsuario(usuarioIdd));
     }
 
-    // ==== DTOs ====
+    // DTOs 
 
     public static class PedidoRequest {
         private List<Item> items;

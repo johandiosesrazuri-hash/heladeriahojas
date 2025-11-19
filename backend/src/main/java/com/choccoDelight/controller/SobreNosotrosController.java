@@ -18,18 +18,12 @@ public class SobreNosotrosController {
         this.service = service;
     }
 
-    /**
-     * ✅ Endpoint PÚBLICO para obtener toda la información
-     * Accesible sin login
-     */
     @GetMapping
     public ResponseEntity<SobreNosotrosDTO> obtenerInformacion() {
         return ResponseEntity.ok(service.obtenerInformacionCompleta());
     }
 
-    /* ========================================
-       ENDPOINTS ADMINISTRATIVOS (ADMIN ONLY)
-       ======================================== */
+    /* ENDPOINTS ADMINISTRATIVOS */
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/informacion/{id}")
