@@ -10,34 +10,42 @@ const Promociones = () => {
 
   // ✅ Cargar las promociones desde el backend
   useEffect(() => {
-    const fetchPromos = async () => {
-      try {
-        const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-        const response = await axios.get(`${api}/api/promociones`);
+  const fetchPromos = async () => {
+    try {
+      const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+      const response = await axios.get(`${api}/api/promociones`);
 
-        if (response.data && Array.isArray(response.data)) {
-          // Verificar si las promociones contienen la URL de la imagen
-          const validPromos = response.data.map((promo) => ({
+      console.log('📦 Respuesta completa:', response.data); // 🔍 VER QUÉ LLEGA
+
+      if (response.data && Array.isArray(response.data)) {
+        const validPromos = response.data.map((promo) => {
+          console.log('🔍 Promo:', promo); // 🔍 VER CADA PROMO
+          console.log('🖼️ ImagenUrl:', promo.imagenUrl); // 🔍 VER LA URL
+          
+          return {
             ...promo,
-            imagenUrl: promo.imagenUrl || "/img/promociones/default.png", // Asignar imagen predeterminada si no hay URL
-          }));
-
-          setPromociones(validPromos);  // Aquí se setean las promociones con la URL de la imagen
-        }
-      } catch (error) {
-        console.error("Error al cargar promociones:", error);
-        setNotification({
-          show: true,
-          message: "Error al cargar promociones. Inténtalo de nuevo.",
-          type: "error",
+            imagenUrl: promo.imagenUrl || "/img/promociones/default.png",
+          };
         });
-      } finally {
-        setLoading(false);  // Detener el estado de carga
-      }
-    };
 
-    fetchPromos();
-  }, []);
+        console.log('✅ Promociones procesadas:', validPromos); // 🔍 VER RESULTADO FINAL
+        setPromociones(validPromos);
+      }
+    } catch (error) {
+      console.error("❌ Error al cargar promociones:", error);
+      setNotification({
+        show: true,
+        message: "Error al cargar promociones. Inténtalo de nuevo.",
+        type: "error",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchPromos();
+}, []);
+
   // ✅ Manejar la adición de una promoción al carrito
   const handleAddPromo = (promo) => {
     addItem({
@@ -112,14 +120,22 @@ const Promociones = () => {
                 <div key={promo.id} className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden group border border-[#f5f0e8]" style={{ animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both` }}>
                   {/* Imagen del Producto */}
                   <div className="relative overflow-hidden bg-gradient-to-br from-[#fef7f0] to-[#fef9f4] h-48 md:h-56">
-                    <img src={`http://localhost:8080${promo.imagenUrl}`} alt={promo.nombrePromo} onError={(e) => e.target.src = "/img/promociones/default.png"} />
-
-                    
-                    {/* Badge de Descuento */}
-                    <div className="absolute top-3 right-3 bg-[#dbbba6] text-[#5d4037] px-4 py-2 rounded-full shadow-lg font-bold text-sm transform rotate-3 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110">
-                      {promo.descuento}% OFF
-                    </div>
-                  </div>
+  <img 
+    src={promo.imagenUrl ? `http://localhost:8080${promo.imagenUrl}` : "/img/promociones/default.png"} 
+    alt={promo.nombrePromo}
+    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+    onError={(e) => {
+      console.error('❌ Error cargando imagen:', e.target.src);
+      e.target.src = "/img/promociones/default.png";
+    }}
+    onLoad={(e) => console.log('✅ Imagen cargada:', e.target.src)}
+  />
+  
+  {/* Badge de Descuento */}
+  <div className="absolute top-3 right-3 bg-[#dbbba6] text-[#5d4037] px-4 py-2 rounded-full shadow-lg font-bold text-sm transform rotate-3 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110">
+    {promo.descuento}% OFF
+  </div>
+</div>
 
                   {/* Contenido de la Tarjeta */}
                   <div className="p-5">

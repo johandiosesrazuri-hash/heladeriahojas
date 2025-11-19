@@ -23,19 +23,6 @@ public class PromocionController {
     public PromocionController(PromocionService promocionService) {
         this.promocionService = promocionService;
     }
-
-    /**
-     * Listar todas las promociones activas.
-     */
-    @GetMapping
-    public ResponseEntity<List<PromocionDTO>> listarPromociones() {
-        List<Promocion> promociones = promocionService.listarPromociones();
-        List<PromocionDTO> dtos = promociones.stream()
-                                             .map(this::convertToDTO)
-                                             .collect(Collectors.toList());
-        return ResponseEntity.ok(dtos);
-    }
-
     /**
      * Obtener una promoción por su ID.
      */
@@ -48,27 +35,40 @@ public class PromocionController {
         return ResponseEntity.ok(convertToDTO(promo));
     }
 
-   
-   private PromocionDTO convertToDTO(Promocion p) {
+   @GetMapping
+public ResponseEntity<List<PromocionDTO>> listarPromociones() {
+    List<Promocion> promociones = promocionService.listarPromociones();
+    List<PromocionDTO> dtos = promociones.stream()
+                                         .map(this::convertToDTO)
+                                         .collect(Collectors.toList());
+    
+    // 🔍 AGREGAR LOG TEMPORAL
+    System.out.println("📦 Devolviendo " + dtos.size() + " promociones");
+    dtos.forEach(dto -> System.out.println("🖼️ ImagenUrl: " + dto.getImagenUrl()));
+    
+    return ResponseEntity.ok(dtos);
+}
+
+private PromocionDTO convertToDTO(Promocion p) {
     PromocionDTO dto = new PromocionDTO();
     dto.setId(p.getId());
-    dto.setNombrePromo(p.getNombre());  // Nombre de la promoción
+    dto.setNombrePromo(p.getNombre());
     dto.setDescripcion(p.getDescripcion());
     
-    // Cálculo del precio con descuento
     BigDecimal precio = p.getProducto().getPrecio();
     BigDecimal descuento = BigDecimal.valueOf(p.getDescuento())
                                      .divide(BigDecimal.valueOf(100));
     BigDecimal precioConDescuento = precio.multiply(BigDecimal.ONE.subtract(descuento));
     
-    dto.setPrecio(precioConDescuento.doubleValue());  // Precio con descuento
-    dto.setDescuento(p.getDescuento());  // Descuento
-dto.setImagenUrl(p.getImagenUrl()); // Asegúrate de que esta propiedad esté siendo correctamente proporcionada
-
+    dto.setPrecio(precioConDescuento.doubleValue());
+    dto.setDescuento(p.getDescuento());
+    
+    // 🔍 VERIFICA QUE ESTO NO SEA NULL
+    String imagenUrl = p.getImagenUrl();
+    System.out.println("🖼️ ImagenUrl de la BD: " + imagenUrl);
+    dto.setImagenUrl(imagenUrl != null ? imagenUrl : "/img/promociones/default.png");
+    
     return dto;
 }
-
-
-
 
 }
