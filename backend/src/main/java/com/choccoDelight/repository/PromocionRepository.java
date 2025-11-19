@@ -9,4 +9,3 @@ public interface PromocionRepository extends JpaRepository<Promocion, Long> {
     List<Promocion> findByActivoTrue();
     void deleteByProductoId(Long productoId);
 }
-    

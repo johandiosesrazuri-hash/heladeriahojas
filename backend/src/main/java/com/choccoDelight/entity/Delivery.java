@@ -1,5 +1,6 @@
 package com.choccoDelight.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 @Entity
@@ -9,6 +10,7 @@ public class Delivery {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "pedido_id", nullable = false)
     private Pedido pedido;

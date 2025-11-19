@@ -19,10 +19,6 @@ public class PromocionService {
         return promocionRepository.findAll();
     }
 
-    /**
-     * Obtener una promoción por su ID.
-     * Asegurarse de que la URL de la imagen se incluya correctamente.
-     */
     public Promocion obtenerPorId(Long id) {
         return promocionRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Promoción no encontrada con id: " + id));

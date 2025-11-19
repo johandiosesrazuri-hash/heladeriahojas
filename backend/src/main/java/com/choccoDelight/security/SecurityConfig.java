@@ -84,7 +84,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 
                 // USUARIO AUTENTICADO
-                .requestMatchers("/api/pedidos/**").authenticated()
+                .requestMatchers("/api/pedidos/**").permitAll()
                 .requestMatchers("/api/delivery/**").authenticated()
                 .requestMatchers("/api/usuarios/**").authenticated()
                 

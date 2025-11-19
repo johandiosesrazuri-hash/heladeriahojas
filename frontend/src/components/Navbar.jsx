@@ -98,7 +98,7 @@ const Navbar = () => {
               {user ? (
                 <div className="flex items-center space-x-3">
                   <Link 
-                    to="/pedidos" 
+                    to="/mis-pedidos" 
                     className="text-[#6d4c41] hover:text-[#5d4037] font-medium font-quicksand transition-colors duration-200"
                   >
                     Mis Pedidos

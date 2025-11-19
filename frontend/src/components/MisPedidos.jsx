@@ -27,7 +27,6 @@ const MisPedidos = () => {
     }
   }, [notification.show]);
 
-  // Cargar pedidos del usuario
   useEffect(() => {
     if (!user) {
       setNotification({
@@ -45,12 +44,10 @@ const MisPedidos = () => {
     try {
       setLoading(true);
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-        const response = await axios.get(`${api}/api/pedidos/usuario/${user.id}`, {
+      const response = await axios.get(`${api}/api/pedidos/usuario/${user.id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      
-      // Ordenar por fecha descendente (más reciente primero)
-      const pedidosOrdenados = response.data.sort((a, b) => 
+            const pedidosOrdenados = response.data.sort((a, b) => 
         new Date(b.fecha) - new Date(a.fecha)
       );
       

@@ -15,6 +15,7 @@ import Contacto from './components/Contacto'
 import Pedido from './components/Pedido'
 import Testimonios from './components/Testimonios'
 import SobreNosotros from './components/SobreNosotros'
+import MisPedidos from './components/MisPedidos'
 
 
 // Páginas Admin
@@ -52,48 +53,50 @@ function App() {
             <Route path="/contacto" element={<Contacto />} />
             <Route path="/testimonios" element={<Testimonios />} />
             <Route path="/sobre-nosotros" element={<SobreNosotros />} />
+            <Route path="/mis-pedidos" element={<MisPedidos />} />
+
             <Route path="/" element={<Menu />} />
 
             {/* Rutas protegidas - Admin */}
-            <Route 
-              path="/admin/dashboard" 
+            <Route
+              path="/admin/dashboard"
               element={
                 <ProtectedRoute requiredRole="ADMIN">
                   <AdminDashboard />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/usuarios" 
+            <Route
+              path="/admin/usuarios"
               element={
                 <ProtectedRoute requiredRole="ADMIN">
                   <GestionUsuarios />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/productos" 
+            <Route
+              path="/admin/productos"
               element={
                 <ProtectedRoute requiredRole="ADMIN">
                   <GestionProductos />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/pedidos" 
+            <Route
+              path="/admin/pedidos"
               element={
                 <ProtectedRoute requiredRole="ADMIN">
                   <GestionPedidos />
                 </ProtectedRoute>
-              } 
+              }
             />
-            <Route 
-              path="/admin/contactos" 
+            <Route
+              path="/admin/contactos"
               element={
                 <ProtectedRoute requiredRole="ADMIN">
                   <GestionContactos />
                 </ProtectedRoute>
-              } 
+              }
             />
 
             {/* Ruta por defecto */}

@@ -7,7 +7,7 @@ public class PromocionDTO {
     private String descripcion;
     private Double precio;
     private Double descuento;
-    private String imagenUrl;  // Aquí se guarda la URL de la imagen de la promoción
+    private String imagenUrl; 
 
     // Getters y setters
     public Long getId() {

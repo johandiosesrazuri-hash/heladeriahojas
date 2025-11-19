@@ -17,7 +17,6 @@ const Menu = () => {
         console.error('Error al cargar productos:', error);
       }
     };
-
     fetchProductos();
   }, []);
 

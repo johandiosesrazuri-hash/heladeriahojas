@@ -115,9 +115,9 @@ public class PedidoController {
         return ResponseEntity.ok(creado);
     }
 
-    @GetMapping("/usuario/{usuarioIdd}")
-    public ResponseEntity<List<Pedido>> listarPorUsuario(@PathVariable Long usuarioIdd) {
-        return ResponseEntity.ok(pedidoService.listarPedidosPorUsuario(usuarioIdd));
+    @GetMapping("/usuario/{usuarioId}")
+    public ResponseEntity<List<Pedido>> listarPorUsuario(@PathVariable Long usuarioId) {
+        return ResponseEntity.ok(pedidoService.listarPedidosPorUsuario(usuarioId));
     }
 
     // DTOs 
@@ -125,7 +125,7 @@ public class PedidoController {
     public static class PedidoRequest {
         private List<Item> items;
         private Delivery delivery;
-        private String metodoPago;  // ✅ AGREGAR ESTA LÍNEA
+        private String metodoPago;
 
         public List<Item> getItems() { return items; }
         public void setItems(List<Item> items) { this.items = items; }
