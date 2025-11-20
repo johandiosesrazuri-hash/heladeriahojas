@@ -29,17 +29,30 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String authorizationHeader = request.getHeader("Authorization");
+        String requestURI = request.getRequestURI();
+        String method = request.getMethod();
+
+        System.out.println("🔐 JWT Filter - " + method + " " + requestURI);
 
         String username = null;
         String jwt = null;
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);  // Extrae el token
-            username = jwtTokenUtil.extractUsername(jwt);  // Extrae el nombre de usuario del token
+            jwt = authorizationHeader.substring(7); // Extrae el token
+            try {
+                username = jwtTokenUtil.extractUsername(jwt); // Extrae el nombre de usuario del token
+                System.out.println("✅ Token válido para usuario: " + username);
+            } catch (Exception e) {
+                System.out.println("❌ Error extrayendo username del token: " + e.getMessage());
+            }
+        } else {
+            System.out.println("⚠️ No se encontró token Bearer en el header Authorization");
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            System.out.println("👤 Usuario cargado: " + username);
+            System.out.println("🔑 Authorities: " + userDetails.getAuthorities());
 
             // Verificar si el token es válido
             if (jwtTokenUtil.validateToken(jwt, userDetails)) {
@@ -48,9 +61,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+                System.out.println("✅ Autenticación establecida para: " + username + " con roles: "
+                        + userDetails.getAuthorities());
+            } else {
+                System.out.println("❌ Token inválido para usuario: " + username);
             }
         }
 
-        chain.doFilter(request, response);  // Continúa con el filtro
+        chain.doFilter(request, response); // Continúa con el filtro
     }
 }

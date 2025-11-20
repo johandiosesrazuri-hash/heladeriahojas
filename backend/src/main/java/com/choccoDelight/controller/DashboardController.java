@@ -14,9 +14,12 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import org.springframework.security.access.prepost.PreAuthorize;
+
 @RestController
 @RequestMapping("/api/admin/dashboard")
 @CrossOrigin(origins = "http://localhost:5173")
+@PreAuthorize("hasRole('ADMIN')")
 public class DashboardController {
 
     @Autowired
@@ -233,8 +236,7 @@ public class DashboardController {
         return Map.of("mensaje", "Contacto eliminado correctamente", "id", id.toString());
     }
 
-    
-    //PROMOCIONES
+    // PROMOCIONES
     @GetMapping("/promociones")
     public List<PromocionDTO> obtenerPromociones() {
         System.out.println("🎁 GET /api/admin/dashboard/promociones");
@@ -243,7 +245,7 @@ public class DashboardController {
         return promociones.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
-        @GetMapping("/promociones/{id}")
+    @GetMapping("/promociones/{id}")
     public PromocionDTO obtenerPromocionPorId(@PathVariable Long id) {
         Promocion promo = promocionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Promoción no encontrada"));
@@ -259,7 +261,7 @@ public class DashboardController {
         System.out.println("✅ Promoción eliminada: " + id);
         return Map.of("mensaje", "Promoción eliminada correctamente", "id", id.toString());
     }
-    
+
     @PostMapping("/promociones")
     public PromocionDTO crearPromocion(@RequestBody PromocionDTO promocionDTO) {
         System.out.println("➕ POST /api/admin/dashboard/promociones - " + promocionDTO.getNombrePromo());
@@ -275,7 +277,7 @@ public class DashboardController {
                 promocionDTO.getProductos());
         return convertToDTO(actualizada);
     }
-    
+
     // UTILIDADES
 
     private BigDecimal calcularIngresos() {
@@ -305,17 +307,16 @@ public class DashboardController {
         }
         if (p.getProductos() != null) {
             dto.setProductos(
-                p.getProductos().stream().map(pp -> {
-                    PromocionDTO.ProductoPromoDTO prod = new PromocionDTO.ProductoPromoDTO();
-                    prod.setProductoId(pp.getProducto().getId());
-                    prod.setNombre(pp.getProducto().getNombre());
-                    prod.setCantidad(pp.getCantidad());
-                    if (pp.getPrecioUnitario() != null) {
-                        prod.setPrecioUnitario(pp.getPrecioUnitario().doubleValue());
-                    }
-                    return prod;
-                }).collect(Collectors.toList())
-            );
+                    p.getProductos().stream().map(pp -> {
+                        PromocionDTO.ProductoPromoDTO prod = new PromocionDTO.ProductoPromoDTO();
+                        prod.setProductoId(pp.getProducto().getId());
+                        prod.setNombre(pp.getProducto().getNombre());
+                        prod.setCantidad(pp.getCantidad());
+                        if (pp.getPrecioUnitario() != null) {
+                            prod.setPrecioUnitario(pp.getPrecioUnitario().doubleValue());
+                        }
+                        return prod;
+                    }).collect(Collectors.toList()));
         }
         return dto;
     }

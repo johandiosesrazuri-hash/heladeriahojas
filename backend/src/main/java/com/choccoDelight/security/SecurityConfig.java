@@ -7,6 +7,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,6 +22,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 
 @Configuration
+@EnableWebSecurity
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
@@ -58,6 +62,9 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             
             .authorizeHttpRequests(auth -> auth
+                // Preflight CORS sin autenticación
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
                 // PERMITIR /api/auth/** SIN AUTENTICACIÓN
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/auth/login").permitAll()
@@ -81,11 +88,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/api/testimonios").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/testimonios/**").authenticated()
 
-                // ENDPOINTS ADMIN DASHBOARD (requieren autenticación)
-                .requestMatchers("/api/admin/dashboard/**").authenticated()
-
-                // OTRO ADMIN SOLO
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                // ADMIN SOLO
+.requestMatchers("/api/admin/**").authenticated()
                 
                 // USUARIO AUTENTICADO
                 .requestMatchers("/api/pedidos/**").permitAll()
