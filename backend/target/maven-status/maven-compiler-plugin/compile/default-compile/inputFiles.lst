@@ -28,6 +28,7 @@ C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com
 C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com\choccoDelight\controller\ContactoController.java
 C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com\choccoDelight\entity\Contacto.java
 C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com\choccoDelight\repository\SobreNosotrosRepository.java
+C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com\choccoDelight\entity\PromocionProducto.java
 C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com\choccoDelight\config\WebConfig.java
 C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com\choccoDelight\repository\PromocionRepository.java
 C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com\choccoDelight\repository\GaleriaEmpresaRepository.java
@@ -46,6 +47,7 @@ C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com
 C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com\choccoDelight\entity\ValorEmpresa.java
 C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com\choccoDelight\dto\TestimonioDTO.java
 C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com\choccoDelight\security\JwtTokenUtil.java
+C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com\choccoDelight\dto\PedidoDTO.java
 C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com\choccoDelight\service\AuthService.java
 C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com\choccoDelight\repository\EstadisticaEmpresaRepository.java
 C:\Users\JOHAN\Documents\heladeriahojas\heladeriahojas\backend\src\main\java\com\choccoDelight\repository\TestimonioRepository.java

@@ -32,7 +32,6 @@ com\choccoDelight\entity\DetallePedido.class
 com\choccoDelight\service\PromocionService.class
 com\choccoDelight\entity\SobreNosotros.class
 com\choccoDelight\controller\ContactoController.class
-com\choccoDelight\security\SecurityConfig$WebConfig.class
 com\choccoDelight\dto\RegisterRequest.class
 com\choccoDelight\ChoccoDelightApplication.class
 com\choccoDelight\repository\DetallePedidoRepository.class

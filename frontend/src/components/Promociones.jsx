@@ -47,7 +47,7 @@ const Promociones = () => {
     addItem({
       id: `promo-${promo.id}`,
       name: promo.nombrePromo,
-      price: Number(promo.precio) || 0,
+      price: Number(promo.precioTotal) || 0,
       image: promo.imagenUrl || "/img/promociones/default.png",
       quantity: 1
     });
@@ -147,7 +147,7 @@ const Promociones = () => {
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-baseline gap-2">
                         <span className="text-3xl font-bold text-[#6d4c41]" style={{ fontFamily: "'Montserrat', sans-serif" }}>
-                          S/ {Number(promo.precio).toFixed(2)}
+                          S/ {Number(promo.precioTotal).toFixed(2)}
                         </span>
                       </div>
                     </div>

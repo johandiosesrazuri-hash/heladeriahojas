@@ -1,60 +1,89 @@
 package com.choccoDelight.dto;
 
-public class PromocionDTO {
+import java.util.List;
 
+public class PromocionDTO {
     private Long id;
     private String nombrePromo;
     private String descripcion;
-    private Double precio;
+    private Double precioTotal; // Precio final del combo
     private Double descuento;
-    private String imagenUrl; 
+    private String imagenUrl;
+    private List<ProductoPromoDTO> productos; // Lista de productos
 
-    // Getters y setters
+    // Clase interna para productos en la promo
+    public static class ProductoPromoDTO {
+        private Long productoId;
+        private String nombre;
+        private Integer cantidad;
+        private Double precioUnitario;
+        
+        public Integer getCantidad() {
+            return cantidad;
+        }  
+        public void setCantidad(Integer cantidad) {
+            this.cantidad = cantidad;
+        }
+        public Long getProductoId() {
+            return productoId;
+        }
+        public void setProductoId(Long productoId) {
+            this.productoId = productoId;
+        }
+        public String getNombre() {
+            return nombre;
+        }
+        public void setNombre(String nombre) {
+            this.nombre = nombre;
+        }
+        public Double getPrecioUnitario() {
+            return precioUnitario;
+        }
+        public void setPrecioUnitario(Double precioUnitario) {
+            this.precioUnitario = precioUnitario;
+        }
+    }
+    // Getters y Setters
     public Long getId() {
         return id;
     }
-
     public void setId(Long id) {
         this.id = id;
     }
-
     public String getNombrePromo() {
         return nombrePromo;
     }
-
     public void setNombrePromo(String nombrePromo) {
         this.nombrePromo = nombrePromo;
     }
-
     public String getDescripcion() {
         return descripcion;
     }
-
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
-
-    public Double getPrecio() {
-        return precio;
+    public Double getPrecioTotal() {
+        return precioTotal;
     }
-
-    public void setPrecio(Double precio) {
-        this.precio = precio;
+    public void setPrecioTotal(Double precioTotal) {
+        this.precioTotal = precioTotal;
     }
-
     public Double getDescuento() {
         return descuento;
     }
-
     public void setDescuento(Double descuento) {
         this.descuento = descuento;
     }
-
     public String getImagenUrl() {
         return imagenUrl;
     }
-
     public void setImagenUrl(String imagenUrl) {
         this.imagenUrl = imagenUrl;
+    }
+    public List<ProductoPromoDTO> getProductos() {
+        return productos;
+    }
+    public void setProductos(List<ProductoPromoDTO> productos) {
+        this.productos = productos;
     }
 }
