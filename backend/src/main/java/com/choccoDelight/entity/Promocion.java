@@ -1,7 +1,7 @@
 package com.choccoDelight.entity;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,10 +35,10 @@ public class Promocion {
     private BigDecimal precioTotal; // Precio final del combo
 
     @Column(name = "fecha_inicio")
-    private LocalDateTime fechaInicio;
+    private LocalDate fechaInicio;
 
     @Column(name = "fecha_fin")
-    private LocalDateTime fechaFin;
+    private LocalDate fechaFin;
 
     // Getters y Setters
     public Long getId() { return id; }
@@ -66,8 +66,8 @@ public class Promocion {
     public void setProductos(List<PromocionProducto> productos) { this.productos = productos; }
     public BigDecimal getPrecioTotal() { return precioTotal; }
     public void setPrecioTotal(BigDecimal precioTotal) { this.precioTotal = precioTotal; }
-    public LocalDateTime getFechaInicio() { return fechaInicio; }
-    public void setFechaInicio(LocalDateTime fechaInicio) { this.fechaInicio = fechaInicio; }
-    public LocalDateTime getFechaFin() { return fechaFin; }
-    public void setFechaFin(LocalDateTime fechaFin) { this.fechaFin = fechaFin; }
+    public LocalDate getFechaInicio() { return fechaInicio; }
+    public void setFechaInicio(LocalDate fechaInicio) { this.fechaInicio = fechaInicio; }
+    public LocalDate getFechaFin() { return fechaFin; }
+    public void setFechaFin(LocalDate fechaFin) { this.fechaFin = fechaFin; }
 }

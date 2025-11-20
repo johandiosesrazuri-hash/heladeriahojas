@@ -1,5 +1,6 @@
 package com.choccoDelight.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
@@ -11,6 +12,7 @@ public class PromocionProducto {
     private Long id;
 
     @ManyToOne
+    @JsonIgnore // evitamos recursión infinita al serializar promociones con sus productos
     @JoinColumn(name = "promocion_id", nullable = false)
     private Promocion promocion;
 
@@ -19,10 +21,10 @@ public class PromocionProducto {
     private Producto producto;
 
     @Column(nullable = false)
-    private Integer cantidad = 1; // Cantidad de este producto en la promo
+    private Integer cantidad = 1; 
 
     @Column(name = "precio_unitario")
-    private BigDecimal precioUnitario; // Precio específico en esta promo
+    private BigDecimal precioUnitario; 
 
     public Integer getCantidad() {
         return cantidad;

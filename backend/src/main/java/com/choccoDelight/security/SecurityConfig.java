@@ -62,6 +62,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/auth/register").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                 
                 // PERMITIR PRODUCTOS Y PROMOCIONES
                 .requestMatchers(HttpMethod.GET, "/api/productos").permitAll()
@@ -79,8 +80,11 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/api/testimonios").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/testimonios").authenticated()
                 .requestMatchers(HttpMethod.DELETE, "/api/testimonios/**").authenticated()
-                
-                // ADMIN SOLO
+
+                // ENDPOINTS ADMIN DASHBOARD (requieren autenticación)
+                .requestMatchers("/api/admin/dashboard/**").authenticated()
+
+                // OTRO ADMIN SOLO
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
                 
                 // USUARIO AUTENTICADO

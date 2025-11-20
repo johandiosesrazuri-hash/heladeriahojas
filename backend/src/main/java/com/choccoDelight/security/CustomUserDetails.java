@@ -18,7 +18,12 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + usuario.getRol().name()));
+        String roleName = usuario.getRol().name();
+        // Evita doble prefijo si en BD quedó guardado como ROLE_ADMIN
+        if (roleName.startsWith("ROLE_")) {
+            roleName = roleName.substring("ROLE_".length());
+        }
+        return List.of(new SimpleGrantedAuthority("ROLE_" + roleName));
     }
 
     @Override

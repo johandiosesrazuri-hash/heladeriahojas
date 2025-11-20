@@ -1,13 +1,22 @@
 package com.choccoDelight.controller;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.choccoDelight.dto.PromocionDTO;
 import com.choccoDelight.entity.Promocion;
 import com.choccoDelight.service.PromocionService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/promociones")
@@ -31,33 +40,39 @@ public class PromocionController {
 
     @GetMapping
     public ResponseEntity<List<PromocionDTO>> listarPromociones() {
-            List<Promocion> promociones = promocionService.listarPromociones();
+        List<Promocion> promociones = promocionService.listarPromociones();
         List<PromocionDTO> dtos = promociones.stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<PromocionDTO> crearPromocion(@RequestBody PromocionDTO promocionDTO) {
         Promocion promocion = convertToEntity(promocionDTO);
-        Promocion nuevaPromocion = promocionService.crearPromocion(promocion);
+        Promocion nuevaPromocion = promocionService.crearPromocion(promocion, promocionDTO.getProductos());
         return ResponseEntity.ok(convertToDTO(nuevaPromocion));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
-    public ResponseEntity<PromocionDTO> actualizarPromocion(@PathVariable Long id, @RequestBody PromocionDTO promocionDTO) {
+    public ResponseEntity<PromocionDTO> actualizarPromocion(
+            @PathVariable Long id, 
+            @RequestBody PromocionDTO promocionDTO) {
         Promocion promocion = convertToEntity(promocionDTO);
-        Promocion promocionActualizada = promocionService.actualizarPromocion(id, promocion);
+        Promocion promocionActualizada = promocionService.actualizarPromocion(id, promocion, promocionDTO.getProductos());
         return ResponseEntity.ok(convertToDTO(promocionActualizada));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarPromocion(@PathVariable Long id) {
         promocionService.eliminarPromocion(id);
         return ResponseEntity.noContent().build();
     }
 
+    // ✅ CONVERSIÓN MEJORADA DE ENTITY A DTO
     private PromocionDTO convertToDTO(Promocion p) {
         PromocionDTO dto = new PromocionDTO();
         dto.setId(p.getId());
@@ -65,11 +80,12 @@ public class PromocionController {
         dto.setDescripcion(p.getDescripcion());
         dto.setDescuento(p.getDescuento());
         dto.setImagenUrl(p.getImagenUrl());
+        
         if (p.getPrecioTotal() != null) {
             dto.setPrecioTotal(p.getPrecioTotal().doubleValue());
         }
         
-        // Mapear productos
+        // ✅ MAPEAR MÚLTIPLES PRODUCTOS
         List<PromocionDTO.ProductoPromoDTO> productosDTO = p.getProductos().stream()
             .map(pp -> {
                 PromocionDTO.ProductoPromoDTO prodDTO = new PromocionDTO.ProductoPromoDTO();
@@ -87,6 +103,7 @@ public class PromocionController {
         return dto;
     }
 
+    // ✅ CONVERSIÓN BÁSICA DE DTO A ENTITY
     private Promocion convertToEntity(PromocionDTO dto) {
         Promocion promocion = new Promocion();
         promocion.setId(dto.getId());
@@ -97,7 +114,6 @@ public class PromocionController {
         if (dto.getPrecioTotal() != null) {
             promocion.setPrecioTotal(java.math.BigDecimal.valueOf(dto.getPrecioTotal()));
         }
-        // La conversión de productos asociados requeriría una lógica más compleja
         return promocion;
     }
 }

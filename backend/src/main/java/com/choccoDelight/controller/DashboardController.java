@@ -1,11 +1,13 @@
 package com.choccoDelight.controller;
 
 import com.choccoDelight.dto.PedidoDTO;
+import com.choccoDelight.dto.PromocionDTO;
 import com.choccoDelight.entity.*;
 import com.choccoDelight.repository.*;
+import com.choccoDelight.service.PromocionService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
@@ -15,7 +17,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/admin/dashboard")
 @CrossOrigin(origins = "http://localhost:5173")
-@PreAuthorize("hasRole('ADMIN')") // ✅ TODOS los endpoints requieren ADMIN
 public class DashboardController {
 
     @Autowired
@@ -25,11 +26,13 @@ public class DashboardController {
     @Autowired
     private PromocionProductoRepository promocionProductoRepository;
     @Autowired
-    private PromocionRepository promocionRepository;
-    @Autowired
     private PedidoRepository pedidoRepository;
     @Autowired
     private ContactoRepository contactoRepository;
+    @Autowired
+    private PromocionRepository promocionRepository;
+    @Autowired
+    private PromocionService promocionService;
 
     // 📊 Estadísticas generales
     @GetMapping("/stats")
@@ -41,6 +44,7 @@ public class DashboardController {
         stats.put("totalProductos", productoRepository.count());
         stats.put("totalPedidos", pedidoRepository.count());
         stats.put("ingresosTotales", calcularIngresos());
+        stats.put("totalPromociones", promocionRepository.count());
 
         System.out.println("✅ Stats: " + stats);
         return stats;
@@ -232,19 +236,19 @@ public class DashboardController {
     
     //PROMOCIONES
     @GetMapping("/promociones")
-    public List<Promocion> obtenerPromociones() {
+    public List<PromocionDTO> obtenerPromociones() {
         System.out.println("🎁 GET /api/admin/dashboard/promociones");
         List<Promocion> promociones = promocionRepository.findAll();
         System.out.println("✅ Promociones encontradas: " + promociones.size());
-        return promociones;
+        return promociones.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
         @GetMapping("/promociones/{id}")
-    public Promocion obtenerPromocionPorId(@PathVariable Long id) {
-        return promocionRepository.findById(id)
+    public PromocionDTO obtenerPromocionPorId(@PathVariable Long id) {
+        Promocion promo = promocionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Promoción no encontrada"));
-        ret
-            }
+        return convertToDTO(promo);
+    }
 
     @DeleteMapping("/promociones/{id}")
     @Transactional
@@ -257,23 +261,19 @@ public class DashboardController {
     }
     
     @PostMapping("/promociones")
-    public Promocion crearPromocion(@RequestBody Promocion promocion) {
-        System.out.println("➕ POST /api/admin/dashboard/promociones - " + promocion.getNombre());
-        return promocionRepository.save(promocion);
+    public PromocionDTO crearPromocion(@RequestBody PromocionDTO promocionDTO) {
+        System.out.println("➕ POST /api/admin/dashboard/promociones - " + promocionDTO.getNombrePromo());
+        Promocion nueva = promocionService.crearPromocion(convertToEntity(promocionDTO), promocionDTO.getProductos());
+        return convertToDTO(nueva);
     }
 
     @PutMapping("/promociones/{id}")
-    public Promocion actualizarPromocion(@PathVariable Long id, @RequestBody Promocion promocion) {
-        Promocion existente = obtenerPromocionPorId(id);
-        existente.setNombre(promocion.getNombre());
-        existente.setDescripcion(promocion.getDescripcion());
-        existente.setDescuento(promocion.getDescuento());
-        existente.setPrecioTotal(promocion.getPrecioTotal());
-        existente.setFechaInicio(promocion.getFechaInicio());
-        existente.setFechaFin(promocion.getFechaFin());
-        existente.setActivo(promocion.getActivo());
-        existente.setImagenUrl(promocion.getImagenUrl());
-        return promocionRepository.save(existente);
+    public PromocionDTO actualizarPromocionCompleta(@PathVariable Long id, @RequestBody PromocionDTO promocionDTO) {
+        Promocion actualizada = promocionService.actualizarPromocion(
+                id,
+                convertToEntity(promocionDTO),
+                promocionDTO.getProductos());
+        return convertToDTO(actualizada);
     }
     
     // UTILIDADES
@@ -283,5 +283,56 @@ public class DashboardController {
                 .filter(p -> p.getEstado() == Pedido.EstadoPedido.ENTREGADO)
                 .map(Pedido::getTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    // Conversión Promocion -> DTO para evitar ciclos al serializar
+    private PromocionDTO convertToDTO(Promocion p) {
+        PromocionDTO dto = new PromocionDTO();
+        dto.setId(p.getId());
+        dto.setNombrePromo(p.getNombre());
+        dto.setDescripcion(p.getDescripcion());
+        dto.setDescuento(p.getDescuento());
+        dto.setImagenUrl(p.getImagenUrl());
+        dto.setActivo(p.getActivo() != null ? p.getActivo() : true);
+        if (p.getFechaInicio() != null) {
+            dto.setFechaInicio(p.getFechaInicio());
+        }
+        if (p.getFechaFin() != null) {
+            dto.setFechaFin(p.getFechaFin());
+        }
+        if (p.getPrecioTotal() != null) {
+            dto.setPrecioTotal(p.getPrecioTotal().doubleValue());
+        }
+        if (p.getProductos() != null) {
+            dto.setProductos(
+                p.getProductos().stream().map(pp -> {
+                    PromocionDTO.ProductoPromoDTO prod = new PromocionDTO.ProductoPromoDTO();
+                    prod.setProductoId(pp.getProducto().getId());
+                    prod.setNombre(pp.getProducto().getNombre());
+                    prod.setCantidad(pp.getCantidad());
+                    if (pp.getPrecioUnitario() != null) {
+                        prod.setPrecioUnitario(pp.getPrecioUnitario().doubleValue());
+                    }
+                    return prod;
+                }).collect(Collectors.toList())
+            );
+        }
+        return dto;
+    }
+
+    private Promocion convertToEntity(PromocionDTO dto) {
+        Promocion promocion = new Promocion();
+        promocion.setId(dto.getId());
+        promocion.setNombre(dto.getNombrePromo());
+        promocion.setDescripcion(dto.getDescripcion());
+        promocion.setDescuento(dto.getDescuento());
+        promocion.setImagenUrl(dto.getImagenUrl());
+        promocion.setActivo(dto.getActivo());
+        promocion.setFechaInicio(dto.getFechaInicio());
+        promocion.setFechaFin(dto.getFechaFin());
+        if (dto.getPrecioTotal() != null) {
+            promocion.setPrecioTotal(BigDecimal.valueOf(dto.getPrecioTotal()));
+        }
+        return promocion;
     }
 }

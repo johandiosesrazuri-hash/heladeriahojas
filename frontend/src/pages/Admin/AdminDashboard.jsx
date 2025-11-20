@@ -241,6 +241,13 @@ const AdminDashboard = () => {
             color="from-emerald-400 to-emerald-500"
             delay={0.4}
           />
+          <StatCard
+            title="Promociones Activas"
+            value={stats?.totalPromociones || 0}
+            icon="🎁"
+            color="from-purple-400 to-purple-500"
+            delay={0.5}
+            />
         </div>
 
         {/* Navegación Rápida */}
@@ -257,6 +264,7 @@ const AdminDashboard = () => {
             <NavButton to="/admin/productos" label="Productos" icon="🍨" delay={0.2} />
             <NavButton to="/admin/pedidos" label="Pedidos" icon="🚚" delay={0.3} />
             <NavButton to="/admin/contactos" label="Contactos" icon="✉️" delay={0.4} />
+            <NavButton to="/admin/promociones" label="Promociones" icon="🎁" delay={0.5} />
           </div>
         </div>
       </div>
@@ -315,6 +323,7 @@ const StatCard = ({ title, value, icon, color, delay }) => {
 
 const NavButton = ({ to, label, icon, delay }) => {
   const [animate, setAnimate] = useState(false);
+  const navigate = useNavigate();
   
   useEffect(() => {
     const timer = setTimeout(() => setAnimate(true), delay * 1000);
@@ -323,7 +332,7 @@ const NavButton = ({ to, label, icon, delay }) => {
 
   return (
     <button 
-      onClick={() => window.location.href = to}
+      onClick={() => navigate(to)}
       className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md p-6 text-center transition-all duration-300 hover:shadow-lg hover:-translate-y-1 group relative overflow-hidden"
       style={{ 
         animation: animate ? `fadeInUp 0.6s ease-out ${delay}s both` : 'none',

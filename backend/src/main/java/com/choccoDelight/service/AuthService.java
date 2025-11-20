@@ -43,7 +43,7 @@ public class AuthService {
     resp.setId(usuario.getId());
     resp.setEmail(usuario.getEmail());
     resp.setNombre(usuario.getNombre());
-    resp.setRol(usuario.getRol().name());
+    resp.setRol(usuario.getRol().name().startsWith("ROLE_") ? usuario.getRol().name().substring("ROLE_".length()) : usuario.getRol().name());
     return resp;
     }
 
@@ -67,8 +67,7 @@ public class AuthService {
     resp.setId(usuario.getId());
     resp.setEmail(usuario.getEmail());
     resp.setNombre(usuario.getNombre());
-    // Devolvemos el role con prefijo ROLE_ para mantener compatibilidad con Spring Security
-    resp.setRol("ROLE_" + usuario.getRol().name());
+    resp.setRol(usuario.getRol().name());
     return resp;
     }
 

@@ -1,5 +1,6 @@
 package com.choccoDelight.dto;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class PromocionDTO {
@@ -9,6 +10,9 @@ public class PromocionDTO {
     private Double precioTotal; // Precio final del combo
     private Double descuento;
     private String imagenUrl;
+    private Boolean activo;
+    private java.time.LocalDate fechaInicio;
+    private LocalDate fechaFin;
     private List<ProductoPromoDTO> productos; // Lista de productos
 
     // Clase interna para productos en la promo
@@ -79,6 +83,24 @@ public class PromocionDTO {
     }
     public void setImagenUrl(String imagenUrl) {
         this.imagenUrl = imagenUrl;
+    }
+    public Boolean getActivo() {
+        return activo;
+    }
+    public void setActivo(Boolean activo) {
+        this.activo = activo;
+    }
+    public java.time.LocalDate getFechaInicio() {
+        return fechaInicio;
+    }
+    public void setFechaInicio(LocalDate fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+    public java.time.LocalDate getFechaFin() {
+        return fechaFin;
+    }
+    public void setFechaFin(java.time.LocalDate fechaFin) {
+        this.fechaFin = fechaFin;
     }
     public List<ProductoPromoDTO> getProductos() {
         return productos;

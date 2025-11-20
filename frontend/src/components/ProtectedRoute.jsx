@@ -22,7 +22,8 @@ const ProtectedRoute = ({ children, requiredRole = 'ADMIN' }) => {
   }
 
   // Verifica si el usuario no tiene el rol requerido
-  if (user.rol !== requiredRole) {
+  const userRoleNormalized = user.rol?.startsWith('ROLE_') ? user.rol.replace('ROLE_', '') : user.rol;
+  if (userRoleNormalized !== requiredRole) {
     console.warn(`❌ Rol insuficiente. Requerido: ${requiredRole}, Actual: ${user.rol}`);
     return <Navigate to="/" />;
   }

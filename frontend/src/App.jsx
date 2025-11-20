@@ -24,6 +24,8 @@ import GestionUsuarios from './pages/Admin/GestionUsuarios'
 import GestionProductos from './pages/Admin/GestionProductos'
 import GestionPedidos from './pages/Admin/GestionPedidos'
 import GestionContactos from './pages/Admin/GestionContactos'
+import GestionPromociones from './pages/Admin/GestionPromociones'
+
 
 import './App.css'
 
@@ -95,6 +97,14 @@ function App() {
               element={
                 <ProtectedRoute requiredRole="ADMIN">
                   <GestionContactos />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin/promociones"
+              element={
+                <ProtectedRoute requiredRole="ADMIN">
+                  <GestionPromociones />
                 </ProtectedRoute>
               }
             />
