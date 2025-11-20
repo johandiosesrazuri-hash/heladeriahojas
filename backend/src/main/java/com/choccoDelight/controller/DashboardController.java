@@ -23,6 +23,8 @@ public class DashboardController {
     @Autowired
     private ProductoRepository productoRepository;
     @Autowired
+    private PromocionProductoRepository promocionProductoRepository;
+    @Autowired
     private PromocionRepository promocionRepository;
     @Autowired
     private PedidoRepository pedidoRepository;
@@ -143,7 +145,7 @@ public class DashboardController {
 
             // Eliminar las promociones asociadas si el stock llega a 0
             if (producto.getStockDisponible() == 0) {
-                promocionRepository.deleteByProductoId(id);
+                promocionProductoRepository.deleteById(id);
                 System.out.println("🔥 Promociones asociadas eliminadas");
             }
 
@@ -227,6 +229,53 @@ public class DashboardController {
         return Map.of("mensaje", "Contacto eliminado correctamente", "id", id.toString());
     }
 
+    
+    //PROMOCIONES
+    @GetMapping("/promociones")
+    public List<Promocion> obtenerPromociones() {
+        System.out.println("🎁 GET /api/admin/dashboard/promociones");
+        List<Promocion> promociones = promocionRepository.findAll();
+        System.out.println("✅ Promociones encontradas: " + promociones.size());
+        return promociones;
+    }
+
+        @GetMapping("/promociones/{id}")
+    public Promocion obtenerPromocionPorId(@PathVariable Long id) {
+        return promocionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Promoción no encontrada"));
+        ret
+            }
+
+    @DeleteMapping("/promociones/{id}")
+    @Transactional
+    public Map<String, String> eliminarPromocion(@PathVariable Long id) {
+        System.out.println("🗑️ DELETE /api/admin/dashboard/promociones/" + id);
+        promocionProductoRepository.deleteByPromocionId(id);
+        promocionRepository.deleteById(id);
+        System.out.println("✅ Promoción eliminada: " + id);
+        return Map.of("mensaje", "Promoción eliminada correctamente", "id", id.toString());
+    }
+    
+    @PostMapping("/promociones")
+    public Promocion crearPromocion(@RequestBody Promocion promocion) {
+        System.out.println("➕ POST /api/admin/dashboard/promociones - " + promocion.getNombre());
+        return promocionRepository.save(promocion);
+    }
+
+    @PutMapping("/promociones/{id}")
+    public Promocion actualizarPromocion(@PathVariable Long id, @RequestBody Promocion promocion) {
+        Promocion existente = obtenerPromocionPorId(id);
+        existente.setNombre(promocion.getNombre());
+        existente.setDescripcion(promocion.getDescripcion());
+        existente.setDescuento(promocion.getDescuento());
+        existente.setPrecioTotal(promocion.getPrecioTotal());
+        existente.setFechaInicio(promocion.getFechaInicio());
+        existente.setFechaFin(promocion.getFechaFin());
+        existente.setActivo(promocion.getActivo());
+        existente.setImagenUrl(promocion.getImagenUrl());
+        return promocionRepository.save(existente);
+    }
+    
     // UTILIDADES
 
     private BigDecimal calcularIngresos() {
