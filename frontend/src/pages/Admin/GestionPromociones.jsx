@@ -377,18 +377,6 @@ const GestionPromociones = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">Precio Total</label>
-                  <input
-                    type="number"
-                    value={formData.precioTotal}
-                    onChange={(e) => setFormData({...formData, precioTotal: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
-                    min="0"
-                    step="0.01"
-                    required
-                  />
-                </div>
-                <div>
                   <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">Fecha Inicio</label>
                   <input
                     type="date"
