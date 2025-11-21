@@ -93,7 +93,7 @@ const Contacto = () => {
           </h2>
           
           <p 
-            className="text-center text-black mb-12 text-lg max-w-2xl mx-auto"
+            className="text-center text-[#904939] mb-12 text-lg max-w-2xl mx-auto"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.3s both` : 'none',
               opacity: animate ? 1 : 0
@@ -106,7 +106,7 @@ const Contacto = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Formulario de contacto */}
           <div 
-            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-[#f5f0e8]"
+            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-[#DDD4CE]"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.5s both` : 'none',
               opacity: animate ? 1 : 0
@@ -218,7 +218,7 @@ const Contacto = () => {
             </h3>
             
             <div 
-              className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-[#f5f0e8] mb-8"
+              className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-[#DDD4CE] mb-8"
               style={{ 
                 animation: animate ? `fadeInUp 0.6s ease-out 0.9s both` : 'none',
                 opacity: animate ? 1 : 0
@@ -287,7 +287,7 @@ const Contacto = () => {
 
             {/* Redes sociales */}
             <div 
-              className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-[#f5f0e8]"
+              className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-[#DDD4CE]"
               style={{ 
                 animation: animate ? `fadeInUp 0.6s ease-out 1.1s both` : 'none',
                 opacity: animate ? 1 : 0
@@ -327,7 +327,7 @@ const Contacto = () => {
           }}
         >
           <h3 className="text-2xl font-bold text-primary-dark mb-6 text-center font-cinzel">Encuéntranos</h3>
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden border border-[#f5f0e8]">
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden border border-[#DDD4CE]">
             <div className="h-80 md:h-96 w-full">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m12!1m8!1m3!1d127150.66014173928!2d-80.73494263270626!3d-5.190435122876108!3m2!1i1024!2i768!4f13.1!2m1!1sutp%20maps!5e0!3m2!1ses-419!2spe!4v1763280622494!5m2!1ses-419!2spe"
@@ -360,3 +360,6 @@ const Contacto = () => {
 };
 
 export default Contacto;
+
+
+

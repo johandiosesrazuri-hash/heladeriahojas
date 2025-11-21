@@ -193,11 +193,11 @@ const GestionUsuarios = () => {
         </div>
         <div className="relative z-10 container-custom flex flex-col items-center justify-center min-h-[70vh]">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-[#dbbba6] mb-6"></div>
-            <p className="text-xl text-[#6d4c41] font-quicksand">Cargando usuarios...</p>
+            <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-[#E19D7E] mb-6"></div>
+            <p className="text-xl text-[#C1583B] font-quicksand">Cargando usuarios...</p>
           </div>
         </div>
-        <style>{`.gradient-hero { background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%); }`}</style>
+        <style>{`.gradient-hero { background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%); }`}</style>
       </section>
     );
   }
@@ -229,11 +229,11 @@ const GestionUsuarios = () => {
       <div className="relative z-10 container-custom">
         {/* Encabezado */}
         <div className="mb-12 text-center">
-          <h1 className="text-4xl md:text-5xl text-[#3e2723] font-bold mb-4 relative pb-4 font-cinzel">
+          <h1 className="text-4xl md:text-5xl text-[#904939] font-bold mb-4 relative pb-4 font-cinzel">
             Gestión de Usuarios
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#d4af37] to-[#e8b4b8] rounded-full"></span>
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#E19D7E] to-[#904939] rounded-full"></span>
           </h1>
-          <p className="text-lg text-[#6d4c41] font-quicksand">
+          <p className="text-lg text-[#C1583B] font-quicksand">
             Total: {usuarios.length} usuarios
           </p>
         </div>
@@ -242,8 +242,8 @@ const GestionUsuarios = () => {
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 mb-8">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             {/* Búsqueda */}
-            <div className="flex-1 flex items-center gap-3 p-3 bg-white rounded-lg border border-[#e8d7c3]">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#6d4c41]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="flex-1 flex items-center gap-3 p-3 bg-white rounded-lg border border-[#E19D7E]">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[#C1583B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <input
@@ -259,7 +259,7 @@ const GestionUsuarios = () => {
             <select
               value={filtroRol}
               onChange={(e) => setFiltroRol(e.target.value)}
-              className="px-4 py-3 bg-white border border-[#e8d7c3] rounded-lg font-quicksand"
+              className="px-4 py-3 bg-white border border-[#E19D7E] rounded-lg font-quicksand"
             >
               <option value="TODOS">Todos los roles</option>
               <option value="ADMIN">Administradores</option>
@@ -277,7 +277,7 @@ const GestionUsuarios = () => {
               Nuevo Usuario
             </button>
           </div>
-          <p className="text-sm text-[#6d4c41] mt-2 font-quicksand">
+          <p className="text-sm text-[#C1583B] mt-2 font-quicksand">
             Mostrando {usuariosFiltrados.length} de {usuarios.length} usuarios
           </p>
         </div>
@@ -286,7 +286,7 @@ const GestionUsuarios = () => {
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gradient-to-r from-[#8d6e63] to-[#6d4c41] text-white">
+              <thead className="bg-gradient-to-r from-[#8d6e63] to-[#C1583B] text-white">
                 <tr>
                   <th className="px-6 py-4 text-left font-cinzel">ID</th>
                   <th className="px-6 py-4 text-left font-cinzel">Usuario</th>
@@ -298,25 +298,25 @@ const GestionUsuarios = () => {
               <tbody>
                 {usuariosFiltrados.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="px-6 py-8 text-center text-[#6d4c41] font-quicksand">
+                    <td colSpan="5" className="px-6 py-8 text-center text-[#C1583B] font-quicksand">
                       {busqueda || filtroRol !== 'TODOS' ? 'No se encontraron resultados' : 'No hay usuarios registrados'}
                     </td>
                   </tr>
                 ) : (
                   usuariosFiltrados.map((usuario) => (
-                    <tr key={usuario.id} className="border-t border-[#f5f0e8] hover:bg-[#f9f6f2] transition-colors duration-200">
-                      <td className="px-6 py-4 font-semibold text-[#6d4c41] font-montserrat">{usuario.id}</td>
+                    <tr key={usuario.id} className="border-t border-[#DDD4CE] hover:bg-[#DDD4CE] transition-colors duration-200">
+                      <td className="px-6 py-4 font-semibold text-[#C1583B] font-montserrat">{usuario.id}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center">
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#dbbba6] to-[#d0aa96] flex items-center justify-center mr-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] flex items-center justify-center mr-3">
                             <span className="text-white font-bold font-montserrat">
                               {usuario.nombre?.charAt(0).toUpperCase()}
                             </span>
                           </div>
-                          <span className="font-semibold text-[#3e2723] font-montserrat">{usuario.nombre}</span>
+                          <span className="font-semibold text-[#904939] font-montserrat">{usuario.nombre}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-[#6d4c41] font-quicksand">{usuario.email}</td>
+                      <td className="px-6 py-4 text-[#C1583B] font-quicksand">{usuario.email}</td>
                       <td className="px-6 py-4">
                         <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
                           usuario.rol === 'ADMIN' 
@@ -360,45 +360,45 @@ const GestionUsuarios = () => {
         {showCreateModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
-              <h3 className="text-2xl font-bold text-[#3e2723] mb-6 font-cinzel">Crear Nuevo Usuario</h3>
+              <h3 className="text-2xl font-bold text-[#904939] mb-6 font-cinzel">Crear Nuevo Usuario</h3>
               <form onSubmit={handleCreateUser}>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-[#6d4c41] font-medium mb-2">Nombre</label>
+                    <label className="block text-[#C1583B] font-medium mb-2">Nombre</label>
                     <input
                       type="text"
                       value={createForm.nombre}
                       onChange={(e) => setCreateForm({...createForm, nombre: e.target.value})}
-                      className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#64b5f6]"
+                      className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#64b5f6]"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-[#6d4c41] font-medium mb-2">Email</label>
+                    <label className="block text-[#C1583B] font-medium mb-2">Email</label>
                     <input
                       type="email"
                       value={createForm.email}
                       onChange={(e) => setCreateForm({...createForm, email: e.target.value})}
-                      className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#64b5f6]"
+                      className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#64b5f6]"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-[#6d4c41] font-medium mb-2">Contraseña</label>
+                    <label className="block text-[#C1583B] font-medium mb-2">Contraseña</label>
                     <input
                       type="password"
                       value={createForm.password}
                       onChange={(e) => setCreateForm({...createForm, password: e.target.value})}
-                      className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#64b5f6]"
+                      className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#64b5f6]"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-[#6d4c41] font-medium mb-2">Rol</label>
+                    <label className="block text-[#C1583B] font-medium mb-2">Rol</label>
                     <select
                       value={createForm.rol}
                       onChange={(e) => setCreateForm({...createForm, rol: e.target.value})}
-                      className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#64b5f6]"
+                      className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#64b5f6]"
                     >
                       <option value="CLIENTE">Cliente</option>
                       <option value="ADMIN">Administrador</option>
@@ -409,7 +409,7 @@ const GestionUsuarios = () => {
                   <button type="submit" className="flex-1 bg-gradient-to-r from-[#64b5f6] to-[#42a5f5] text-white py-3 rounded-lg font-semibold">
                     Crear
                   </button>
-                  <button type="button" onClick={() => setShowCreateModal(false)} className="flex-1 bg-[#f5f0e8] text-[#6d4c41] py-3 rounded-lg font-semibold">
+                  <button type="button" onClick={() => setShowCreateModal(false)} className="flex-1 bg-[#DDD4CE] text-[#C1583B] py-3 rounded-lg font-semibold">
                     Cancelar
                   </button>
                 </div>
@@ -422,35 +422,35 @@ const GestionUsuarios = () => {
         {showEditModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
-              <h3 className="text-2xl font-bold text-[#3e2723] mb-6 font-cinzel">Editar Usuario</h3>
+              <h3 className="text-2xl font-bold text-[#904939] mb-6 font-cinzel">Editar Usuario</h3>
               <form onSubmit={handleEditUser}>
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-[#6d4c41] font-medium mb-2">Nombre</label>
+                    <label className="block text-[#C1583B] font-medium mb-2">Nombre</label>
                     <input
                       type="text"
                       value={editForm.nombre}
                       onChange={(e) => setEditForm({...editForm, nombre: e.target.value})}
-                      className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#1976d2]"
+                      className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#1976d2]"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-[#6d4c41] font-medium mb-2">Email</label>
+                    <label className="block text-[#C1583B] font-medium mb-2">Email</label>
                     <input
                       type="email"
                       value={editForm.email}
                       onChange={(e) => setEditForm({...editForm, email: e.target.value})}
-                      className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#1976d2]"
+                      className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#1976d2]"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-[#6d4c41] font-medium mb-2">Rol</label>
+                    <label className="block text-[#C1583B] font-medium mb-2">Rol</label>
                     <select
                       value={editForm.rol}
                       onChange={(e) => setEditForm({...editForm, rol: e.target.value})}
-                      className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#1976d2]"
+                      className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#1976d2]"
                     >
                       <option value="CLIENTE">Cliente</option>
                       <option value="ADMIN">Administrador</option>
@@ -461,7 +461,7 @@ const GestionUsuarios = () => {
                   <button type="submit" className="flex-1 bg-gradient-to-r from-[#1976d2] to-[#1565c0] text-white py-3 rounded-lg font-semibold">
                     Guardar
                   </button>
-                  <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 bg-[#f5f0e8] text-[#6d4c41] py-3 rounded-lg font-semibold">
+                  <button type="button" onClick={() => setShowEditModal(false)} className="flex-1 bg-[#DDD4CE] text-[#C1583B] py-3 rounded-lg font-semibold">
                     Cancelar
                   </button>
                 </div>
@@ -475,7 +475,7 @@ const GestionUsuarios = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
               <h3 className="text-2xl font-bold text-[#c62828] mb-4 font-cinzel">Confirmar Eliminación</h3>
-              <p className="text-[#6d4c41] mb-6 font-quicksand">
+              <p className="text-[#C1583B] mb-6 font-quicksand">
                 ¿Estás seguro de eliminar al usuario <strong>{selectedUser?.nombre}</strong>?
                 Esta acción no se puede deshacer.
               </p>
@@ -488,7 +488,7 @@ const GestionUsuarios = () => {
                 </button>
                 <button
                   onClick={() => setShowDeleteModal(false)}
-                  className="flex-1 bg-[#f5f0e8] text-[#6d4c41] py-3 rounded-lg font-semibold"
+                  className="flex-1 bg-[#DDD4CE] text-[#C1583B] py-3 rounded-lg font-semibold"
                 >
                   Cancelar
                 </button>
@@ -500,7 +500,7 @@ const GestionUsuarios = () => {
 
       <style>{`
         .gradient-hero {
-          background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
+          background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
         }
       `}</style>
     </section>
@@ -508,3 +508,6 @@ const GestionUsuarios = () => {
 };
 
 export default GestionUsuarios;
+
+
+

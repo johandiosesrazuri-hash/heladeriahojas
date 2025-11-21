@@ -140,18 +140,18 @@ const Pedido = () => {
             }}
           >
             <div className="mb-8">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 mx-auto text-[#dbbba6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 mx-auto text-[#E19D7E]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707L17 22h-2m0 0l-2.293-2.293c-.63-.63-1.077-.184-1.707.707L7 13H5m2 0h2m0 0h6m2 0h2m-6 0v2m0 0v-2" />
               </svg>
             </div>
-            <h2 className="text-4xl md:text-5xl text-[#3e2723] font-bold mb-4 font-cinzel">Tu carrito está vacío</h2>
-            <p className="text-lg text-[#6d4c41] mb-8 font-quicksand">
+            <h2 className="text-4xl md:text-5xl text-[#904939] font-bold mb-4 font-cinzel">Tu carrito está vacío</h2>
+            <p className="text-lg text-[#C1583B] mb-8 font-quicksand">
               Agrega algunos productos deliciosos para comenzar
             </p>
             <div className="flex justify-center">
               <button 
                 onClick={() => navigate('/menu')}
-                className="px-8 py-3 bg-[#dbbba6] hover:bg-[#d0aa96] text-[#5d4037] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform flex items-center justify-center"
+                className="px-8 py-3 bg-[#E19D7E] hover:bg-[#3aa38f] text-[#904939] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform flex items-center justify-center"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1h3a1 1 0 110 2h-3v3a1 1 0 11-2 0V6H6a1 1 0 010-2h3V3a1 1 0 01-1-1zm-1 9a1 1 0 100-2v-1a1 1 0 00-1 1v1H6a1 1 0 100 2v1a1 1 0 001 1v1h3a1 1 0 100 2v-1a1 1 0 001-1v-1h3a1 1 0 100-2v-1a1 1 0 00-1-1v-1z" clipRule="evenodd" />
@@ -166,7 +166,7 @@ const Pedido = () => {
         <style jsx global>{`
 
           .gradient-hero {
-            background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
+            background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
           }
           
           @keyframes fadeInUp {
@@ -213,18 +213,18 @@ const Pedido = () => {
       <div className="relative z-10 container-custom">
         <div className="text-center mb-16">
           <h2 
-            className="text-4xl md:text-5xl text-[#3e2723] text-center font-bold mb-4 relative pb-4 font-cinzel"
+            className="text-4xl md:text-5xl text-[#904939] text-center font-bold mb-4 relative pb-4 font-cinzel"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.1s both` : 'none',
               opacity: animate ? 1 : 0
             }}
           >
             Finalizar Pedido
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#d4af37] to-[#e8b4b8] rounded-full"></span>
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#E19D7E] to-[#904939] rounded-full"></span>
           </h2>
           
           <p 
-            className="text-center text-[#6d4c41] mb-12 text-lg max-w-2xl mx-auto font-quicksand"
+            className="text-center text-[#C1583B] mb-12 text-lg max-w-2xl mx-auto font-quicksand"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.3s both` : 'none',
               opacity: animate ? 1 : 0
@@ -243,8 +243,8 @@ const Pedido = () => {
               opacity: animate ? 1 : 0
             }}
           >
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-[#f5f0e8]">
-              <h3 className="text-2xl font-bold text-[#3e2723] mb-6 font-cinzel">Resumen del Pedido</h3>
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-[#DDD4CE]">
+              <h3 className="text-2xl font-bold text-[#904939] mb-6 font-cinzel">Resumen del Pedido</h3>
               
               <div className="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2">
                 {items.map((item, index) => (
@@ -274,8 +274,8 @@ const Pedido = () => {
               
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-medium text-[#3e2723] font-montserrat">Total:</span>
-                  <span className="text-2xl font-bold text-[#6d4c41] font-montserrat">S/ {(total || 0).toFixed(2)}</span>
+                  <span className="text-lg font-medium text-[#904939] font-montserrat">Total:</span>
+                  <span className="text-2xl font-bold text-[#C1583B] font-montserrat">S/ {(total || 0).toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -289,12 +289,12 @@ const Pedido = () => {
               opacity: animate ? 1 : 0
             }}
           >
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-[#f5f0e8]">
-              <h3 className="text-2xl font-bold text-[#3e2723] mb-6 font-cinzel">Datos de Entrega</h3>
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-[#DDD4CE]">
+              <h3 className="text-2xl font-bold text-[#904939] mb-6 font-cinzel">Datos de Entrega</h3>
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                  <label htmlFor="nombreReceptor" className="block text-sm font-medium text-[#3e2723] mb-1 font-montserrat">
+                  <label htmlFor="nombreReceptor" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
                     Nombre del Receptor <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -304,13 +304,13 @@ const Pedido = () => {
                     value={formData.nombreReceptor}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dbbba6] focus:border-[#dbbba6] transition-all duration-200 font-quicksand"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
                     placeholder="Nombre completo"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="direccion" className="block text-sm font-medium text-[#3e2723] mb-1 font-montserrat">
+                  <label htmlFor="direccion" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
                     Dirección de Entrega <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -320,13 +320,13 @@ const Pedido = () => {
                     value={formData.direccion}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dbbba6] focus:border-[#dbbba6] transition-all duration-200 font-quicksand"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
                     placeholder="Dirección completa"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="telefono" className="block text-sm font-medium text-[#3e2723] mb-1 font-montserrat">
+                  <label htmlFor="telefono" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
                     Teléfono de Contacto <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -336,14 +336,14 @@ const Pedido = () => {
                     value={formData.telefono}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dbbba6] focus:border-[#dbbba6] transition-all duration-200 font-quicksand"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
                     placeholder="Número de teléfono"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="ciudad" className="block text-sm font-medium text-[#3e2723] mb-1 font-montserrat">
+                    <label htmlFor="ciudad" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
                       Ciudad <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -353,13 +353,13 @@ const Pedido = () => {
                       value={formData.ciudad}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dbbba6] focus:border-[#dbbba6] transition-all duration-200 font-quicksand"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
                       placeholder="Ciudad"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="codigoPostal" className="block text-sm font-medium text-[#3e2723] mb-1 font-montserrat">
+                    <label htmlFor="codigoPostal" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
                       Código Postal
                     </label>
                     <input
@@ -368,14 +368,14 @@ const Pedido = () => {
                       name="codigoPostal"
                       value={formData.codigoPostal}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dbbba6] focus:border-[#dbbba6] transition-all duration-200 font-quicksand"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
                       placeholder="Código postal"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="instrucciones" className="block text-sm font-medium text-[#3e2723] mb-1 font-montserrat">
+                  <label htmlFor="instrucciones" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
                     Instrucciones de Entrega
                   </label>
                   <textarea
@@ -384,13 +384,13 @@ const Pedido = () => {
                     value={formData.instrucciones}
                     onChange={handleChange}
                     rows="3"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dbbba6] focus:border-[#dbbba6] transition-all duration-200 font-quicksand"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
                     placeholder="Ej: Tocar el timbre, dejar en portería, etc."
                   ></textarea>
                 </div>
 
                 <div>
-                  <label htmlFor="metodoPago" className="block text-sm font-medium text-[#3e2723] mb-1 font-montserrat">
+                  <label htmlFor="metodoPago" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
                     Método de Pago <span className="text-red-500">*</span>
                   </label>
                   <select
@@ -399,7 +399,7 @@ const Pedido = () => {
                     value={formData.metodoPago}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dbbba6] focus:border-[#dbbba6] transition-all duration-200 font-quicksand"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
                   >
                     <option value="efectivo">💵 Efectivo (Pago contra entrega)</option>
                     <option value="transferencia">🏦 Transferencia bancaria</option>
@@ -410,10 +410,10 @@ const Pedido = () => {
                 <button 
                   type="submit" 
                   disabled={isProcessing || formData.metodoPago === 'tarjeta'}
-                  className={`w-full py-4 px-6 rounded-lg font-semibold text-white shadow-lg transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#dbbba6] font-montserrat ${
+                  className={`w-full py-4 px-6 rounded-lg font-semibold text-white shadow-lg transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E19D7E] font-montserrat ${
                     isProcessing || formData.metodoPago === 'tarjeta' 
                       ? 'bg-gray-400 cursor-not-allowed' 
-                      : 'bg-gradient-to-r from-[#dbbba6] to-[#d0aa96] hover:from-[#d0aa96] hover:to-[#c4a08d] hover:shadow-xl'
+                      : 'bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] hover:from-[#3aa38f] hover:to-[#c4a08d] hover:shadow-xl'
                   }`}
                 >
                   {isProcessing ? (
@@ -439,7 +439,7 @@ const Pedido = () => {
 
         
         .gradient-hero {
-          background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
+          background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
         }
         
         @keyframes fadeInUp {
@@ -458,3 +458,6 @@ const Pedido = () => {
 };
 
 export default Pedido;
+
+
+

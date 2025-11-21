@@ -170,8 +170,8 @@ const Testimonios = () => {
         
         <div className="relative z-10 container-custom flex justify-center items-center min-h-[60vh]">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#dbbba6] border-t-transparent"></div>
-            <p className="mt-4 text-[#6d4c41] text-lg font-quicksand">Cargando testimonios...</p>
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#E19D7E] border-t-transparent"></div>
+            <p className="mt-4 text-[#C1583B] text-lg font-quicksand">Cargando testimonios...</p>
           </div>
         </div>
       </section>
@@ -217,7 +217,7 @@ const Testimonios = () => {
           </h2>
           
           <p 
-            className="text-center text-black mb-12 text-lg max-w-2xl mx-auto font-quicksand"
+            className="text-center text-[#904939] mb-12 text-lg max-w-2xl mx-auto font-quicksand"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.3s both` : 'none',
               opacity: animate ? 1 : 0
@@ -235,11 +235,11 @@ const Testimonios = () => {
             opacity: animate ? 1 : 0
           }}
         >
-          <div className="inline-flex bg-white/80 backdrop-blur-sm rounded-full p-1 border border-[#f5f0e8] shadow-md">
-            <button className="px-6 py-3 rounded-full bg-[#dbbba6] text-[#5d4037] font-medium font-montserrat transition-all duration-300">
+          <div className="inline-flex bg-white/80 backdrop-blur-sm rounded-full p-1 border border-[#DDD4CE] shadow-md">
+            <button className="px-6 py-3 rounded-full bg-[#E19D7E] text-[#904939] font-medium font-montserrat transition-all duration-300">
               Todos los Testimonios
             </button>
-            <button className="px-6 py-3 rounded-full text-[#6d4c41] font-medium font-montserrat hover:bg-[#f5f0e8] transition-all duration-300">
+            <button className="px-6 py-3 rounded-full text-[#C1583B] font-medium font-montserrat hover:bg-[#DDD4CE] transition-all duration-300">
               Mis Testimonios ({miTestimonio ? 1 : 0})
             </button>
           </div>
@@ -248,17 +248,17 @@ const Testimonios = () => {
         {/* Carrusel de testimonios */}
         {testimonios.length === 0 ? (
           <div 
-            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-12 text-center border border-[#f5f0e8] mb-12"
+            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-12 text-center border border-[#DDD4CE] mb-12"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.7s both` : 'none',
               opacity: animate ? 1 : 0
             }}
           >
             <div className="max-w-md mx-auto">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-[#dbbba6] mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-[#E19D7E] mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
-              <h3 className="text-2xl font-bold text-[#3e2723] mb-2 font-cinzel">Aún no hay testimonios</h3>
+              <h3 className="text-2xl font-bold text-[#904939] mb-2 font-cinzel">Aún no hay testimonios</h3>
               <p className="text-gray-600 font-quicksand">¡Sé el primero en compartir tu experiencia con nosotros!</p>
             </div>
           </div>
@@ -285,11 +285,11 @@ const Testimonios = () => {
                       <div className="p-8">
                         <div className="flex justify-between items-start mb-6">
                           <div className="flex items-center">
-                            <div className="flex-shrink-0 h-16 w-16 rounded-full bg-[#dbbba6] flex items-center justify-center text-white font-bold text-xl">
+                            <div className="flex-shrink-0 h-16 w-16 rounded-full bg-[#E19D7E] flex items-center justify-center text-white font-bold text-xl">
                               {test.usuario?.nombre?.charAt(0).toUpperCase() || '?'}
                             </div>
                             <div className="ml-4">
-                              <h4 className="text-xl font-bold text-[#3e2723] font-montserrat">
+                              <h4 className="text-xl font-bold text-[#904939] font-montserrat">
                                 {test.usuario?.nombre || 'Usuario Anónimo'}
                               </h4>
                               <p className="text-sm text-gray-500 font-quicksand">
@@ -319,7 +319,7 @@ const Testimonios = () => {
                           "{test.comentario}"
                         </p>
                         <div className="flex justify-end">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#dbbba6]" viewBox="0 0 20 20" fill="currentColor">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#E19D7E]" viewBox="0 0 20 20" fill="currentColor">
                             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                           </svg>
                         </div>
@@ -333,25 +333,25 @@ const Testimonios = () => {
             {/* Botones de navegación */}
             <button
               onClick={prevTestimonio}
-              className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-3 shadow-lg hover:bg-[#dbbba6] transition-all duration-300 z-10"
+              className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-3 shadow-lg hover:bg-[#E19D7E] transition-all duration-300 z-10"
               style={{ 
                 animation: animate ? `fadeInUp 0.6s ease-out 0.9s both` : 'none',
                 opacity: animate ? 1 : 0
               }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#6d4c41]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#C1583B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             <button
               onClick={nextTestimonio}
-              className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-3 shadow-lg hover:bg-[#dbbba6] transition-all duration-300 z-10"
+              className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm rounded-full p-3 shadow-lg hover:bg-[#E19D7E] transition-all duration-300 z-10"
               style={{ 
                 animation: animate ? `fadeInUp 0.6s ease-out 0.9s both` : 'none',
                 opacity: animate ? 1 : 0
               }}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#6d4c41]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[#C1583B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
@@ -369,7 +369,7 @@ const Testimonios = () => {
                   key={index}
                   onClick={() => setCurrentIndex(index)}
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentIndex ? 'bg-[#dbbba6]' : 'bg-gray-300'
+                    index === currentIndex ? 'bg-[#E19D7E]' : 'bg-gray-300'
                   }`}
                 />
               ))}
@@ -387,7 +387,7 @@ const Testimonios = () => {
             }}
           >
             <button 
-              className="px-6 py-3 bg-[#dbbba6] hover:bg-[#d0aa96] text-[#5d4037] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform inline-flex items-center"
+              className="px-6 py-3 bg-[#E19D7E] hover:bg-[#904939] text-white rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform inline-flex items-center"
               onClick={() => setShowForm(true)}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
@@ -404,7 +404,7 @@ const Testimonios = () => {
             <div className="bg-white rounded-2xl shadow-xl w-full max-w-md transform transition-all duration-300 scale-95 animate-scale-in">
               <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-2xl font-bold text-[#3e2723] font-cinzel">Deja tu testimonio</h3>
+                  <h3 className="text-2xl font-bold text-[#904939] font-cinzel">Deja tu testimonio</h3>
                   <button 
                     onClick={() => {
                       setShowForm(false);
@@ -452,12 +452,12 @@ const Testimonios = () => {
                   </div>
 
                   <div className="flex space-x-3">
-                    <button type="submit" className="px-6 py-3 bg-[#dbbba6] hover:bg-[#d0aa96] text-[#5d4037] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform flex-1">
+                    <button type="submit" className="px-6 py-3 bg-[#E19D7E] hover:bg-[#904939] text-white rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform flex-1">
                       Enviar
                     </button>
                     <button 
                       type="button" 
-                      className="px-6 py-3 bg-white text-[#6d4c41] border-2 border-[#6d4c41] rounded-full font-semibold transition-all duration-300 hover:bg-[#6d4c41] hover:text-white hover:-translate-y-1 flex-1"
+                      className="px-6 py-3 bg-white text-[#C1583B] border-2 border-[#C1583B] rounded-full font-semibold transition-all duration-300 hover:bg-[#C1583B] hover:text-white hover:-translate-y-1 flex-1"
                       onClick={() => {
                         setShowForm(false);
                         setFormData({ calificacion: 5, comentario: '' });
@@ -516,3 +516,6 @@ const Testimonios = () => {
 };
 
 export default Testimonios;
+
+
+

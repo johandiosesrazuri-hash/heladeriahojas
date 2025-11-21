@@ -28,7 +28,7 @@ const Inicio = () => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-[#faf7f2] to-[#f9f5f0]">
+    <div className="bg-gradient-to-br from-[#DDD4CE] to-[#DDD4CE]">
 
       {/* Secciones ancladas con margen para el navbar fijo */}
       <div id="sobre-nosotros" className="scroll-mt-24">
@@ -55,3 +55,7 @@ const Inicio = () => {
 };
 
 export default Inicio;
+
+
+
+

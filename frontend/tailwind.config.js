@@ -9,40 +9,45 @@ const config = {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
+    // Fuente base para utilidades Tailwind
+    fontFamily: {
+      sans: ['Open Sans', 'sans-serif'],
+      serif: ['Comfortaa', 'sans-serif'],
+    },
     extend: {
       // Paleta de colores personalizada para ChoccoDelight
       colors: {
         gray: colors.gray,
         primary: {
-          dark: '#3e2723',
-          brown: '#6d4c41',
-          accent: '#a1887f',
+          dark: '#904939',   // Profundo
+          brown: '#C1583B',  // Tono medio
+          accent: '#E19D7E', // Claro
         },
         secondary: {
-          warm: '#d7ccc8',
-          cream: '#faf7f2',
+          warm: '#E19D7E',   // Intermedio suave
+          cream: '#DDD4CE',  // Fondo claro Linen
         },
         accent: {
-          gold: '#d4af37',
-          rose: '#e8b4b8',
-          punch: '#ff6b6b',
+          gold: '#E19D7E',   // Acento suave
+          rose: '#C1583B',   // Acento medio
+          punch: '#904939',  // Contraste oscuro
         },
         chocolate: {
-          dark: '#5d4037',
-          medium: '#8b5a3c',
+          dark: '#904939',
+          medium: '#C1583B',
         },
         pastel: {
-          brown: '#d4a373',
-          pink: '#f8c4b4',
-          cream: '#f8f7f2',
+          brown: '#E19D7E',
+          pink: '#DDD4CE',
+          cream: '#E19D7E',
         },
       },
       
-      // Fuentes personalizadas
+      // Fuentes personalizadas adicionales
       fontFamily: {
-        title: ['Pacifico', 'cursive'],
-        body: ['Montserrat', 'sans-serif'],
-        accent: ['Quicksand', 'sans-serif'],
+        title: ['Comfortaa', 'sans-serif'],
+        body: ['Open Sans', 'sans-serif'],
+        accent: ['Open Sans', 'sans-serif'],
       },
       
       // Sombras personalizadas

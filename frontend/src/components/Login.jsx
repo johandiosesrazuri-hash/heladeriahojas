@@ -90,25 +90,25 @@ const Login = () => {
       {/* Contenido principal */}
       <div className="relative z-10 container-custom flex flex-col items-center justify-center min-h-[70vh]">
         <div 
-          className="w-full max-w-md bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-[#f5f0e8]"
+          className="w-full max-w-md bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 border border-[#DDD4CE]"
           style={{ 
             animation: animate ? `fadeInUp 0.6s ease-out 0.1s both` : 'none',
             opacity: animate ? 1 : 0
           }}
         >
           <div className="text-center mb-8">
-            <div className="mx-auto bg-[#dbbba6] rounded-full p-4 w-20 h-20 flex items-center justify-center mb-6">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-[#5d4037]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className="mx-auto bg-[#E19D7E] rounded-full p-4 w-20 h-20 flex items-center justify-center mb-6">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-[#904939]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
               </svg>
             </div>
-            <h2 className="text-3xl font-bold text-[#3e2723] mb-2 font-cinzel">Iniciar Sesión</h2>
-            <p className="text-[#6d4c41] font-quicksand">Ingresa tus credenciales para acceder</p>
+            <h2 className="text-3xl font-bold text-[#904939] mb-2 font-cinzel">Iniciar Sesión</h2>
+            <p className="text-[#C1583B] font-quicksand">Ingresa tus credenciales para acceder</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-[#3e2723] mb-1 font-montserrat">
+              <label htmlFor="email" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
                 Email
               </label>
               <div className="relative">
@@ -124,14 +124,14 @@ const Login = () => {
                   value={formData.email}
                   onChange={handleChange}
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dbbba6] focus:border-[#dbbba6] transition-all duration-200 font-quicksand"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
                   placeholder="tu@email.com"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-[#3e2723] mb-1 font-montserrat">
+              <label htmlFor="password" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
                 Contraseña
               </label>
               <div className="relative">
@@ -147,7 +147,7 @@ const Login = () => {
                   value={formData.password}
                   onChange={handleChange}
                   required
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#dbbba6] focus:border-[#dbbba6] transition-all duration-200 font-quicksand"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
                   placeholder="••••••••"
                 />
               </div>
@@ -159,15 +159,15 @@ const Login = () => {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-[#dbbba6] focus:ring-[#dbbba6] border-gray-300 rounded"
+                  className="h-4 w-4 text-[#E19D7E] focus:ring-[#E19D7E] border-gray-300 rounded"
                 />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-[#6d4c41] font-quicksand">
+                <label htmlFor="remember-me" className="ml-2 block text-sm text-[#C1583B] font-quicksand">
                   Recordarme
                 </label>
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-[#6d4c41] hover:text-[#5d4037] font-quicksand">
+                <a href="#" className="font-medium text-[#C1583B] hover:text-[#904939] font-quicksand">
                   ¿Olvidaste tu contraseña?
                 </a>
               </div>
@@ -177,10 +177,10 @@ const Login = () => {
               <button
                 type="submit"
                 disabled={isProcessing}
-                className={`w-full py-3 px-4 rounded-lg font-semibold text-white shadow-lg transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#dbbba6] font-montserrat ${
+                className={`w-full py-3 px-4 rounded-lg font-semibold text-white shadow-lg transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E19D7E] font-montserrat ${
                   isProcessing 
                     ? 'bg-gray-400 cursor-not-allowed' 
-                    : 'bg-gradient-to-r from-[#dbbba6] to-[#d0aa96] hover:from-[#d0aa96] hover:to-[#c4a08d] hover:shadow-xl'
+                    : 'bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] hover:from-[#3aa38f] hover:to-[#c4a08d] hover:shadow-xl'
                 }`}
               >
                 {isProcessing ? (
@@ -199,11 +199,11 @@ const Login = () => {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-sm text-[#6d4c41] font-quicksand">
+            <p className="text-sm text-[#C1583B] font-quicksand">
               ¿No tienes una cuenta?{' '}
               <button 
                 onClick={() => navigate('/register')}
-                className="font-medium text-[#6d4c41] hover:text-[#5d4037] font-montserrat"
+                className="font-medium text-[#C1583B] hover:text-[#904939] font-montserrat"
               >
                 Regístrate
               </button>
@@ -217,7 +217,7 @@ const Login = () => {
 
         
         .gradient-hero {
-          background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
+          background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
         }
         
         @keyframes fadeInUp {
@@ -236,3 +236,6 @@ const Login = () => {
 };
 
 export default Login;
+
+
+

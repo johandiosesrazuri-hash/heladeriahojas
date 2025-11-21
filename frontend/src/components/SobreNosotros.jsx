@@ -6,6 +6,7 @@ const SobreNosotros = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('mision');
   const [animate, setAnimate] = useState(false);
+  const [videoError, setVideoError] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,16 +28,16 @@ const SobreNosotros = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#faf7f2] to-[#f9f5f0]">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#DDD4CE] to-[#DDD4CE]">
         <div className="relative">
           {/* Spinner animado */}
-          <div className="w-20 h-20 border-4 border-[#d7ccc8] border-t-[#6d4c41] rounded-full animate-spin"></div>
+          <div className="w-20 h-20 border-4 border-[#E19D7E] border-t-[#C1583B] rounded-full animate-spin"></div>
           {/* Icono de helado en el centro */}
           <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-3xl">
             🍦
           </span>
         </div>
-        <p className="mt-6 text-lg font-accent text-[#6d4c41] animate-pulse">
+        <p className="mt-6 text-lg font-accent text-[#C1583B] animate-pulse">
           Cargando nuestra deliciosa historia...
         </p>
       </div>
@@ -45,10 +46,10 @@ const SobreNosotros = () => {
 
   if (!data) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#faf7f2] to-[#f9f5f0]">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#DDD4CE] to-[#DDD4CE]">
         <div className="text-center px-4">
           <span className="text-6xl mb-4 block animate-bounce">😞</span>
-          <p className="text-xl font-accent text-[#6d4c41] mb-6">
+          <p className="text-xl font-accent text-[#C1583B] mb-6">
             No pudimos cargar la información
           </p>
           <button 
@@ -64,17 +65,34 @@ const SobreNosotros = () => {
 
   const { informacionPrincipal, valores, estadisticas, galeria } = data;
 
+  const videoBackgroundSrc = '/video/sobre-nosotros.mp4';
+
   return (
-    <div className="bg-gradient-to-br from-[#faf7f2] to-[#f9f5f0]">
+    <div className="bg-gradient-to-br from-[#DDD4CE] to-[#DDD4CE]">
       
       {/* 🎨 Hero Section - Impactante */}
       <section className="relative h-[70vh] overflow-hidden">
-        {/* Fondo con gradiente animado */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#6d4c41] via-[#a1887f] to-[#d4af37] opacity-90"></div>
+        {/* Fondo degradado base para fallback */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#C1583B] via-[#904939] to-[#E19D7E]"></div>
+        {/* Video de fondo si está disponible */}
+        {!videoError && (
+          <video
+            className="absolute inset-0 w-full h-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="/img/sobre-nosotros-poster.jpg"
+            src={videoBackgroundSrc}
+            onError={() => setVideoError(true)}
+          />
+        )}
+        {/* Overlay para legibilidad */}
+        <div className="absolute inset-0 bg-gradient-to-br from-black/45 via-[#904939]/40 to-[#E19D7E]/55"></div>
         
         {/* Círculos decorativos flotantes */}
         <div className="absolute top-20 right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 left-20 w-80 h-80 bg-[#e8b4b8]/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-20 left-20 w-80 h-80 bg-[#904939]/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
         
         {/* Contenido del hero */}
         <div className="relative h-full flex flex-col items-center justify-center text-center px-4 z-10">
@@ -128,7 +146,7 @@ const SobreNosotros = () => {
             
             {/* Imagen con efectos */}
             <div className="relative group">
-              <div className="absolute -inset-4 bg-gradient-to-r from-[#d4af37] to-[#e8b4b8] 
+              <div className="absolute -inset-4 bg-gradient-to-r from-[#E19D7E] to-[#904939] 
                             rounded-3xl opacity-30 group-hover:opacity-50 blur-xl transition-all duration-500"></div>
               <div className="relative overflow-hidden rounded-3xl shadow-2xl">
                 <img 
@@ -137,7 +155,7 @@ const SobreNosotros = () => {
                   className="w-full h-[500px] object-cover transform group-hover:scale-110 
                            transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#6d4c41]/60 to-transparent 
+                <div className="absolute inset-0 bg-gradient-to-t from-[#C1583B]/60 to-transparent 
                               opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               </div>
             </div>
@@ -161,13 +179,13 @@ const SobreNosotros = () => {
                     onClick={() => setActiveTab('mision')}
                     className={`pb-4 px-6 font-semibold font-accent text-lg relative transition-colors duration-300
                               ${activeTab === 'mision' 
-                                ? 'text-[#6d4c41]' 
+                                ? 'text-[#C1583B]' 
                                 : 'text-gray-400 hover:text-gray-600'}`}
                   >
                     🎯 Misión
                     {activeTab === 'mision' && (
                       <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r 
-                                     from-[#d4af37] to-[#e8b4b8] animate-fade-in"></span>
+                                     from-[#E19D7E] to-[#904939] animate-fade-in"></span>
                     )}
                   </button>
                   
@@ -175,13 +193,13 @@ const SobreNosotros = () => {
                     onClick={() => setActiveTab('vision')}
                     className={`pb-4 px-6 font-semibold font-accent text-lg relative transition-colors duration-300
                               ${activeTab === 'vision' 
-                                ? 'text-[#6d4c41]' 
+                                ? 'text-[#C1583B]' 
                                 : 'text-gray-400 hover:text-gray-600'}`}
                   >
                     🔭 Visión
                     {activeTab === 'vision' && (
                       <span className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r 
-                                     from-[#d4af37] to-[#e8b4b8] animate-fade-in"></span>
+                                     from-[#E19D7E] to-[#904939] animate-fade-in"></span>
                     )}
                   </button>
                 </div>
@@ -206,7 +224,7 @@ const SobreNosotros = () => {
 
       {/* 📊 Statistics Section - Estadísticas impactantes */}
       <section 
-        className="py-20 bg-gradient-to-br from-[#6d4c41] to-[#a1887f] relative overflow-hidden"
+        className="py-20 bg-gradient-to-br from-[#C1583B] to-[#904939] relative overflow-hidden"
         style={{ 
           animation: animate ? `fadeInUp 0.6s ease-out 0.9s both` : 'none',
           opacity: animate ? 1 : 0
@@ -268,8 +286,8 @@ const SobreNosotros = () => {
                               transition-all duration-500">
                   {valor.icono}
                 </div>
-                <h3 className="text-2xl font-bold text-[#3e2723] mb-4 font-accent 
-                             group-hover:text-[#6d4c41] transition-colors">
+                <h3 className="text-2xl font-bold text-[#904939] mb-4 font-accent 
+                             group-hover:text-[#C1583B] transition-colors">
                   {valor.titulo}
                 </h3>
                 <p className="text-gray-600 leading-relaxed font-accent">
@@ -278,7 +296,7 @@ const SobreNosotros = () => {
                 
                 {/* Línea decorativa que aparece en hover */}
                 <div className="mt-6 h-1 w-0 group-hover:w-full bg-gradient-to-r 
-                              from-[#d4af37] to-[#e8b4b8] transition-all duration-500 rounded-full"></div>
+                              from-[#E19D7E] to-[#904939] transition-all duration-500 rounded-full"></div>
               </div>
             ))}
           </div>
@@ -352,7 +370,7 @@ const SobreNosotros = () => {
             </h2>
 
             <div className="relative rounded-3xl overflow-hidden shadow-2xl group">
-              <div className="absolute -inset-4 bg-gradient-to-r from-[#d4af37] to-[#e8b4b8] 
+              <div className="absolute -inset-4 bg-gradient-to-r from-[#E19D7E] to-[#904939] 
                             opacity-30 group-hover:opacity-50 blur-2xl transition-all duration-500"></div>
               <div className="relative aspect-video">
                 <iframe
@@ -378,7 +396,7 @@ const SobreNosotros = () => {
         }}
       >
         {/* Fondo con patrón */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#e8b4b8] via-[#d4af37] to-[#a1887f]"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-[#904939] via-[#E19D7E] to-[#904939]"></div>
         
         {/* Círculos decorativos */}
         <div className="absolute top-10 left-10 w-72 h-72 bg-white/20 rounded-full blur-3xl animate-pulse"></div>
@@ -395,8 +413,8 @@ const SobreNosotros = () => {
           
           <button
             onClick={() => window.location.href = '/menu'}
-            className="px-12 py-5 bg-white text-[#6d4c41] rounded-full font-bold text-lg
-                     hover:bg-[#6d4c41] hover:text-white transition-all duration-300
+            className="px-12 py-5 bg-white text-[#C1583B] rounded-full font-bold text-lg
+                     hover:bg-[#C1583B] hover:text-white transition-all duration-300
                      hover:scale-110 hover:shadow-2xl transform active:scale-95
                      flex items-center gap-3 mx-auto group"
           >
@@ -442,3 +460,6 @@ const SobreNosotros = () => {
 };
 
 export default SobreNosotros;
+
+
+

@@ -114,18 +114,18 @@ const Carrito = () => {
             }}
           >
             <div className="mb-8">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 mx-auto text-[#dbbba6]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 mx-auto text-[#E19D7E]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707L17 22h-2m0 0l-2.293-2.293c-.63-.63-1.077-.184-1.707.707L7 13H5m2 0h2m0 0h6m2 0h2m-6 0v2m0 0v-2" />
               </svg>
             </div>
-            <h2 className="text-4xl md:text-5xl text-[#3e2723] font-bold mb-4 font-cinzel">Tu carrito está vacío</h2>
-            <p className="text-lg text-[#6d4c41] mb-8 font-quicksand">
+            <h2 className="text-4xl md:text-5xl text-[#904939] font-bold mb-4 font-cinzel">Tu carrito está vacío</h2>
+            <p className="text-lg text-[#C1583B] mb-8 font-quicksand">
               Agrega algunos productos deliciosos para comenzar
             </p>
             <div className="flex justify-center">
               <button 
                 onClick={() => navigate('/menu')}
-                className="px-8 py-3 bg-[#dbbba6] hover:bg-[#d0aa96] text-[#5d4037] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform flex items-center justify-center"
+                className="px-8 py-3 bg-[#E19D7E] hover:bg-[#3aa38f] text-[#904939] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform flex items-center justify-center"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1h3a1 1 0 110 2h-3v3a1 1 0 11-2 0V6H6a1 1 0 010-2h3V3a1 1 0 01-1-1zm-1 9a1 1 0 100-2v-1a1 1 0 00-1 1v1H6a1 1 0 100 2v1a1 1 0 001 1v1h3a1 1 0 100 2v-1a1 1 0 001-1v-1h3a1 1 0 100-2v-1a1 1 0 00-1-1v-1z" clipRule="evenodd" />
@@ -183,18 +183,18 @@ const Carrito = () => {
       <div className="relative z-10 container-custom">
         <div className="text-center mb-16">
           <h2 
-            className="text-4xl md:text-5xl text-[#3e2723] text-center font-bold mb-4 relative pb-4 font-cinzel"
+            className="text-4xl md:text-5xl text-[#904939] text-center font-bold mb-4 relative pb-4 font-cinzel"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.1s both` : 'none',
               opacity: animate ? 1 : 0
             }}
           >
             Tu Carrito
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#d4af37] to-[#e8b4b8] rounded-full"></span>
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#E19D7E] to-[#904939] rounded-full"></span>
           </h2>
           
           <p 
-            className="text-center text-[#6d4c41] mb-12 text-lg max-w-2xl mx-auto font-quicksand"
+            className="text-center text-[#C1583B] mb-12 text-lg max-w-2xl mx-auto font-quicksand"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.3s both` : 'none',
               opacity: animate ? 1 : 0
@@ -213,7 +213,7 @@ const Carrito = () => {
               opacity: animate ? 1 : 0
             }}
           >
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-[#f5f0e8]">
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-[#DDD4CE]">
               <div className="space-y-6">
                 {items.map((item, index) => (
                   <div 
@@ -236,8 +236,8 @@ const Carrito = () => {
                     
                     {/* Detalles del producto */}
                     <div className="flex-grow">
-                      <h3 className="text-lg font-bold text-[#3e2723] mb-1 font-montserrat">{item.name}</h3>
-                      <p className="text-[#6d4c41] font-medium mb-3 font-quicksand">S/ {(Number(item.price) || 0).toFixed(2)}</p>
+                      <h3 className="text-lg font-bold text-[#904939] mb-1 font-montserrat">{item.name}</h3>
+                      <p className="text-[#C1583B] font-medium mb-3 font-quicksand">S/ {(Number(item.price) || 0).toFixed(2)}</p>
                       
                       {/* Controles de cantidad */}
                       <div className="flex items-center gap-3 mb-3">
@@ -262,7 +262,7 @@ const Carrito = () => {
                       
                       {/* Subtotal y eliminar */}
                       <div className="flex justify-between items-center">
-                        <p className="text-sm font-medium text-[#6d4c41] font-quicksand">
+                        <p className="text-sm font-medium text-[#C1583B] font-quicksand">
                           Subtotal: <span className="font-bold">S/ {((Number(item.price) || 0) * item.quantity).toFixed(2)}</span>
                         </p>
                         <button 
@@ -290,8 +290,8 @@ const Carrito = () => {
               opacity: animate ? 1 : 0
             }}
           >
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-[#f5f0e8] sticky top-6">
-              <h3 className="text-2xl font-bold text-[#3e2723] mb-6 font-cinzel">Resumen del pedido</h3>
+            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-[#DDD4CE] sticky top-6">
+              <h3 className="text-2xl font-bold text-[#904939] mb-6 font-cinzel">Resumen del pedido</h3>
               
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between items-center py-2 border-b border-gray-200">
@@ -303,15 +303,15 @@ const Carrito = () => {
                   <span className="font-medium font-quicksand">S/ 5.00</span>
                 </div>
                 <div className="flex justify-between items-center py-2">
-                  <span className="text-lg font-bold text-[#3e2723] font-montserrat">Total</span>
-                  <span className="text-xl font-bold text-[#6d4c41] font-montserrat">S/ {((total || 0) + 5).toFixed(2)}</span>
+                  <span className="text-lg font-bold text-[#904939] font-montserrat">Total</span>
+                  <span className="text-xl font-bold text-[#C1583B] font-montserrat">S/ {((total || 0) + 5).toFixed(2)}</span>
                 </div>
               </div>
               
               <div className="space-y-3">
                 <button 
                   onClick={handleCheckout}
-                  className="w-full px-6 py-3 bg-[#dbbba6] hover:bg-[#d0aa96] text-[#5d4037] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform flex items-center justify-center font-montserrat"
+                  className="w-full px-6 py-3 bg-[#E19D7E] hover:bg-[#3aa38f] text-[#904939] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform flex items-center justify-center font-montserrat"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1h3a1 1 0 110 2h-3v3a1 1 0 11-2 0V6H6a1 1 0 010-2h3V3a1 1 0 01-1-1zm-1 9a1 1 0 100-2v-1a1 1 0 00-1 1v1H6a1 1 0 100 2v1a1 1 0 001 1v1h3a1 1 0 100 2v-1a1 1 0 001-1v-1h3a1 1 0 100-2v-1a1 1 0 00-1-1v-1z" clipRule="evenodd" />
@@ -321,14 +321,14 @@ const Carrito = () => {
                 
                 <button 
                   onClick={handleClearCart}
-                  className="w-full px-6 py-3 bg-white text-[#6d4c41] border-2 border-[#6d4c41] rounded-full font-semibold transition-all duration-300 hover:bg-[#6d4c41] hover:text-white hover:-translate-y-1 font-montserrat"
+                  className="w-full px-6 py-3 bg-white text-[#C1583B] border-2 border-[#C1583B] rounded-full font-semibold transition-all duration-300 hover:bg-[#C1583B] hover:text-white hover:-translate-y-1 font-montserrat"
                 >
                   Vaciar carrito
                 </button>
                 
                 <button 
                   onClick={() => navigate('/menu')}
-                  className="w-full px-6 py-3 bg-white text-[#6d4c41] border border-gray-300 rounded-full font-semibold transition-all duration-300 hover:bg-gray-100 font-montserrat"
+                  className="w-full px-6 py-3 bg-white text-[#C1583B] border border-gray-300 rounded-full font-semibold transition-all duration-300 hover:bg-gray-100 font-montserrat"
                 >
                   Seguir comprando
                 </button>
@@ -357,3 +357,6 @@ const Carrito = () => {
 };
 
 export default Carrito;
+
+
+

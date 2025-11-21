@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 /* Importar fuentes de Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Pacifico&family=Montserrat:wght@300;400;500;600;700;800&family=Quicksand:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap');
 
 /* Capa de estilos base personalizados */
 @layer base {
@@ -13,15 +13,24 @@
   }
 
   body {
-    @apply font-body text-gray-800 bg-gradient-to-br from-secondary-cream to-[#f9f5f0] min-h-screen;
+    @apply font-body text-primary-dark bg-[#DDD4CE] min-h-screen;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-title font-semibold tracking-wide;
+    @apply font-title font-semibold tracking-wide text-primary-dark;
+  }
+
+  /* Ajustar familias usadas en clases existentes */
+  .font-cinzel, .font-serif, .font-title {
+    font-family: 'Comfortaa', sans-serif;
+  }
+
+  .font-quicksand, .font-montserrat, .font-sans, .font-body, .font-accent {
+    font-family: 'Open Sans', sans-serif;
   }
 
   p {
-    @apply leading-relaxed text-gray-600;
+    @apply leading-relaxed text-gray-700;
   }
 
   /* Personalizar scrollbar */
@@ -46,9 +55,9 @@
 @layer components {
   /* Botones */
   .btn-primary {
-    @apply px-6 py-3 bg-gradient-to-r from-primary-brown to-primary-accent text-white 
+    @apply px-6 py-3 bg-primary-brown text-white 
            rounded-full font-semibold transition-all duration-300 
-           hover:shadow-large hover:-translate-y-1 active:translate-y-0;
+           hover:bg-primary-accent hover:text-white hover:shadow-large hover:-translate-y-1 active:translate-y-0;
   }
 
   .btn-secondary {
@@ -98,11 +107,18 @@
   }
 
   .badge-primary {
-    @apply bg-primary-accent/20 text-primary-brown;
+    @apply bg-primary-accent/20 text-primary-dark;
   }
 
   .badge-accent {
     @apply bg-accent-rose/20 text-accent-punch;
+  }
+
+  /* Superficie opcional oscura */
+  .surface {
+    background-color: #DDD4CE;
+    color: #DDD4CE;
+    border: 1px solid #2f2f33;
   }
 }
 
@@ -110,15 +126,15 @@
 @layer utilities {
   /* Gradientes personalizados */
   .gradient-primary {
-    @apply bg-gradient-to-br from-[#6d4c41] to-[#a1887f];
+    @apply bg-gradient-to-br from-[#C1583B] to-[#E19D7E];
   }
 
   .gradient-secondary {
-    @apply bg-gradient-to-br from-[#d4a373] to-[#f8c4b4];
+    @apply bg-gradient-to-br from-[#DDD4CE] to-[#E19D7E];
   }
 
   .gradient-hero {
-    @apply bg-gradient-to-br from-[#d4a373]/15 via-[#e8b4b8]/15 to-[#d4a373]/10;
+    @apply bg-gradient-to-br from-[#C1583B]/15 via-[#DDD4CE]/40 to-[#C1583B]/10;
   }
 
   /* Efectos de texto */
@@ -164,3 +180,5 @@
     transform: translateY(0);
   }
 }
+
+

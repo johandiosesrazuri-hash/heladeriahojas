@@ -88,8 +88,8 @@ const AdminDashboard = () => {
         {/* Contenido principal */}
         <div className="relative z-10 container-custom flex flex-col items-center justify-center min-h-[70vh]">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-[#dbbba6] mb-6"></div>
-            <p className="text-xl text-[#6d4c41] font-quicksand">Cargando dashboard...</p>
+            <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-[#E19D7E] mb-6"></div>
+            <p className="text-xl text-[#C1583B] font-quicksand">Cargando dashboard...</p>
           </div>
         </div>
 
@@ -97,7 +97,7 @@ const AdminDashboard = () => {
         <style jsx global>{`
           
           .gradient-hero {
-            background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
+            background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
           }
         `}</style>
       </section>
@@ -134,11 +134,11 @@ const AdminDashboard = () => {
         <div className="relative z-10 container-custom flex flex-col items-center justify-center min-h-[70vh]">
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
             <div className="text-red-500 text-5xl mb-4">⚠️</div>
-            <h2 className="text-2xl font-bold text-[#3e2723] mb-2 font-cinzel">Error al cargar datos</h2>
-            <p className="text-[#6d4c41] mb-6 font-quicksand">{error}</p>
+            <h2 className="text-2xl font-bold text-[#904939] mb-2 font-cinzel">Error al cargar datos</h2>
+            <p className="text-[#C1583B] mb-6 font-quicksand">{error}</p>
             <button
               onClick={() => fetchStats()}
-              className="px-6 py-3 bg-[#dbbba6] hover:bg-[#d0aa96] text-[#5d4037] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform font-montserrat"
+              className="px-6 py-3 bg-[#E19D7E] hover:bg-[#3aa38f] text-[#904939] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform font-montserrat"
             >
               Reintentar
             </button>
@@ -148,7 +148,7 @@ const AdminDashboard = () => {
         {/* Estilos de Animación y Fuentes */}
         <style jsx global>{`
           .gradient-hero {
-            background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
+            background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
           }
         `}</style>
       </section>
@@ -185,17 +185,17 @@ const AdminDashboard = () => {
         {/* Encabezado */}
         <div className="mb-12 text-center">
           <h1 
-            className="text-4xl md:text-5xl text-[#3e2723] font-bold mb-4 relative pb-4 font-cinzel"
+            className="text-4xl md:text-5xl text-[#904939] font-bold mb-4 relative pb-4 font-cinzel"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.1s both` : 'none',
               opacity: animate ? 1 : 0
             }}
           >
             Dashboard Administrativo
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#d4af37] to-[#e8b4b8] rounded-full"></span>
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#E19D7E] to-[#904939] rounded-full"></span>
           </h1>
           <p 
-            className="text-lg text-[#6d4c41] font-quicksand"
+            className="text-lg text-[#C1583B] font-quicksand"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.3s both` : 'none',
               opacity: animate ? 1 : 0
@@ -258,7 +258,7 @@ const AdminDashboard = () => {
             opacity: animate ? 1 : 0
           }}
         >
-          <h2 className="text-2xl font-bold text-[#3e2723] mb-6 font-cinzel">Gestión</h2>
+          <h2 className="text-2xl font-bold text-[#904939] mb-6 font-cinzel">Gestión</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <NavButton to="/admin/usuarios" label="Usuarios" icon="👥" delay={0.1} />
             <NavButton to="/admin/productos" label="Productos" icon="🍨" delay={0.2} />
@@ -273,7 +273,7 @@ const AdminDashboard = () => {
       <style jsx global>{`
 
         .gradient-hero {
-          background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
+          background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
         }
         
         @keyframes fadeInUp {
@@ -347,9 +347,13 @@ const NavButton = ({ to, label, icon, delay }) => {
       </div>
       
       <div className="text-4xl mb-3 group-hover:scale-110 transition-transform duration-300 relative z-10">{icon}</div>
-      <p className="font-semibold text-[#3e2723] font-montserrat relative z-10">{label}</p>
+      <p className="font-semibold text-[#904939] font-montserrat relative z-10">{label}</p>
     </button>
   );
 };
 
 export default AdminDashboard;
+
+
+
+

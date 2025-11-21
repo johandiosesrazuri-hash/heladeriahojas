@@ -248,15 +248,15 @@ const GestionPromociones = () => {
         {/* Contenido principal */}
         <div className="relative z-10 container-custom flex flex-col items-center justify-center min-h-[70vh]">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-[#dbbba6] mb-6"></div>
-            <p className="text-xl text-[#6d4c41] font-quicksand">Cargando promociones...</p>
+            <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-[#E19D7E] mb-6"></div>
+            <p className="text-xl text-[#C1583B] font-quicksand">Cargando promociones...</p>
           </div>
         </div>
 
         {/* Estilos de Animación y Fuentes */}
         <style jsx global>{`
           .gradient-hero {
-            background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
+            background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
           }
         `}</style>
       </section>
@@ -300,17 +300,17 @@ const GestionPromociones = () => {
         {/* Encabezado */}
         <div className="mb-12 text-center">
           <h1 
-            className="text-4xl md:text-5xl text-[#3e2723] font-bold mb-4 relative pb-4 font-cinzel"
+            className="text-4xl md:text-5xl text-[#904939] font-bold mb-4 relative pb-4 font-cinzel"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.1s both` : 'none',
               opacity: animate ? 1 : 0
             }}
           >
             Gestión de Promociones
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#d4af37] to-[#e8b4b8] rounded-full"></span>
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#E19D7E] to-[#904939] rounded-full"></span>
           </h1>
           <p 
-            className="text-lg text-[#6d4c41] font-quicksand"
+            className="text-lg text-[#C1583B] font-quicksand"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.3s both` : 'none',
               opacity: animate ? 1 : 0
@@ -330,7 +330,7 @@ const GestionPromociones = () => {
         >
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-gradient-to-r from-[#e8b4b8] to-[#d4af37] text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center mx-auto"
+            className="bg-gradient-to-r from-[#904939] to-[#E19D7E] text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center mx-auto"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
@@ -342,34 +342,34 @@ const GestionPromociones = () => {
         {/* Formulario de creación/edición de promoción */}
         {showForm && (
           <div 
-            className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 mb-8 border-l-4 border-[#e8b4b8] animate-scale-in"
+            className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 mb-8 border-l-4 border-[#904939] animate-scale-in"
             style={{ 
               animation: animate ? `scaleIn 0.4s ease-out 0.7s both` : 'none',
               opacity: animate ? 1 : 0
             }}
           >
-            <h2 className="text-2xl font-bold text-[#3e2723] mb-6 font-cinzel">
+            <h2 className="text-2xl font-bold text-[#904939] mb-6 font-cinzel">
               {editingId ? 'Editar Promoción' : 'Crear Nueva Promoción'}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">Nombre</label>
+                  <label className="block text-[#C1583B] font-medium mb-2 font-montserrat">Nombre</label>
                   <input
                     type="text"
                     value={formData.nombre}
                     onChange={(e) => setFormData({...formData, nombre: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">Descuento (%)</label>
+                  <label className="block text-[#C1583B] font-medium mb-2 font-montserrat">Descuento (%)</label>
                   <input
                     type="number"
                     value={formData.descuento}
                     onChange={(e) => setFormData({...formData, descuento: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                     min="0"
                     max="100"
                     step="0.01"
@@ -377,40 +377,40 @@ const GestionPromociones = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">Fecha Inicio</label>
+                  <label className="block text-[#C1583B] font-medium mb-2 font-montserrat">Fecha Inicio</label>
                   <input
                     type="date"
                     value={formData.fechaInicio}
                     onChange={(e) => setFormData({...formData, fechaInicio: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">Fecha Fin</label>
+                  <label className="block text-[#C1583B] font-medium mb-2 font-montserrat">Fecha Fin</label>
                   <input
                     type="date"
                     value={formData.fechaFin}
                     onChange={(e) => setFormData({...formData, fechaFin: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">URL Imagen</label>
+                  <label className="block text-[#C1583B] font-medium mb-2 font-montserrat">URL Imagen</label>
                   <input
                     type="text"
                     value={formData.imagenUrl}
                     onChange={(e) => setFormData({...formData, imagenUrl: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">Descripción</label>
+                  <label className="block text-[#C1583B] font-medium mb-2 font-montserrat">Descripción</label>
                   <textarea
                     value={formData.descripcion}
                     onChange={(e) => setFormData({...formData, descripcion: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                     rows="3"
                   ></textarea>
                 </div>
@@ -420,24 +420,24 @@ const GestionPromociones = () => {
                     id="activo"
                     checked={formData.activo}
                     onChange={(e) => setFormData({...formData, activo: e.target.checked})}
-                    className="h-5 w-5 text-[#e8b4b8] focus:ring-[#e8b4b8] border-gray-300 rounded"
+                    className="h-5 w-5 text-[#904939] focus:ring-[#904939] border-gray-300 rounded"
                   />
-                  <label htmlFor="activo" className="ml-2 block text-sm text-[#6d4c41] font-montserrat">
+                  <label htmlFor="activo" className="ml-2 block text-sm text-[#C1583B] font-montserrat">
                     Activo
                   </label>
                 </div>
               </div>
 
               {/* Selección de productos para la promoción */}
-              <div className="mt-6 border rounded-xl p-4 bg-[#f9f6f2]">
-                <h3 className="text-lg font-semibold text-[#3e2723] mb-3 font-montserrat">Productos en la promoción</h3>
+              <div className="mt-6 border rounded-xl p-4 bg-[#DDD4CE]">
+                <h3 className="text-lg font-semibold text-[#904939] mb-3 font-montserrat">Productos en la promoción</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
                   <div>
-                    <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">Producto</label>
+                    <label className="block text-[#C1583B] font-medium mb-2 font-montserrat">Producto</label>
                     <select
                       value={productoIdSeleccionado}
                       onChange={(e) => setProductoIdSeleccionado(e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                     >
                       <option value="">Selecciona un producto</option>
                       {productosDisponibles.map((p) => (
@@ -446,20 +446,20 @@ const GestionPromociones = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">Cantidad</label>
+                    <label className="block text-[#C1583B] font-medium mb-2 font-montserrat">Cantidad</label>
                     <input
                       type="number"
                       min="1"
                       value={cantidadSeleccionada}
                       onChange={(e) => setCantidadSeleccionada(e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
+                      className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                     />
                   </div>
                   <div>
                     <button
                       type="button"
                       onClick={handleAddProducto}
-                      className="w-full px-4 py-3 rounded-lg font-medium text-white bg-[#6d4c41] hover:bg-[#5d4037] transition-colors duration-300"
+                      className="w-full px-4 py-3 rounded-lg font-medium text-white bg-[#C1583B] hover:bg-[#904939] transition-colors duration-300"
                     >
                       Agregar producto
                     </button>
@@ -468,11 +468,11 @@ const GestionPromociones = () => {
 
                 {productosSeleccionados.length > 0 ? (
                   <div className="mt-4">
-                    <p className="text-sm text-[#6d4c41] font-semibold mb-2">Productos añadidos:</p>
+                    <p className="text-sm text-[#C1583B] font-semibold mb-2">Productos añadidos:</p>
                     <ul className="space-y-2">
                       {productosSeleccionados.map((p) => (
                         <li key={p.productoId} className="flex items-center justify-between bg-white px-3 py-2 rounded-lg border border-[#f0e6de]">
-                          <span className="text-sm text-[#3e2723]">{p.cantidad}x {p.nombre}</span>
+                          <span className="text-sm text-[#904939]">{p.cantidad}x {p.nombre}</span>
                           <button
                             type="button"
                             onClick={() => handleRemoveProducto(p.productoId)}
@@ -492,13 +492,13 @@ const GestionPromociones = () => {
                 <button 
                   type="button"
                   onClick={resetForm}
-                  className="px-6 py-3 rounded-lg font-medium text-[#6d4c41] bg-[#f5f0e8] hover:bg-[#e8d7c3] transition-colors duration-300"
+                  className="px-6 py-3 rounded-lg font-medium text-[#C1583B] bg-[#DDD4CE] hover:bg-[#E19D7E] transition-colors duration-300"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit"
-                  className="px-6 py-3 rounded-lg font-medium text-white bg-gradient-to-r from-[#e8b4b8] to-[#d4af37] hover:shadow-lg transition-all duration-300"
+                  className="px-6 py-3 rounded-lg font-medium text-white bg-gradient-to-r from-[#904939] to-[#E19D7E] hover:shadow-lg transition-all duration-300"
                 >
                   {editingId ? 'Actualizar Promoción' : 'Guardar Promoción'}
                 </button>
@@ -517,8 +517,8 @@ const GestionPromociones = () => {
             }}
           >
             <div className="text-6xl mb-4">🎁</div>
-            <h3 className="text-2xl font-bold text-[#3e2723] mb-2 font-cinzel">No hay promociones registradas</h3>
-            <p className="text-[#6d4c41] font-quicksand">Agrega nuevas promociones para comenzar</p>
+            <h3 className="text-2xl font-bold text-[#904939] mb-2 font-cinzel">No hay promociones registradas</h3>
+            <p className="text-[#C1583B] font-quicksand">Agrega nuevas promociones para comenzar</p>
           </div>
         ) : (
           <div 
@@ -530,7 +530,7 @@ const GestionPromociones = () => {
           >
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gradient-to-r from-[#8d6e63] to-[#6d4c41] text-white">
+                <thead className="bg-gradient-to-r from-[#8d6e63] to-[#C1583B] text-white">
                   <tr>
                     <th className="px-6 py-4 text-left font-cinzel">ID</th>
                     <th className="px-6 py-4 text-left font-cinzel">Nombre</th>
@@ -546,21 +546,21 @@ const GestionPromociones = () => {
                   {promociones.map((promocion, index) => (
                     <tr 
                       key={promocion.id} 
-                      className="border-t border-[#f5f0e8] hover:bg-[#f9f6f2] transition-colors duration-200"
+                      className="border-t border-[#DDD4CE] hover:bg-[#DDD4CE] transition-colors duration-200"
                       style={{ 
                         animation: animate ? `fadeInUp 0.6s ease-out ${1.1 + index * 0.1}s both` : 'none',
                         opacity: animate ? 1 : 0
                       }}
                     >
-                      <td className="px-6 py-4 font-semibold text-[#6d4c41] font-montserrat">{promocion.id}</td>
+                      <td className="px-6 py-4 font-semibold text-[#C1583B] font-montserrat">{promocion.id}</td>
                       <td className="px-6 py-4">
                         <div className="flex items-center">
-                          <span className="font-semibold text-[#3e2723] font-montserrat">{promocion.nombrePromo}</span>
+                          <span className="font-semibold text-[#904939] font-montserrat">{promocion.nombrePromo}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-[#6d4c41] font-quicksand">{promocion.descuento}%</td>
-                      <td className="px-6 py-4 text-[#6d4c41] font-quicksand">S/ {promocion.precioTotal}</td>
-                      <td className="px-6 py-4 text-[#6d4c41] font-quicksand">
+                      <td className="px-6 py-4 text-[#C1583B] font-quicksand">{promocion.descuento}%</td>
+                      <td className="px-6 py-4 text-[#C1583B] font-quicksand">S/ {promocion.precioTotal}</td>
+                      <td className="px-6 py-4 text-[#C1583B] font-quicksand">
                         {promocion.productos && promocion.productos.length > 0 ? (
                           <ul className="text-sm space-y-1">
                             {promocion.productos.map((prod) => (
@@ -571,7 +571,7 @@ const GestionPromociones = () => {
                           <span className="text-xs text-gray-500">Sin productos</span>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-[#6d4c41] font-quicksand">
+                      <td className="px-6 py-4 text-[#C1583B] font-quicksand">
                         <div className="text-sm">
                           <div>Inicio: {formatDate(promocion.fechaInicio)}</div>
                           <div>Fin: {formatDate(promocion.fechaFin)}</div>
@@ -590,7 +590,7 @@ const GestionPromociones = () => {
                         <div className="flex space-x-2">
                           <button 
                             onClick={() => handleEdit(promocion)}
-                            className="text-[#5d4037] hover:text-[#3e2723] font-semibold flex items-center transition-colors"
+                            className="text-[#904939] hover:text-[#904939] font-semibold flex items-center transition-colors"
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -621,7 +621,7 @@ const GestionPromociones = () => {
       <style jsx global>{`
         
         .gradient-hero {
-          background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
+          background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
         }
         
         @keyframes fadeInUp {
@@ -655,3 +655,7 @@ const GestionPromociones = () => {
 };
 
 export default GestionPromociones;
+
+
+
+

@@ -3,22 +3,22 @@
    ======================================== */
 
 :root {
-  /* Colores Principales - Paleta Cálida Gourmet */
-  --primary-dark: #3e2723;
-  --primary-brown: #6d4c41;
-  --primary-accent: #a1887f;
-  --secondary-warm: #d7ccc8;
-  --cream-light: #f5f5f5;
-  --cream-bg: #faf7f2;
-  --accent-gold: #d4af37;
-  --accent-rose: #e8b4b8;
+  /* Colores Principales - Minimal Bakery */
+  --primary-dark: #904939;   /* Deep */
+  --primary-brown: #c1583b;  /* Mid */
+  --primary-accent: #e19d7e; /* Light */
+  --secondary-warm: #e19d7e; /* Soft */
+  --cream-light: #ddd4ce;    /* Light linen */
+  --cream-bg: #ddd4ce;       /* Main background */
+  --accent-gold: #e19d7e;    /* Hover / accent */
+  --accent-rose: #c1583b;    /* Accent */
   --text-dark: #2c2c2c;
   --text-muted: #6b6b6b;
   
   /* Tipografía */
-  --font-display: 'Poppins', 'Dancing Script', cursive;
-  --font-body: 'Poppins', sans-serif;
-  --font-accent: 'Quicksand', sans-serif;
+  --font-display: 'Comfortaa', sans-serif;
+  --font-body: 'Open Sans', sans-serif;
+  --font-accent: 'Open Sans', sans-serif;
   
   /* Espaciado */
   --spacing-xs: 0.5rem;
@@ -51,8 +51,8 @@ html {
 
 body {
   font-family: var(--font-body);
-  color: var(--text-dark);
-  background: linear-gradient(135deg, var(--cream-bg) 0%, #f9f5f0 100%);
+  color: #2c2c2c;
+  background: linear-gradient(135deg, #ddd4ce 0%, #e19d7e 100%);
   min-height: 100vh;
   line-height: 1.6;
 }
@@ -761,3 +761,6 @@ button {
     font-size: 1.1rem;
   }
 }
+
+
+

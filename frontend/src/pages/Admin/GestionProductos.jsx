@@ -150,15 +150,15 @@ const GestionProductos = () => {
         {/* Contenido principal */}
         <div className="relative z-10 container-custom flex flex-col items-center justify-center min-h-[70vh]">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-[#dbbba6] mb-6"></div>
-            <p className="text-xl text-[#6d4c41] font-quicksand">Cargando productos...</p>
+            <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-[#E19D7E] mb-6"></div>
+            <p className="text-xl text-[#C1583B] font-quicksand">Cargando productos...</p>
           </div>
         </div>
 
         {/* Estilos de Animación y Fuentes */}
         <style jsx global>{`
           .gradient-hero {
-            background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
+            background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
           }
         `}</style>
       </section>
@@ -195,17 +195,17 @@ const GestionProductos = () => {
         {/* Encabezado */}
         <div className="mb-12 text-center">
           <h1 
-            className="text-4xl md:text-5xl text-[#3e2723] font-bold mb-4 relative pb-4 font-cinzel"
+            className="text-4xl md:text-5xl text-[#904939] font-bold mb-4 relative pb-4 font-cinzel"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.1s both` : 'none',
               opacity: animate ? 1 : 0
             }}
           >
             Gestión de Productos
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#d4af37] to-[#e8b4b8] rounded-full"></span>
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#E19D7E] to-[#904939] rounded-full"></span>
           </h1>
           <p 
-            className="text-lg text-[#6d4c41] font-quicksand"
+            className="text-lg text-[#C1583B] font-quicksand"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.3s both` : 'none',
               opacity: animate ? 1 : 0
@@ -225,7 +225,7 @@ const GestionProductos = () => {
         >
           <button
             onClick={() => setShowForm(!showForm)}
-            className="bg-gradient-to-r from-[#e8b4b8] to-[#d4af37] text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center mx-auto"
+            className="bg-gradient-to-r from-[#904939] to-[#E19D7E] text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center mx-auto"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
@@ -237,70 +237,70 @@ const GestionProductos = () => {
         {/* Formulario de creación de producto */}
         {showForm && (
           <div 
-            className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 mb-8 border-l-4 border-[#e8b4b8] animate-scale-in"
+            className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 mb-8 border-l-4 border-[#904939] animate-scale-in"
             style={{ 
               animation: animate ? `scaleIn 0.4s ease-out 0.7s both` : 'none',
               opacity: animate ? 1 : 0
             }}
           >
-            <h2 className="text-2xl font-bold text-[#3e2723] mb-6 font-cinzel">Crear Nuevo Producto</h2>
+            <h2 className="text-2xl font-bold text-[#904939] mb-6 font-cinzel">Crear Nuevo Producto</h2>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">Nombre</label>
+                  <label className="block text-[#C1583B] font-medium mb-2 font-montserrat">Nombre</label>
                   <input
                     type="text"
                     value={formData.nombre}
                     onChange={(e) => setFormData({...formData, nombre: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">Precio</label>
+                  <label className="block text-[#C1583B] font-medium mb-2 font-montserrat">Precio</label>
                   <input
                     type="number"
                     step="0.01"
                     value={formData.precio}
                     onChange={(e) => setFormData({...formData, precio: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                     required
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">Descripción</label>
+                  <label className="block text-[#C1583B] font-medium mb-2 font-montserrat">Descripción</label>
                   <textarea
                     value={formData.descripcion}
                     onChange={(e) => setFormData({...formData, descripcion: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                     rows="3"
                   ></textarea>
                 </div>
                 <div>
-                  <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">URL Imagen</label>
+                  <label className="block text-[#C1583B] font-medium mb-2 font-montserrat">URL Imagen</label>
                   <input
                     type="text"
                     value={formData.imagen}
                     onChange={(e) => setFormData({...formData, imagen: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">Categoría</label>
+                  <label className="block text-[#C1583B] font-medium mb-2 font-montserrat">Categoría</label>
                   <input
                     type="text"
                     value={formData.categoria}
                     onChange={(e) => setFormData({...formData, categoria: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                   />
                 </div>
                 <div>
-                  <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">Stock Disponible</label>
+                  <label className="block text-[#C1583B] font-medium mb-2 font-montserrat">Stock Disponible</label>
                   <input
                     type="number"
                     value={formData.stockDisponible}
                     onChange={(e) => setFormData({...formData, stockDisponible: e.target.value})}
-                    className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
+                    className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                   />
                 </div>
               </div>
@@ -308,13 +308,13 @@ const GestionProductos = () => {
                 <button 
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="px-6 py-3 rounded-lg font-medium text-[#6d4c41] bg-[#f5f0e8] hover:bg-[#e8d7c3] transition-colors duration-300"
+                  className="px-6 py-3 rounded-lg font-medium text-[#C1583B] bg-[#DDD4CE] hover:bg-[#E19D7E] transition-colors duration-300"
                 >
                   Cancelar
                 </button>
                 <button 
                   type="submit"
-                  className="px-6 py-3 rounded-lg font-medium text-white bg-gradient-to-r from-[#e8b4b8] to-[#d4af37] hover:shadow-lg transition-all duration-300"
+                  className="px-6 py-3 rounded-lg font-medium text-white bg-gradient-to-r from-[#904939] to-[#E19D7E] hover:shadow-lg transition-all duration-300"
                 >
                   Guardar Producto
                 </button>
@@ -333,8 +333,8 @@ const GestionProductos = () => {
             }}
           >
             <div className="text-6xl mb-4">🍦</div>
-            <h3 className="text-2xl font-bold text-[#3e2723] mb-2 font-cinzel">No hay productos registrados</h3>
-            <p className="text-[#6d4c41] font-quicksand">Agrega nuevos productos para comenzar</p>
+            <h3 className="text-2xl font-bold text-[#904939] mb-2 font-cinzel">No hay productos registrados</h3>
+            <p className="text-[#C1583B] font-quicksand">Agrega nuevos productos para comenzar</p>
           </div>
         ) : (
           <div 
@@ -370,15 +370,15 @@ const GestionProductos = () => {
 
                   <div className="p-6">
                     <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-xl font-bold text-[#3e2723] font-montserrat">{producto.nombre}</h3>
-                      <span className="text-lg font-bold text-[#d4af37]">S/ {Number(producto.precio).toFixed(2)}</span>
+                      <h3 className="text-xl font-bold text-[#904939] font-montserrat">{producto.nombre}</h3>
+                      <span className="text-lg font-bold text-[#E19D7E]">S/ {Number(producto.precio).toFixed(2)}</span>
                     </div>
                     
-                    <p className="text-[#6d4c41] mb-4 font-quicksand line-clamp-2">{producto.descripcion}</p>
+                    <p className="text-[#C1583B] mb-4 font-quicksand line-clamp-2">{producto.descripcion}</p>
                     
                     {producto.categoria && (
                       <div className="mb-4">
-                        <span className="inline-block px-3 py-1 bg-[#f5f0e8] text-[#6d4c41] rounded-full text-sm font-medium">
+                        <span className="inline-block px-3 py-1 bg-[#DDD4CE] text-[#C1583B] rounded-full text-sm font-medium">
                           {producto.categoria}
                         </span>
                       </div>
@@ -404,21 +404,21 @@ const GestionProductos = () => {
         {showDeleteModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
             <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl max-w-md w-full p-6 animate-scale-in">
-              <h3 className="text-2xl font-bold text-[#3e2723] mb-4 font-cinzel">Eliminar Stock</h3>
-              <p className="text-[#6d4c41] mb-2 font-quicksand">
+              <h3 className="text-2xl font-bold text-[#904939] mb-4 font-cinzel">Eliminar Stock</h3>
+              <p className="text-[#C1583B] mb-2 font-quicksand">
                 Estás eliminando stock de: <span className="font-semibold">{productoAEliminar?.nombre}</span>
               </p>
-              <p className="text-[#6d4c41] mb-6 font-quicksand">
+              <p className="text-[#C1583B] mb-6 font-quicksand">
                 Stock disponible: <span className="font-semibold">{productoAEliminar?.stockDisponible}</span>
               </p>
               
               <div className="mb-6">
-                <label className="block text-[#6d4c41] font-medium mb-2 font-montserrat">Cantidad a eliminar</label>
+                <label className="block text-[#C1583B] font-medium mb-2 font-montserrat">Cantidad a eliminar</label>
                 <input
                   type="number"
                   value={cantidadEliminar}
                   onChange={(e) => setCantidadEliminar(e.target.value)}
-                  className="w-full px-4 py-3 rounded-lg border border-[#d7ccc8] focus:outline-none focus:ring-2 focus:ring-[#e8b4b8] focus:border-transparent transition-all"
+                  className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                   placeholder="Ingresa la cantidad"
                   min="1"
                   max={productoAEliminar?.stockDisponible}
@@ -428,7 +428,7 @@ const GestionProductos = () => {
               <div className="flex justify-end gap-4">
                 <button 
                   onClick={cerrarModalEliminar}
-                  className="px-6 py-3 rounded-lg font-medium text-[#6d4c41] bg-[#f5f0e8] hover:bg-[#e8d7c3] transition-colors duration-300"
+                  className="px-6 py-3 rounded-lg font-medium text-[#C1583B] bg-[#DDD4CE] hover:bg-[#E19D7E] transition-colors duration-300"
                 >
                   Cancelar
                 </button>
@@ -448,7 +448,7 @@ const GestionProductos = () => {
       <style jsx global>{`
         
         .gradient-hero {
-          background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
+          background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
         }
         
         @keyframes fadeInUp {
@@ -489,3 +489,6 @@ const GestionProductos = () => {
 };
 
 export default GestionProductos;
+
+
+

@@ -119,14 +119,14 @@ const GestionPedidos = () => {
         {/* Contenido principal */}
         <div className="relative z-10 container-custom flex flex-col items-center justify-center min-h-[70vh]">
           <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-[#dbbba6] mb-6"></div>
-            <p className="text-xl text-[#6d4c41] font-quicksand">Cargando pedidos...</p>
+            <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-[#E19D7E] mb-6"></div>
+            <p className="text-xl text-[#C1583B] font-quicksand">Cargando pedidos...</p>
           </div>
         </div>
 
         <style>{`
           .gradient-hero {
-            background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
+            background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
           }
         `}</style>
       </section>
@@ -161,17 +161,17 @@ const GestionPedidos = () => {
         {/* Encabezado */}
         <div className="mb-12 text-center">
           <h1 
-            className="text-4xl md:text-5xl text-[#3e2723] font-bold mb-4 relative pb-4 font-cinzel"
+            className="text-4xl md:text-5xl text-[#904939] font-bold mb-4 relative pb-4 font-cinzel"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.1s both` : 'none',
               opacity: animate ? 1 : 0
             }}
           >
             Gestión de Pedidos
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#d4af37] to-[#e8b4b8] rounded-full"></span>
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#E19D7E] to-[#904939] rounded-full"></span>
           </h1>
           <p 
-            className="text-lg text-[#6d4c41] font-quicksand"
+            className="text-lg text-[#C1583B] font-quicksand"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.3s both` : 'none',
               opacity: animate ? 1 : 0
@@ -194,8 +194,8 @@ const GestionPedidos = () => {
               onClick={() => setFiltro('TODOS')}
               className={`px-4 py-2 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 font-montserrat ${
                 filtro === 'TODOS'
-                  ? 'bg-gradient-to-r from-[#dbbba6] to-[#d0aa96] text-white shadow-md'
-                  : 'bg-[#f5f0e8] text-[#5d4037] hover:bg-[#e8d7c3]'
+                  ? 'bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] text-white shadow-md'
+                  : 'bg-[#DDD4CE] text-[#904939] hover:bg-[#E19D7E]'
               }`}
             >
               Todos ({pedidos.length})
@@ -208,8 +208,8 @@ const GestionPedidos = () => {
                   onClick={() => setFiltro(estado)}
                   className={`px-4 py-2 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 font-montserrat flex items-center ${
                     filtro === estado
-                      ? 'bg-gradient-to-r from-[#dbbba6] to-[#d0aa96] text-white shadow-md'
-                      : `${estadoColores[estado] || 'bg-[#f5f0e8] text-[#5d4037]'} hover:opacity-80`
+                      ? 'bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] text-white shadow-md'
+                      : `${estadoColores[estado] || 'bg-[#DDD4CE] text-[#904939]'} hover:opacity-80`
                   }`}
                 >
                   <span className="mr-2">{estadoIconos[estado]}</span>
@@ -230,7 +230,7 @@ const GestionPedidos = () => {
         >
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gradient-to-r from-[#8d6e63] to-[#6d4c41] text-white">
+              <thead className="bg-gradient-to-r from-[#8d6e63] to-[#C1583B] text-white">
                 <tr>
                   <th className="px-6 py-4 text-left font-cinzel">ID Pedido</th>
                   <th className="px-6 py-4 text-left font-cinzel">Cliente</th>
@@ -244,7 +244,7 @@ const GestionPedidos = () => {
               <tbody>
                 {pedidosFiltrados.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className="px-6 py-8 text-center text-[#6d4c41] font-quicksand">
+                    <td colSpan="7" className="px-6 py-8 text-center text-[#C1583B] font-quicksand">
                       No hay pedidos en este estado
                     </td>
                   </tr>
@@ -252,39 +252,39 @@ const GestionPedidos = () => {
                   pedidosFiltrados.map((pedido, index) => (
                     <tr 
                       key={pedido.id} 
-                      className="border-t border-[#f5f0e8] hover:bg-[#f9f6f2] transition-colors duration-200"
+                      className="border-t border-[#DDD4CE] hover:bg-[#DDD4CE] transition-colors duration-200"
                       style={{ 
                         animation: animate ? `fadeInUp 0.6s ease-out ${0.8 + index * 0.1}s both` : 'none',
                         opacity: animate ? 1 : 0
                       }}
                     >
-                      <td className="px-6 py-4 font-semibold text-[#6d4c41] font-montserrat">#{pedido.id}</td>
+                      <td className="px-6 py-4 font-semibold text-[#C1583B] font-montserrat">#{pedido.id}</td>
                       <td className="px-6 py-4">
                         <div>
-                          <p className="font-semibold text-[#3e2723] font-montserrat">{pedido.usuarioNombre}</p>
-                          <p className="text-sm text-[#6d4c41] font-quicksand">{pedido.usuarioEmail}</p>
+                          <p className="font-semibold text-[#904939] font-montserrat">{pedido.usuarioNombre}</p>
+                          <p className="text-sm text-[#C1583B] font-quicksand">{pedido.usuarioEmail}</p>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm text-[#6d4c41] font-quicksand">
+                      <td className="px-6 py-4 text-sm text-[#C1583B] font-quicksand">
                         {new Date(pedido.fecha).toLocaleDateString('es-ES')}
                       </td>
                       <td className="px-6 py-4 font-bold text-[#4caf50] font-montserrat">
                         S/ {Number(pedido.total).toFixed(2)}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${estadoColores[pedido.estado] || 'bg-[#f5f0e8]'}`}>
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${estadoColores[pedido.estado] || 'bg-[#DDD4CE]'}`}>
                           {estadoIconos[pedido.estado]} {pedido.estado.replace('_', ' ')}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="px-2 py-1 bg-[#f5f0e8] rounded text-xs font-medium text-[#5d4037] font-quicksand">
+                        <span className="px-2 py-1 bg-[#DDD4CE] rounded text-xs font-medium text-[#904939] font-quicksand">
                           {pedido.metodoPago?.toUpperCase() || 'NO ESPECIFICADO'}
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <button
                           onClick={() => setDetallesModal(pedido)}
-                          className="text-[#6d4c41] hover:text-[#5d4037] font-semibold text-sm mr-3 font-montserrat transition-colors"
+                          className="text-[#C1583B] hover:text-[#904939] font-semibold text-sm mr-3 font-montserrat transition-colors"
                         >
                           Ver Detalles
                         </button>
@@ -295,7 +295,7 @@ const GestionPedidos = () => {
                               e.target.value = '';
                             }
                           }}
-                          className="text-sm border border-[#e8d7c3] rounded px-2 py-1 text-[#5d4037] bg-white hover:border-[#dbbba6] font-quicksand transition-colors"
+                          className="text-sm border border-[#E19D7E] rounded px-2 py-1 text-[#904939] bg-white hover:border-[#E19D7E] font-quicksand transition-colors"
                           defaultValue=""
                         >
                           <option value="">Cambiar estado...</option>
@@ -320,11 +320,11 @@ const GestionPedidos = () => {
             <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 scale-95 animate-scale-in">
               
               {/* Encabezado Modal */}
-              <div className="bg-gradient-to-r from-[#8d6e63] to-[#6d4c41] text-white p-6 flex justify-between items-center rounded-t-2xl">
+              <div className="bg-gradient-to-r from-[#8d6e63] to-[#C1583B] text-white p-6 flex justify-between items-center rounded-t-2xl">
                 <h2 className="text-2xl font-bold font-cinzel">Detalles del Pedido #{detallesModal.id}</h2>
                 <button
                   onClick={() => setDetallesModal(null)}
-                  className="text-white hover:text-[#f5f0e8] text-2xl font-bold transition-colors"
+                  className="text-white hover:text-[#DDD4CE] text-2xl font-bold transition-colors"
                 >
                   ✕
                 </button>
@@ -334,44 +334,44 @@ const GestionPedidos = () => {
               <div className="p-6">
                 
                 {/* Información del Cliente */}
-                <div className="mb-6 pb-6 border-b border-[#f5f0e8]">
-                  <h3 className="text-lg font-bold text-[#3e2723] mb-3 font-cinzel">Información del Cliente</h3>
+                <div className="mb-6 pb-6 border-b border-[#DDD4CE]">
+                  <h3 className="text-lg font-bold text-[#904939] mb-3 font-cinzel">Información del Cliente</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-[#6d4c41] font-quicksand">Nombre</p>
-                      <p className="font-semibold text-[#3e2723] font-montserrat">{detallesModal.usuarioNombre}</p>
+                      <p className="text-sm text-[#C1583B] font-quicksand">Nombre</p>
+                      <p className="font-semibold text-[#904939] font-montserrat">{detallesModal.usuarioNombre}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-[#6d4c41] font-quicksand">Email</p>
-                      <p className="font-semibold text-[#3e2723] font-montserrat">{detallesModal.usuarioEmail}</p>
+                      <p className="text-sm text-[#C1583B] font-quicksand">Email</p>
+                      <p className="font-semibold text-[#904939] font-montserrat">{detallesModal.usuarioEmail}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Información del Pedido */}
-                <div className="mb-6 pb-6 border-b border-[#f5f0e8]">
-                  <h3 className="text-lg font-bold text-[#3e2723] mb-3 font-cinzel">Información del Pedido</h3>
+                <div className="mb-6 pb-6 border-b border-[#DDD4CE]">
+                  <h3 className="text-lg font-bold text-[#904939] mb-3 font-cinzel">Información del Pedido</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm text-[#6d4c41] font-quicksand">Fecha</p>
+                      <p className="text-sm text-[#C1583B] font-quicksand">Fecha</p>
                       <p className="font-semibold font-montserrat">{new Date(detallesModal.fecha).toLocaleString('es-ES')}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-[#6d4c41] font-quicksand">Total</p>
+                      <p className="text-sm text-[#C1583B] font-quicksand">Total</p>
                       <p className="font-bold text-[#4caf50] text-lg font-montserrat">S/ {Number(detallesModal.total).toFixed(2)}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-[#6d4c41] font-quicksand">Estado</p>
+                      <p className="text-sm text-[#C1583B] font-quicksand">Estado</p>
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${estadoColores[detallesModal.estado]}`}>
                         {estadoIconos[detallesModal.estado]} {detallesModal.estado.replace('_', ' ')}
                       </span>
                     </div>
                     <div>
-                      <p className="text-sm text-[#6d4c41] font-quicksand">Método de Pago</p>
+                      <p className="text-sm text-[#C1583B] font-quicksand">Método de Pago</p>
                       <p className="font-semibold font-montserrat">{detallesModal.metodoPago?.toUpperCase()}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-[#6d4c41] font-quicksand">Pagado</p>
+                      <p className="text-sm text-[#C1583B] font-quicksand">Pagado</p>
                       <p className={`font-semibold ${detallesModal.pagado ? 'text-[#4caf50]' : 'text-[#f44336]'}`}>
                         {detallesModal.pagado ? '✓ Sí' : '✗ No'}
                       </p>
@@ -381,31 +381,31 @@ const GestionPedidos = () => {
 
                 {/* Información de Entrega */}
                 {detallesModal.delivery && (
-                  <div className="mb-6 pb-6 border-b border-[#f5f0e8]">
-                    <h3 className="text-lg font-bold text-[#3e2723] mb-3 font-cinzel">Información de Entrega</h3>
+                  <div className="mb-6 pb-6 border-b border-[#DDD4CE]">
+                    <h3 className="text-lg font-bold text-[#904939] mb-3 font-cinzel">Información de Entrega</h3>
                     <div className="grid grid-cols-1 gap-3">
                       <div>
-                        <p className="text-sm text-[#6d4c41] font-quicksand">Receptor</p>
+                        <p className="text-sm text-[#C1583B] font-quicksand">Receptor</p>
                         <p className="font-semibold font-montserrat">{detallesModal.delivery.nombreReceptor}</p>
                       </div>
                       <div>
-                        <p className="text-sm text-[#6d4c41] font-quicksand">Dirección</p>
+                        <p className="text-sm text-[#C1583B] font-quicksand">Dirección</p>
                         <p className="font-semibold font-montserrat">{detallesModal.delivery.direccion}</p>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <p className="text-sm text-[#6d4c41] font-quicksand">Ciudad</p>
+                          <p className="text-sm text-[#C1583B] font-quicksand">Ciudad</p>
                           <p className="font-semibold font-montserrat">{detallesModal.delivery.ciudad}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-[#6d4c41] font-quicksand">Teléfono</p>
+                          <p className="text-sm text-[#C1583B] font-quicksand">Teléfono</p>
                           <p className="font-semibold font-montserrat">{detallesModal.delivery.telefono}</p>
                         </div>
                       </div>
                       {detallesModal.delivery.instruccionesEspeciales && (
                         <div>
-                          <p className="text-sm text-[#6d4c41] font-quicksand">Instrucciones</p>
-                          <p className="font-semibold text-[#3e2723] italic font-montserrat">
+                          <p className="text-sm text-[#C1583B] font-quicksand">Instrucciones</p>
+                          <p className="font-semibold text-[#904939] italic font-montserrat">
                             {detallesModal.delivery.instruccionesEspeciales}
                           </p>
                         </div>
@@ -417,7 +417,7 @@ const GestionPedidos = () => {
                 {/* Botón Cerrar */}
                 <button
                   onClick={() => setDetallesModal(null)}
-                  className="w-full bg-gradient-to-r from-[#dbbba6] to-[#d0aa96] hover:from-[#d0aa96] hover:to-[#c4a08d] text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-montserrat shadow-md hover:shadow-lg"
+                  className="w-full bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] hover:from-[#3aa38f] hover:to-[#c4a08d] text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-montserrat shadow-md hover:shadow-lg"
                 >
                   Cerrar
                 </button>
@@ -430,7 +430,7 @@ const GestionPedidos = () => {
       {/* Estilos - SIN jsx ni global */}
       <style>{`
         .gradient-hero {
-          background: linear-gradient(135deg, #f5f0e8 0%, #e8d7c3 100%);
+          background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
         }
         
         @keyframes fadeInUp {
@@ -464,3 +464,6 @@ const GestionPedidos = () => {
 };
 
 export default GestionPedidos;
+
+
+
