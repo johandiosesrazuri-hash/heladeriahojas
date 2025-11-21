@@ -5,6 +5,8 @@ import axios from 'axios';
 const Menu = () => {
   const [productos, setProductos] = useState([]);
   const [notification, setNotification] = useState({ show: false, message: '' });
+  const [categorias, setCategorias] = useState(['Todos', 'Helados', 'Bebidas']);
+  const [categoriaActiva, setCategoriaActiva] = useState('Todos');
   const { addItem } = useCart();
 
   useEffect(() => {
@@ -30,27 +32,61 @@ const Menu = () => {
       quantity: 1
     });
     
-    // Mostrar notificación
     setNotification({
       show: true,
       message: `${producto.nombre} agregado al carrito`
     });
     
-    // Ocultar notificación después de 3 segundos
     setTimeout(() => {
       setNotification({ show: false, message: '' });
     }, 3000);
   };
 
-  return (
-    <section className="py-16 px-4 md:px-8 lg:px-16 min-h-screen relative overflow-hidden">
-      {/* Fondo decorativo */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-[#fef7f0] via-[#fef9f4] to-[#fefcf8]"></div>
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmNWYwZTAiIGZpbGwtb3BhY2l0eT0iMC4zIiBkPSJNMzYgMzRjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC00LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS00LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDgwIDgwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmOGU1ZDAiIGZpbGwtb3BhY2l0eT0iMC4yIiBkPSJNNDAgNDBjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC00LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS00LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-30"></div>
-      </div>
+  // Determinar el tipo de producto (helado o bebida)
+  const getTipoProducto = (producto) => {
+    // Si el producto ya tiene un campo tipo, usarlo
+    if (producto.tipo) return producto.tipo;
+    
+    // Inferir el tipo por el nombre del producto
+    const nombre = producto.nombre.toLowerCase();
+    
+    // Palabras clave para bebidas
+    const palabrasBebidas = [
+      'bebida', 'jugo', 'refresco', 'malteada', 'batido', 'smoothie', 
+      'agua', 'soda', 'té', 'café', 'limonada', 'horchata', 'chicha'
+    ];
+    
+    // Verificar si el nombre contiene alguna palabra clave de bebida
+    const esBebida = palabrasBebidas.some(palabra => nombre.includes(palabra));
+    
+    return esBebida ? 'Bebidas' : 'Helados';
+  };
 
+  // Filtrar productos por categoría
+  const productosFiltrados = categoriaActiva === 'Todos' 
+    ? productos 
+    : productos.filter(producto => getTipoProducto(producto) === categoriaActiva);
+
+  // Obtener color de la categoría
+  const getColorCategoria = (categoria) => {
+    switch(categoria) {
+      case 'Helados': return 'bg-blue-100 text-blue-800';
+      case 'Bebidas': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  // Obtener icono de la categoría
+  const getIconoCategoria = (categoria) => {
+    switch(categoria) {
+      case 'Helados': return '🍦';
+      case 'Bebidas': return '🥤';
+      default: return '📋';
+    }
+  };
+
+  return (
+    <section className="py-12 px-4 md:px-8 lg:px-16 min-h-screen bg-gradient-to-b from-[#fef9f4] to-[#fef7f0]">
       {/* Notificación temporal */}
       {notification.show && (
         <div className="fixed bottom-4 right-4 z-50 animate-fade-in">
@@ -64,21 +100,40 @@ const Menu = () => {
       )}
 
       {/* Contenido principal */}
-      <div className="relative z-10 max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl text-[#3e2723] text-center font-bold mb-4 relative pb-4 font-cinzel">
-            Nuestros Helados
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#d4af37] to-[#e8b4b8] rounded-full"></span>
-          </h2>
-          
-          <p className="text-center text-[#6d4c41] mb-12 text-lg font-quicksand">
-            Descubre nuestros deliciosos sabores artesanales
+      <div className="max-w-7xl mx-auto">
+        {/* Encabezado */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-[#3e2723] mb-4 font-cinzel">
+            Nuestro Menú
+          </h1>
+          <p className="text-lg text-[#6d4c41] max-w-2xl mx-auto font-quicksand">
+            Descubre nuestra deliciosa variedad de helados artesanales y refrescantes bebidas
           </p>
         </div>
 
+        {/* Filtros de Categoría */}
+        <div className="flex justify-center mb-10">
+          <div className="inline-flex bg-white rounded-full p-1 shadow-md">
+            {categorias.map((categoria) => (
+              <button
+                key={categoria}
+                onClick={() => setCategoriaActiva(categoria)}
+                className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 flex items-center font-quicksand ${
+                  categoriaActiva === categoria
+                    ? 'bg-[#dbbba6] text-[#5d4037] shadow-sm'
+                    : 'text-[#6d4c41] hover:bg-[#f5f0e8]'
+                }`}
+              >
+                <span className="mr-2">{getIconoCategoria(categoria)}</span>
+                {categoria}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Contenedor de Productos */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-          {productos.length === 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {productosFiltrados.length === 0 ? (
             <div className="col-span-full text-center py-12">
               <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#dbbba6] border-t-transparent"></div>
               <p className="mt-4 text-[#6d4c41] text-lg font-quicksand">
@@ -86,75 +141,82 @@ const Menu = () => {
               </p>
             </div>
           ) : (
-            productos.map((producto, index) => (
-              <div
-                key={producto.id}
-                className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl hover:-translate-y-2 overflow-hidden group border border-[#f5f0e8]"
-                style={{
-                  animation: `fadeInUp 0.6s ease-out ${index * 0.1}s both`
-                }}
-              >
-                {/* Imagen del Producto */}
-                <div className="relative overflow-hidden bg-gradient-to-br from-[#fef7f0] to-[#fef9f4] h-48 md:h-56">
-                  <img
-                    src={`http://localhost:8080${producto.imagen}`}
-                    alt={producto.nombre}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                    onError={(e) => {
-                      e.target.src = '/img/default.png';
-                    }}
-                  />
-                  
-                  {/* Badge de Popularidad */}
-                  <div className="absolute top-3 left-3 bg-[#d4af37] text-white px-3 py-1 rounded-full text-xs font-bold font-montserrat">
-                    Popular
+            productosFiltrados.map((producto, index) => {
+              const tipo = getTipoProducto(producto);
+              return (
+                <div
+                  key={producto.id}
+                  className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group"
+                >
+                  {/* Imagen del Producto con efecto zoom */}
+                  <div className="relative h-64 overflow-hidden">
+                    <img
+                      src={`http://localhost:8080${producto.imagen}`}
+                      alt={producto.nombre}
+                      className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
+                      onError={(e) => {
+                        e.target.src = '/img/default.png';
+                      }}
+                    />
+                    
+                    {/* Badge de Tipo */}
+                    <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold flex items-center ${getColorCategoria(tipo)}`}>
+                      <span className="mr-1">{getIconoCategoria(tipo)}</span>
+                      {tipo}
+                    </div>
                   </div>
-                </div>
 
-                {/* Contenido de la Tarjeta */}
-                <div className="p-5">
-                  <h3 className="text-xl font-bold text-[#3e2723] mb-2 transition-colors duration-300 group-hover:text-[#6d4c41] font-cinzel">
-                    {producto.nombre}
-                  </h3>
-                  
-                  <p className="text-[#6d4c41] text-sm mb-4 line-clamp-2 font-quicksand">
-                    {producto.descripcion}
-                  </p>
+                  {/* Contenido de la Tarjeta */}
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-[#3e2723] mb-2 font-cinzel">
+                      {producto.nombre}
+                    </h3>
+                    
+                    <p className="text-[#6d4c41] text-sm mb-4 line-clamp-2 font-quicksand">
+                      {producto.descripcion}
+                    </p>
 
-                  {/* Precio */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-bold text-[#6d4c41] font-cinzel">
+                    {/* Precio y Botón */}
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-[#6d4c41] font-cinzel">
                         S/ {Number(producto.precio).toFixed(2)}
                       </span>
-                    </div>
-                    
-                    {/* Badge de Calorías */}
-                    <div className="bg-[#f5f0e8] text-[#6d4c41] px-2 py-1 rounded-full text-xs font-medium font-montserrat">
-                      {Math.floor(Math.random() * 100 + 150)} cal
+                      
+                      <button
+                        onClick={() => handleAddToCart(producto)}
+                        className="px-4 py-2 bg-[#dbbba6] hover:bg-[#d0aa96] text-[#5d4037] rounded-full font-medium transition-colors duration-300 flex items-center font-montserrat"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+                        </svg>
+                        Agregar
+                      </button>
                     </div>
                   </div>
-
-                  {/* Botón Agregar */}
-                  <button
-                    onClick={() => handleAddToCart(producto)}
-                    className="w-full px-6 py-3 bg-[#dbbba6] hover:bg-[#d0aa96] text-[#5d4037] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform font-montserrat flex items-center justify-center"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                    </svg>
-                    Agregar al Carrito
-                  </button>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
+
+        {/* Mensaje cuando no hay productos en una categoría */}
+        {productosFiltrados.length === 0 && productos.length > 0 && (
+          <div className="col-span-full text-center py-12">
+            <div className="text-6xl mb-4">
+              {categoriaActiva === 'Helados' ? '🍦' : '🥤'}
+            </div>
+            <h3 className="text-2xl font-bold text-[#3e2723] mb-2 font-cinzel">
+              No hay {categoriaActiva.toLowerCase()} disponibles
+            </h3>
+            <p className="text-[#6d4c41] font-quicksand">
+              Prueba seleccionando otra categoría
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* Estilos de Animación y Fuentes */}
+      {/* Estilos */}
       <style jsx global>{`
-        
         @keyframes fadeInUp {
           from {
             opacity: 0;

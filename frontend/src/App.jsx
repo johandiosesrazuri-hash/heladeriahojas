@@ -15,6 +15,7 @@ import Contacto from './components/Contacto'
 import Pedido from './components/Pedido'
 import Testimonios from './components/Testimonios'
 import SobreNosotros from './components/SobreNosotros'
+import Inicio from './components/Inicio'
 import MisPedidos from './components/MisPedidos'
 
 
@@ -57,7 +58,7 @@ function App() {
             <Route path="/sobre-nosotros" element={<SobreNosotros />} />
             <Route path="/mis-pedidos" element={<MisPedidos />} />
 
-            <Route path="/" element={<Menu />} />
+            <Route path="/" element={<Inicio />} />
 
             {/* Rutas protegidas - Admin */}
             <Route

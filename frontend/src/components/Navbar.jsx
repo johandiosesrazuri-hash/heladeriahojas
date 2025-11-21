@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
@@ -9,6 +9,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [cartCount, setCartCount] = useState(0);
+  const location = useLocation();
   const navigate = useNavigate();
 
   // Calcular total de items en el carrito
@@ -35,6 +36,22 @@ const Navbar = () => {
     navigate('/');
   };
 
+  const scrollToSection = (sectionId) => {
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
+  const handleNavClick = (sectionId) => {
+    if (location.pathname === '/') {
+      scrollToSection(sectionId);
+    } else {
+      navigate(`/#${sectionId}`);
+    }
+    setIsMenuOpen(false);
+  };
+
   return (
     <>
       <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
@@ -58,20 +75,22 @@ const Navbar = () => {
             <div className="hidden md:flex items-center space-x-8">
               <ul className="flex space-x-6">
                 {[
-                  { name: 'Inicio', path: '/sobre-nosotros' },
-                  { name: 'Menú', path: '/menu' },
-                  { name: 'Promociones', path: '/promociones' },
-                  { name: 'Contacto', path: '/contacto' },
-                  { name: 'Testimonios', path: '/testimonios' },
+                  { name: 'Inicio', section: 'sobre-nosotros' },
+                  { name: 'Sobre Nosotros', section: 'sobre-nosotros' },
+                  { name: 'Menú', section: 'menu' },
+                  { name: 'Promociones', section: 'promociones' },
+                  { name: 'Contacto', section: 'contacto' },
+                  { name: 'Testimonios', section: 'testimonios' },
                 ].map((item) => (
                   <li key={item.name}>
-                    <Link 
-                      to={item.path} 
+                    <button
+                      type="button"
+                      onClick={() => handleNavClick(item.section)}
                       className="text-[#6d4c41] hover:text-[#5d4037] font-medium font-quicksand transition-colors duration-200 relative group"
                     >
                       {item.name}
                       <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#dbbba6] transition-all duration-300 group-hover:w-full"></span>
-                    </Link>
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -163,25 +182,25 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white/95 backdrop-blur-md shadow-lg">
-            <div className="px-4 pt-2 pb-3 space-y-1">
-              {[
-                { name: 'Inicio', path: '/' },
-                { name: 'Menú', path: '/menu' },
-                { name: 'Promociones', path: '/promociones' },
-                { name: 'Contacto', path: '/contacto' },
-                { name: 'Testimonios', path: '/testimonios' },
-                { name: 'Sobre Nosotros', path: '/sobre-nosotros' }
-              ].map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.path}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-[#6d4c41] hover:text-[#5d4037] hover:bg-[#f5f0e8] font-quicksand"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              ))}
+            <div className="md:hidden bg-white/95 backdrop-blur-md shadow-lg">
+              <div className="px-4 pt-2 pb-3 space-y-1">
+                {[
+                  { name: 'Inicio', section: 'inicio' },
+                  { name: 'Sobre Nosotros', section: 'sobre-nosotros' },
+                  { name: 'Menú', section: 'menu' },
+                  { name: 'Promociones', section: 'promociones' },
+                  { name: 'Contacto', section: 'contacto' },
+                  { name: 'Testimonios', section: 'testimonios' }
+                ].map((item) => (
+                  <button
+                    type="button"
+                    key={item.name}
+                    onClick={() => handleNavClick(item.section)}
+                    className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-[#6d4c41] hover:text-[#5d4037] hover:bg-[#f5f0e8] font-quicksand"
+                  >
+                    {item.name}
+                  </button>
+                ))}
               
               <div className="border-t border-gray-200 pt-4 mt-4">
                 <div className="flex items-center justify-between px-3 py-2">

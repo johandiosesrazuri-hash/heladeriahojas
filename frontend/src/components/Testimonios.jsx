@@ -217,7 +217,7 @@ const Testimonios = () => {
           </h2>
           
           <p 
-            className="text-center text-gray-600 mb-12 text-lg max-w-2xl mx-auto font-quicksand"
+            className="text-center text-black mb-12 text-lg max-w-2xl mx-auto font-quicksand"
             style={{ 
               animation: animate ? `fadeInUp 0.6s ease-out 0.3s both` : 'none',
               opacity: animate ? 1 : 0
