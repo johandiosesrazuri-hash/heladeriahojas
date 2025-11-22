@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const MisPedidos = () => {
+const     MisPedidos = ({ embedded = false }) => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const [pedidos, setPedidos] = useState([]);
@@ -74,6 +74,142 @@ const MisPedidos = () => {
     'ENTREGADO': { color: 'bg-green-100 text-green-800', icono: '🎉', texto: 'Entregado' },
     'CANCELADO': { color: 'bg-red-100 text-red-800', icono: '❌', texto: 'Cancelado' }
   };
+
+  if (embedded) {
+    if (loading) {
+      return (
+        <div className="flex items-center gap-3 text-[#904939]">
+          <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-4 border-[#E19D7E]"></div>
+          <span className="font-semibold">Cargando tus pedidos...</span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-4">
+        {notification.show && (
+          <div className={`px-4 py-3 rounded-lg shadow flex items-center ${notification.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+            <span className="font-medium">{notification.message}</span>
+          </div>
+        )}
+
+        <div className="flex items-center justify-between">
+          <h3 className="text-2xl font-bold text-[#904939]">Mis pedidos</h3>
+          <span className="text-sm text-[#C1583B]">Total: {pedidos.length}</span>
+        </div>
+
+        {pedidos.length === 0 ? (
+          <div className="bg-white rounded-xl border border-[#f0e5dd] p-6 text-center">
+            <p className="text-[#C1583B]">Aún no tienes pedidos.</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 gap-4">
+            {pedidos.map((pedido) => {
+              const estado = estadoInfo[pedido.estado] || estadoInfo['PENDIENTE'];
+              return (
+                <div key={pedido.id} className="bg-white rounded-xl border border-[#f0e5dd] p-4 flex flex-col gap-2">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="text-lg font-bold text-[#904939]">Pedido #{pedido.id}</p>
+                      <p className="text-sm text-[#C1583B]">
+                        {new Date(pedido.fecha).toLocaleDateString('es-ES', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
+                      </p>
+                    </div>
+                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${estado.color}`}>
+                      {estado.icono} {estado.texto}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-[#C1583B]">Método: {pedido.metodoPago?.toUpperCase() || 'EFECTIVO'}</span>
+                    <span className="text-lg font-bold text-[#4caf50]">S/ {Number(pedido.total).toFixed(2)}</span>
+                  </div>
+                  <button
+                    onClick={() => setDetalleModal(pedido)}
+                    className="self-start text-sm font-semibold text-[#1976d2] hover:underline"
+                  >
+                    Ver detalles
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Modal reusa el mismo diseño */}
+        {detalleModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
+            <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="bg-gradient-to-r from-[#8d6e63] to-[#C1583B] text-white p-6 flex justify-between items-center rounded-t-2xl">
+                <h2 className="text-2xl font-bold font-cinzel">Pedido #{detalleModal.id}</h2>
+                <button
+                  onClick={() => setDetalleModal(null)}
+                  className="text-white hover:text-[#DDD4CE] text-2xl font-bold transition-colors"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="p-6">
+                <div className="mb-6 pb-6 border-b border-[#DDD4CE]">
+                  <div className="flex justify-between items-center mb-4">
+                    <span className={`px-4 py-2 rounded-full text-sm font-semibold ${estadoInfo[detalleModal.estado]?.color || 'bg-gray-100'}`}>
+                      {estadoInfo[detalleModal.estado]?.icono} {estadoInfo[detalleModal.estado]?.texto}
+                    </span>
+                    <span className="text-3xl font-bold text-[#4caf50]">
+                      S/ {Number(detalleModal.total).toFixed(2)}
+                    </span>
+                  </div>
+                  <p className="text-sm text-[#C1583B]">
+                    Realizado el {new Date(detalleModal.fecha).toLocaleString('es-ES')}
+                  </p>
+                </div>
+                <div className="mb-6 pb-6 border-b border-[#DDD4CE]">
+                  <h3 className="text-lg font-bold text-[#904939] mb-3 font-cinzel">Información de Pago</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-[#C1583B]">Método de Pago</p>
+                      <p className="font-semibold">{detalleModal.metodoPago?.toUpperCase()}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-[#C1583B]">Estado de Pago</p>
+                      <p className={`font-semibold ${detalleModal.pagado ? 'text-green-600' : 'text-red-600'}`}>
+                        {detalleModal.pagado ? '✓ Pagado' : '✗ Pendiente'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                {detalleModal.delivery && (
+                  <div className="mb-6">
+                    <h3 className="text-lg font-bold text-[#904939] mb-3 font-cinzel">Información de Entrega</h3>
+                    <div className="bg-[#DDD4CE] p-4 rounded-lg space-y-2">
+                      <p className="text-sm"><strong>Receptor:</strong> {detalleModal.delivery.nombreReceptor}</p>
+                      <p className="text-sm"><strong>Dirección:</strong> {detalleModal.delivery.direccion}</p>
+                      <p className="text-sm"><strong>Ciudad:</strong> {detalleModal.delivery.ciudad}</p>
+                      <p className="text-sm"><strong>Teléfono:</strong> {detalleModal.delivery.telefono}</p>
+                      {detalleModal.delivery.instruccionesEspeciales && (
+                        <p className="text-sm"><strong>Instrucciones:</strong> {detalleModal.delivery.instruccionesEspeciales}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+                <button
+                  onClick={() => setDetalleModal(null)}
+                  className="w-full bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] hover:from-[#3aa38f] hover:to-[#c4a08d] text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   if (loading) {
     return (

@@ -27,6 +27,7 @@ import GestionPedidos from './pages/Admin/GestionPedidos'
 import GestionContactos from './pages/Admin/GestionContactos'
 import GestionPromociones from './pages/Admin/GestionPromociones'
 import GestionSobreNosotros from './pages/Admin/GestionSobreNosotros'
+import Perfil from './pages/Perfil'
 
 
 import './App.css'
@@ -58,7 +59,14 @@ function App() {
             <Route path="/testimonios" element={<Testimonios />} />
             <Route path="/sobre-nosotros" element={<SobreNosotros />} />
             <Route path="/mis-pedidos" element={<MisPedidos />} />
-
+            <Route
+              path="/perfil"
+              element={
+                <ProtectedRoute requiredRole={['CLIENTE', 'ADMIN']}>
+                  <Perfil />
+                </ProtectedRoute>
+              }
+            />
             <Route path="/" element={<Inicio />} />
 
             {/* Rutas protegidas - Admin */}

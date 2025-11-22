@@ -70,6 +70,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/auth/login").permitAll()
                 .requestMatchers("/api/auth/register").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                .requestMatchers("/api/perfil").permitAll()
                 
                 // PERMITIR PRODUCTOS Y PROMOCIONES
                 .requestMatchers(HttpMethod.GET, "/api/productos").permitAll()
@@ -89,7 +90,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/testimonios/**").authenticated()
 
                 // ADMIN SOLO
-.requestMatchers("/api/admin/**").authenticated()
+                .requestMatchers("/api/admin/**").authenticated()
                 
                 // USUARIO AUTENTICADO
                 .requestMatchers("/api/pedidos/**").permitAll()
