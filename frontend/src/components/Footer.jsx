@@ -99,7 +99,7 @@ const Footer = () => {
 
           {/* Columna 4: Newsletter */}
           <div>
-            <h3 className="text-xl font-bold mb-6 font-cinzel text-[#E19D7E]">Newsletter</h3>
+            <h3 className="text-xl font-bold mb-6 font-cinzel text-[#E19D7E]">Boletín</h3>
             <p className="text-[#E19D7E] mb-4 font-quicksand">
               Suscríbete para recibir nuestras promociones y novedades.
             </p>
@@ -125,7 +125,7 @@ const Footer = () => {
         </div>
 
         {/* Separador */}
-        <div className="border-t border-[#904939] my-8"></div>
+        <div className="border-t border-[cream-bg]] my-8"></div>
 
         {/* Copyright */}
         <div className="flex flex-col md:flex-row justify-between items-center">

@@ -15,6 +15,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/api/admin/dashboard")
@@ -287,7 +290,6 @@ public class DashboardController {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    // Conversión Promocion -> DTO para evitar ciclos al serializar
     private PromocionDTO convertToDTO(Promocion p) {
         PromocionDTO dto = new PromocionDTO();
         dto.setId(p.getId());
@@ -336,4 +338,5 @@ public class DashboardController {
         }
         return promocion;
     }
+
 }

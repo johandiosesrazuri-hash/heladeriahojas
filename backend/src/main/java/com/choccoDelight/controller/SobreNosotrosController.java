@@ -26,6 +26,12 @@ public class SobreNosotrosController {
     /* ENDPOINTS ADMINISTRATIVOS */
 
     @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/informacion")
+    public ResponseEntity<SobreNosotros> crearInformacion(@RequestBody SobreNosotros datos) {
+        return ResponseEntity.ok(service.crearInformacion(datos));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/informacion/{id}")
     public ResponseEntity<SobreNosotros> actualizarInformacion(
             @PathVariable Long id,
@@ -37,6 +43,14 @@ public class SobreNosotrosController {
     @PostMapping("/valores")
     public ResponseEntity<ValorEmpresa> crearValor(@RequestBody ValorEmpresa valor) {
         return ResponseEntity.ok(service.crearValor(valor));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/valores/{id}")
+    public ResponseEntity<ValorEmpresa> actualizarValor(
+            @PathVariable Long id,
+            @RequestBody ValorEmpresa valor) {
+        return ResponseEntity.ok(service.actualizarValor(id, valor));
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -54,6 +68,14 @@ public class SobreNosotrosController {
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/estadisticas/{id}")
+    public ResponseEntity<EstadisticaEmpresa> actualizarEstadistica(
+            @PathVariable Long id,
+            @RequestBody EstadisticaEmpresa estadistica) {
+        return ResponseEntity.ok(service.actualizarEstadistica(id, estadistica));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/estadisticas/{id}")
     public ResponseEntity<Void> eliminarEstadistica(@PathVariable Long id) {
         service.eliminarEstadistica(id);
@@ -65,6 +87,14 @@ public class SobreNosotrosController {
     public ResponseEntity<GaleriaEmpresa> crearImagenGaleria(
             @RequestBody GaleriaEmpresa imagen) {
         return ResponseEntity.ok(service.crearImagenGaleria(imagen));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/galeria/{id}")
+    public ResponseEntity<GaleriaEmpresa> actualizarImagenGaleria(
+            @PathVariable Long id,
+            @RequestBody GaleriaEmpresa imagen) {
+        return ResponseEntity.ok(service.actualizarImagenGaleria(id, imagen));
     }
 
     @PreAuthorize("hasRole('ADMIN')")

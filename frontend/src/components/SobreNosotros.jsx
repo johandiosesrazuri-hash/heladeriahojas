@@ -82,7 +82,7 @@ const SobreNosotros = () => {
             muted
             loop
             playsInline
-            poster="/img/sobre-nosotros-poster.jpg"
+            poster="/img/ice-cream.png"
             src={videoBackgroundSrc}
             onError={() => setVideoError(true)}
           />

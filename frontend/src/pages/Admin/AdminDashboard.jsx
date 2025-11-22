@@ -265,6 +265,7 @@ const AdminDashboard = () => {
             <NavButton to="/admin/pedidos" label="Pedidos" icon="🚚" delay={0.3} />
             <NavButton to="/admin/contactos" label="Contactos" icon="✉️" delay={0.4} />
             <NavButton to="/admin/promociones" label="Promociones" icon="🎁" delay={0.5} />
+            <NavButton to="/admin/sobre-nosotros" label="Sobre Nosotros" icon="📖" delay={0.6} />
           </div>
         </div>
       </div>
