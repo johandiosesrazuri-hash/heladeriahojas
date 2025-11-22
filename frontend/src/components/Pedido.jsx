@@ -110,7 +110,7 @@ const Pedido = () => {
         {/* Fondo decorativo */}
         <div className="absolute inset-0 z-0">
           <div className="absolute top-0 left-0 w-full h-full gradient-hero"></div>
-          <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmNWYwZTAiIGZpbGwtb3BhY2l0eT0iMC4zIiBkPSJNMzYgMzRjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC40LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS40LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
+          <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmNWYwZTAiIGZpbGwtb3BhY2l0eT0iMC4zIiBkPSJNMzYgMzRjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC00LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS40LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
           <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDgwIDgwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmOGU1ZDAiIGZpbGwtb3BhY2l0eT0iMC4yIiBkPSJNNDAgNDBjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC40LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS40LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-30"></div>
         </div>
 
@@ -132,9 +132,9 @@ const Pedido = () => {
 
         {/* Contenido principal */}
         <div className="relative z-10 container-custom flex flex-col items-center justify-center min-h-[70vh]">
-          <div 
+          <div
             className="text-center max-w-md mx-auto"
-            style={{ 
+            style={{
               animation: animate ? `fadeInUp 0.6s ease-out 0.1s both` : 'none',
               opacity: animate ? 1 : 0
             }}
@@ -149,7 +149,7 @@ const Pedido = () => {
               Agrega algunos productos deliciosos para comenzar
             </p>
             <div className="flex justify-center">
-              <button 
+              <button
                 onClick={() => navigate('/menu')}
                 className="px-8 py-3 bg-[#E19D7E] hover:bg-[#3aa38f] text-[#904939] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform flex items-center justify-center"
               >
@@ -212,9 +212,9 @@ const Pedido = () => {
       {/* Contenido principal */}
       <div className="relative z-10 container-custom">
         <div className="text-center mb-16">
-          <h2 
+          <h2
             className="text-4xl md:text-5xl text-[#904939] text-center font-bold mb-4 relative pb-4 font-cinzel"
-            style={{ 
+            style={{
               animation: animate ? `fadeInUp 0.6s ease-out 0.1s both` : 'none',
               opacity: animate ? 1 : 0
             }}
@@ -222,10 +222,10 @@ const Pedido = () => {
             Finalizar Pedido
             <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#E19D7E] to-[#904939] rounded-full"></span>
           </h2>
-          
-          <p 
+
+          <p
             className="text-center text-[#C1583B] mb-12 text-lg max-w-2xl mx-auto font-quicksand"
-            style={{ 
+            style={{
               animation: animate ? `fadeInUp 0.6s ease-out 0.3s both` : 'none',
               opacity: animate ? 1 : 0
             }}
@@ -236,31 +236,34 @@ const Pedido = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Resumen del pedido */}
-          <div 
+          <div
             className="lg:col-span-1"
-            style={{ 
+            style={{
               animation: animate ? `fadeInUp 0.6s ease-out 0.5s both` : 'none',
               opacity: animate ? 1 : 0
             }}
           >
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-[#DDD4CE]">
               <h3 className="text-2xl font-bold text-[#904939] mb-6 font-cinzel">Resumen del Pedido</h3>
-              
+
               <div className="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2">
                 {items.map((item, index) => (
-                  <div 
+                  <div
                     key={item.id}
                     className="flex items-center justify-between p-4 bg-white rounded-xl shadow-sm transition-all duration-300 hover:shadow-md"
-                    style={{ 
+                    style={{
                       animation: animate ? `fadeInUp 0.6s ease-out ${0.7 + index * 0.1}s both` : 'none',
                       opacity: animate ? 1 : 0
                     }}
                   >
                     <div className="flex items-center">
-                      <div className="bg-gray-200 rounded-lg p-2 mr-4">
-                        <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
-                        </svg>
+                      <div className="w-16 h-16 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden mr-4 border border-gray-200">
+                        <img
+                          src={item.image || '/img/placeholder.png'}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                          onError={(e) => e.target.src = '/img/placeholder.png'}
+                        />
                       </div>
                       <div>
                         <h3 className="font-medium text-gray-900 font-montserrat">{item.name}</h3>
@@ -271,7 +274,7 @@ const Pedido = () => {
                   </div>
                 ))}
               </div>
-              
+
               <div className="mt-6 pt-6 border-t border-gray-200">
                 <div className="flex justify-between items-center">
                   <span className="text-lg font-medium text-[#904939] font-montserrat">Total:</span>
@@ -282,16 +285,16 @@ const Pedido = () => {
           </div>
 
           {/* Formulario de datos de entrega */}
-          <div 
+          <div
             className="lg:col-span-1"
-            style={{ 
+            style={{
               animation: animate ? `fadeInUp 0.6s ease-out 0.9s both` : 'none',
               opacity: animate ? 1 : 0
             }}
           >
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-[#DDD4CE]">
               <h3 className="text-2xl font-bold text-[#904939] mb-6 font-cinzel">Datos de Entrega</h3>
-              
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="nombreReceptor" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
@@ -407,14 +410,13 @@ const Pedido = () => {
                   </select>
                 </div>
 
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={isProcessing || formData.metodoPago === 'tarjeta'}
-                  className={`w-full py-4 px-6 rounded-lg font-semibold text-white shadow-lg transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E19D7E] font-montserrat ${
-                    isProcessing || formData.metodoPago === 'tarjeta' 
-                      ? 'bg-gray-400 cursor-not-allowed' 
+                  className={`w-full py-4 px-6 rounded-lg font-semibold text-white shadow-lg transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E19D7E] font-montserrat ${isProcessing || formData.metodoPago === 'tarjeta'
+                      ? 'bg-gray-400 cursor-not-allowed'
                       : 'bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] hover:from-[#3aa38f] hover:to-[#c4a08d] hover:shadow-xl'
-                  }`}
+                    }`}
                 >
                   {isProcessing ? (
                     <div className="flex items-center justify-center">
@@ -437,7 +439,6 @@ const Pedido = () => {
       {/* Estilos de Animación y Fuentes */}
       <style jsx global>{`
 
-        
         .gradient-hero {
           background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
         }
@@ -458,6 +459,3 @@ const Pedido = () => {
 };
 
 export default Pedido;
-
-
-

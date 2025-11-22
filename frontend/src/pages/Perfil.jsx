@@ -1,25 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import MisPedidos from '../components/MisPedidos';
 
 const tabs = [
-  { id: 'perfil', label: 'Perfil' },
-  { id: 'direcciones', label: 'Direcciones' },
-  { id: 'pedidos', label: 'Pedidos' },
-  { id: 'testimonios', label: 'Testimonios' },
-  { id: 'seguridad', label: 'Seguridad' }
+  {
+    id: 'perfil', label: 'Información', icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+    )
+  },
+  {
+    id: 'pedidos', label: 'Pedidos', icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+    )
+  },
+  {
+    id: 'direcciones', label: 'Direcciones', icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+    )
+  },
+  {
+    id: 'seguridad', label: 'Configuración', icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+    )
+  }
 ];
 
 const Perfil = () => {
-  const { token, user } = useAuth();
+  const { token, user, logout } = useAuth();
+  const navigate = useNavigate();
   const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
   const [activeTab, setActiveTab] = useState('perfil');
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
-  const [form, setForm] = useState({ nombre: '', telefono: '', avatarUrl: '' });
+  const [form, setForm] = useState({ nombre: '', email: '', telefono: '', avatarUrl: '' });
   const [newDir, setNewDir] = useState({ alias: '', linea1: '', linea2: '', ciudad: '', region: '', cp: '', referencias: '', principal: false, activo: true });
-  const [newTestimonio, setNewTestimonio] = useState({ calificacion: 5, comentario: '' });
   const [passwordForm, setPasswordForm] = useState({ passwordActual: '', nuevaPassword: '' });
   const [notification, setNotification] = useState(null);
 
@@ -36,6 +52,7 @@ const Perfil = () => {
       setData(res.data);
       setForm({
         nombre: res.data.nombre || '',
+        email: res.data.email || '',
         telefono: res.data.telefono || '',
         avatarUrl: res.data.avatarUrl || ''
       });
@@ -47,7 +64,15 @@ const Perfil = () => {
     }
   };
 
-  const notify = (msg, type = 'success') => setNotification({ msg, type });
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
+
+  const notify = (msg, type = 'success') => {
+    setNotification({ msg, type });
+    setTimeout(() => setNotification(null), 3000);
+  };
 
   const savePerfil = async (e) => {
     e.preventDefault();
@@ -55,10 +80,11 @@ const Perfil = () => {
       await axios.put(`${api}/api/perfil`, form, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      notify('Perfil actualizado');
+      notify('Perfil actualizado correctamente');
       fetchPerfil();
     } catch (err) {
-      notify('No se pudo actualizar', 'error');
+      const errorMsg = err.response?.data?.message || 'No se pudo actualizar el perfil';
+      notify(errorMsg, 'error');
     }
   };
 
@@ -69,7 +95,7 @@ const Perfil = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setNewDir({ alias: '', linea1: '', linea2: '', ciudad: '', region: '', cp: '', referencias: '', principal: false, activo: true });
-      notify('Dirección guardada');
+      notify('Dirección guardada exitosamente');
       fetchPerfil();
     } catch (err) {
       notify('No se pudo guardar la dirección', 'error');
@@ -77,33 +103,16 @@ const Perfil = () => {
   };
 
   const deleteDireccion = async (id) => {
-    if (!window.confirm('¿Eliminar dirección?')) return;
-    await axios.delete(`${api}/api/perfil/direcciones/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    fetchPerfil();
-  };
-
-  const saveTestimonio = async (e) => {
-    e.preventDefault();
+    if (!window.confirm('¿Estás seguro de eliminar esta dirección?')) return;
     try {
-      await axios.post(`${api}/api/perfil/testimonios`, newTestimonio, {
+      await axios.delete(`${api}/api/perfil/direcciones/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setNewTestimonio({ calificacion: 5, comentario: '' });
-      notify('Testimonio enviado');
+      notify('Dirección eliminada');
       fetchPerfil();
     } catch (err) {
-      notify('No se pudo guardar el testimonio', 'error');
+      notify('Error al eliminar la dirección', 'error');
     }
-  };
-
-  const deleteTestimonio = async (id) => {
-    if (!window.confirm('¿Eliminar testimonio?')) return;
-    await axios.delete(`${api}/api/perfil/testimonios/${id}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    fetchPerfil();
   };
 
   const changePassword = async (e) => {
@@ -113,7 +122,7 @@ const Perfil = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setPasswordForm({ passwordActual: '', nuevaPassword: '' });
-      notify('Contraseña actualizada');
+      notify('Contraseña actualizada correctamente');
     } catch (err) {
       notify('No se pudo actualizar la contraseña', 'error');
     }
@@ -121,242 +130,262 @@ const Perfil = () => {
 
   if (loading || !data) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#DDD4CE] via-[#E19D7E] to-[#C1583B]">
-        <div className="text-center space-y-3">
-          <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-4 border-white/80 mb-2" />
-          <p className="text-white font-semibold text-lg">Cargando tu perfil...</p>
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF9F6]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#C1583B]"></div>
+          <p className="text-[#904939] font-medium animate-pulse">Cargando perfil...</p>
         </div>
       </div>
     );
   }
 
-  const pills = tabs.map((t) => (
-    <button
-      key={t.id}
-      onClick={() => setActiveTab(t.id)}
-      className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border ${
-        activeTab === t.id
-          ? 'bg-[#C1583B] text-white border-transparent shadow-md'
-          : 'bg-white/40 text-[#904939] border-[#f0e5dd] hover:bg-white hover:shadow'
-      }`}
-    >
-      {t.label}
-    </button>
-  ));
-
-  const quickStats = [
-    { label: 'Pedidos', value: data.pedidos?.length || 0, emoji: '📦', color: 'from-amber-400 to-amber-500' },
-    { label: 'Direcciones', value: data.direcciones?.length || 0, emoji: '🏠', color: 'from-emerald-400 to-emerald-500' },
-    { label: 'Testimonios', value: data.testimonios?.length || 0, emoji: '⭐', color: 'from-sky-400 to-sky-500' }
-  ];
-
   return (
-    <section className="py-10 px-4 md:px-10 lg:px-16 min-h-screen bg-gradient-to-br from-[#DDD4CE] via-[#E19D7E] to-[#C1583B]">
-      {notification && (
-        <div className={`mb-4 px-4 py-3 rounded-lg shadow-lg ${notification.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-          {notification.msg}
-        </div>
-      )}
+    <div className="min-h-screen bg-[#FAF9F6] py-10 px-4 md:px-8">
+      <div className="max-w-6xl mx-auto space-y-6">
 
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-2xl overflow-hidden border border-white/40">
-        {/* Hero */}
-        <div className="relative p-6 md:p-8 bg-gradient-to-r from-[#904939] via-[#C1583B] to-[#E19D7E] text-white">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,#ffffff22,transparent_35%)]"></div>
-          <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="w-20 h-20 rounded-2xl bg-white/20 border border-white/30 shadow-lg flex items-center justify-center text-3xl overflow-hidden">
+        {/* Notificaciones */}
+        {notification && (
+          <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 animate-slide-in-right ${notification.type === 'error' ? 'bg-red-50 text-red-800 border-l-4 border-red-500' : 'bg-green-50 text-green-800 border-l-4 border-green-500'
+            }`}>
+            <p className="font-medium">{notification.msg}</p>
+          </div>
+        )}
+
+        {/* Header del Perfil */}
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-8 relative overflow-hidden transition-all duration-300 hover:shadow-md">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-6 relative z-10">
+            {/* Avatar */}
+            <div className="relative group">
+              <div className="w-28 h-28 md:w-32 md:h-32 rounded-full border-4 border-white shadow-lg overflow-hidden bg-gray-100 transition-transform duration-300 group-hover:scale-105">
                 {data.avatarUrl ? (
                   <img src={data.avatarUrl} alt={data.nombre} className="w-full h-full object-cover" />
                 ) : (
-                  (data.nombre || 'U').charAt(0).toUpperCase()
+                  <div className="w-full h-full flex items-center justify-center bg-[#E19D7E] text-white text-4xl font-bold">
+                    {(data.nombre || 'U').charAt(0).toUpperCase()}
+                  </div>
                 )}
               </div>
-              <div>
-                <p className="text-sm uppercase tracking-[0.2em] text-white/80 font-semibold">Perfil</p>
-                <h1 className="text-3xl md:text-4xl font-bold">{data.nombre}</h1>
-                <p className="text-white/90">{data.email}</p>
-                <span className="inline-flex items-center mt-2 px-3 py-1 rounded-full bg-white/15 text-xs font-semibold">
-                  {user?.rol}
+              <button className="absolute bottom-0 right-0 p-2 bg-[#C1583B] text-white rounded-full shadow-md hover:bg-[#904939] transition-all duration-200 hover:scale-110" title="Cambiar foto">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+              </button>
+            </div>
+
+            {/* Info Usuario */}
+            <div className="flex-1 text-center md:text-left space-y-2">
+              <h1 className="text-3xl font-bold text-[#904939]">{data.nombre}</h1>
+              <p className="text-gray-500 font-medium">{data.email}</p>
+
+              <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-3">
+                <span className="px-3 py-1 rounded-full bg-[#E19D7E]/20 text-[#C1583B] text-xs font-bold uppercase tracking-wider">
+                  {user?.rol || 'Cliente'}
+                </span>
+                <span className="px-3 py-1 rounded-full bg-[#E19D7E]/20 text-[#C1583B] text-xs font-bold flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>
+                  {data.pedidos?.length || 0} Pedidos
                 </span>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2">{pills}</div>
+
+            {/* Botones de Acción (Desktop) */}
+            <div className="hidden md:flex flex-col gap-3 items-end">
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gray-100 text-gray-600 font-semibold hover:bg-gray-200 transition-all duration-300"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+                Cerrar Sesión
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Body */}
-        <div className="p-6 md:p-8 space-y-6">
-          {/* Quick stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {quickStats.map((stat) => (
-              <div key={stat.label} className={`bg-gradient-to-r ${stat.color} text-white rounded-2xl p-4 shadow-lg flex items-center justify-between`}>
-                <div>
-                  <p className="text-sm uppercase tracking-wide text-white/80 font-semibold">{stat.label}</p>
-                  <p className="text-3xl font-bold">{stat.value}</p>
-                </div>
-                <span className="text-3xl">{stat.emoji}</span>
-              </div>
+        {/* Navegación */}
+        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-2 sticky top-20 z-30 backdrop-blur-sm bg-white/90">
+          <nav className="flex flex-wrap md:flex-nowrap justify-between gap-2">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-300 ${activeTab === tab.id
+                    ? 'bg-[#FFF5F7] text-[#904939] shadow-sm ring-1 ring-[#f0e5dd] scale-105'
+                    : 'text-gray-500 hover:bg-gray-50 hover:text-[#C1583B]'
+                  }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
             ))}
-          </div>
+          </nav>
+        </div>
 
+        {/* Contenido Principal con Transiciones */}
+        <div className="min-h-[400px] transition-all duration-500 ease-in-out">
           {activeTab === 'perfil' && (
-            <div className="grid lg:grid-cols-2 gap-6">
-              <form onSubmit={savePerfil} className="space-y-4 bg-white rounded-2xl p-5 shadow border border-[#f0e5dd]">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">👤</span>
-                  <h3 className="text-xl font-bold text-[#904939]">Información personal</h3>
-                </div>
-                <Input label="Nombre" value={form.nombre} onChange={(v) => setForm({ ...form, nombre: v })} />
-                <Input label="Teléfono" value={form.telefono} onChange={(v) => setForm({ ...form, telefono: v })} />
-                <Input label="Avatar URL" value={form.avatarUrl} onChange={(v) => setForm({ ...form, avatarUrl: v })} />
-                <button className="w-full px-4 py-3 bg-gradient-to-r from-[#C1583B] to-[#904939] text-white rounded-lg font-semibold shadow hover:shadow-lg transition">
-                  Guardar cambios
-                </button>
-              </form>
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 md:p-10 animate-fade-in">
+              <div className="mb-8">
+                <h2 className="text-2xl font-bold text-[#904939]">Información Personal</h2>
+                <p className="text-gray-500 mt-1">Administra tu información de contacto y detalles personales.</p>
+              </div>
 
-              <div className="space-y-4 bg-white rounded-2xl p-5 shadow border border-[#f0e5dd]">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">📍</span>
-                  <h3 className="text-xl font-bold text-[#904939]">Resumen rápido</h3>
-                </div>
-                <div className="rounded-xl bg-gradient-to-r from-[#f7f1ed] to-white p-4 border border-[#f0e5dd]">
-                  <p className="text-sm text-[#C1583B] font-semibold">Dirección principal</p>
-                  {data.direcciones?.length ? (
-                    data.direcciones.filter((d) => d.principal).map((d) => (
-                      <p key={d.id} className="text-[#904939]">{d.alias || 'Principal'}: {d.linea1}</p>
-                    ))
-                  ) : (
-                    <p className="text-[#C1583B]">Aún no guardas direcciones</p>
-                  )}
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="p-3 rounded-xl border border-[#f0e5dd] bg-[#fdf8f5]">
-                    <p className="text-sm text-[#C1583B]">Pedidos</p>
-                    <p className="text-2xl font-bold text-[#904939]">{data.pedidos?.length || 0}</p>
-                  </div>
-                  <div className="p-3 rounded-xl border border-[#f0e5dd] bg-[#fdf8f5]">
-                    <p className="text-sm text-[#C1583B]">Testimonios</p>
-                    <p className="text-2xl font-bold text-[#904939]">{data.testimonios?.length || 0}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+              <form onSubmit={savePerfil} className="grid md:grid-cols-2 gap-x-8 gap-y-6">
+                <InputGroup label="Nombre Completo" value={form.nombre} onChange={(v) => setForm({ ...form, nombre: v })} />
+                <InputGroup label="Correo Electrónico" value={form.email} onChange={(v) => setForm({ ...form, email: v })} type="email" />
+                <InputGroup label="Teléfono" value={form.telefono} onChange={(v) => setForm({ ...form, telefono: v })} type="tel" />
+                <InputGroup label="URL de Avatar" value={form.avatarUrl} onChange={(v) => setForm({ ...form, avatarUrl: v })} />
 
-          {activeTab === 'direcciones' && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">🏠</span>
-                <h3 className="text-xl font-bold text-[#904939]">Direcciones</h3>
-              </div>
-              <form onSubmit={addDireccion} className="grid md:grid-cols-2 gap-3 bg-white p-5 rounded-2xl shadow border border-[#f0e5dd]">
-                <Input label="Alias" value={newDir.alias} onChange={(v) => setNewDir({ ...newDir, alias: v })} />
-                <Input label="Dirección" value={newDir.linea1} onChange={(v) => setNewDir({ ...newDir, linea1: v })} required />
-                <Input label="Detalle" value={newDir.linea2} onChange={(v) => setNewDir({ ...newDir, linea2: v })} />
-                <Input label="Ciudad" value={newDir.ciudad} onChange={(v) => setNewDir({ ...newDir, ciudad: v })} />
-                <Input label="Región" value={newDir.region} onChange={(v) => setNewDir({ ...newDir, region: v })} />
-                <Input label="CP" value={newDir.cp} onChange={(v) => setNewDir({ ...newDir, cp: v })} />
-                <Input label="Referencias" value={newDir.referencias} onChange={(v) => setNewDir({ ...newDir, referencias: v })} />
-                <label className="flex items-center gap-2 text-[#904939] font-semibold">
-                  <input type="checkbox" checked={newDir.principal} onChange={(e) => setNewDir({ ...newDir, principal: e.target.checked })} />
-                  Marcar como principal
-                </label>
-                <button className="md:col-span-2 px-4 py-3 bg-gradient-to-r from-[#64b5f6] to-[#42a5f5] text-white rounded-lg font-semibold shadow hover:shadow-lg transition">
-                  Guardar dirección
-                </button>
+                <div className="md:col-span-2 pt-4 flex justify-end">
+                  <button className="px-8 py-3 bg-[#C1583B] text-white rounded-xl font-bold shadow-lg shadow-[#C1583B]/20 hover:bg-[#904939] hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
+                    Guardar Cambios
+                  </button>
+                </div>
               </form>
-              <div className="space-y-3">
-                {data.direcciones?.map((d) => (
-                  <div key={d.id} className="p-4 rounded-xl border border-[#f0e5dd] bg-white flex justify-between items-start shadow-sm">
-                    <div>
-                      <p className="font-semibold text-[#904939]">{d.alias || 'Dirección'}</p>
-                      <p className="text-[#C1583B]">{d.linea1}</p>
-                      {d.linea2 && <p className="text-[#C1583B]">{d.linea2}</p>}
-                      <p className="text-sm text-[#C1583B]">{d.ciudad} {d.region} {d.cp}</p>
-                      {d.principal && <span className="text-xs px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full">Principal</span>}
-                    </div>
-                    <button onClick={() => deleteDireccion(d.id)} className="text-[#c62828] font-semibold hover:underline">Eliminar</button>
-                  </div>
-                ))}
-              </div>
             </div>
           )}
 
           {activeTab === 'pedidos' && (
-            <div className="bg-white rounded-2xl shadow border border-[#f0e5dd] p-5">
+            <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 animate-fade-in">
+              <div className="mb-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold text-[#904939]">Mis Pedidos</h2>
+                  <p className="text-gray-500 mt-1">Historial de tus compras recientes.</p>
+                </div>
+              </div>
               <MisPedidos embedded />
             </div>
           )}
 
-          {activeTab === 'testimonios' && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">⭐</span>
-                <h3 className="text-xl font-bold text-[#904939]">Mis testimonios</h3>
-              </div>
-              <form onSubmit={saveTestimonio} className="grid md:grid-cols-2 gap-3 bg-white p-5 rounded-2xl shadow border border-[#f0e5dd]">
-                <Input label="Calificación (1-5)" type="number" min="1" max="5" value={newTestimonio.calificacion} onChange={(v) => setNewTestimonio({ ...newTestimonio, calificacion: Number(v) })} required />
-                <Input label="Comentario" value={newTestimonio.comentario} onChange={(v) => setNewTestimonio({ ...newTestimonio, comentario: v })} required />
-                <button className="md:col-span-2 px-4 py-3 bg-gradient-to-r from-[#8d6e63] to-[#C1583B] text-white rounded-lg font-semibold shadow hover:shadow-lg transition">
-                  Guardar testimonio
-                </button>
-              </form>
-              <div className="space-y-3">
-                {data.testimonios?.map((t) => (
-                  <div key={t.id} className="p-4 rounded-xl bg-white border border-[#f0e5dd] flex justify-between items-start shadow-sm">
-                    <div>
-                      <p className="font-semibold text-[#904939]">⭐ {t.calificacion}</p>
-                      <p className="text-[#C1583B]">{t.comentario}</p>
+          {activeTab === 'direcciones' && (
+            <div className="grid lg:grid-cols-3 gap-6 animate-fade-in">
+              {/* Formulario Nueva Dirección */}
+              <div className="lg:col-span-1">
+                <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sticky top-24 transition-all duration-300 hover:shadow-md">
+                  <h3 className="text-lg font-bold text-[#904939] mb-4 flex items-center gap-2">
+                    <span className="p-2 rounded-lg bg-[#E19D7E]/20 text-[#C1583B]"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4" /></svg></span>
+                    Nueva Dirección
+                  </h3>
+                  <form onSubmit={addDireccion} className="space-y-4">
+                    <InputGroup label="Alias (ej. Casa)" value={newDir.alias} onChange={(v) => setNewDir({ ...newDir, alias: v })} small />
+                    <InputGroup label="Dirección" value={newDir.linea1} onChange={(v) => setNewDir({ ...newDir, linea1: v })} required small />
+                    <InputGroup label="Detalles" value={newDir.linea2} onChange={(v) => setNewDir({ ...newDir, linea2: v })} small />
+                    <div className="grid grid-cols-2 gap-3">
+                      <InputGroup label="Ciudad" value={newDir.ciudad} onChange={(v) => setNewDir({ ...newDir, ciudad: v })} small />
+                      <InputGroup label="CP" value={newDir.cp} onChange={(v) => setNewDir({ ...newDir, cp: v })} small />
                     </div>
-                    <button onClick={() => deleteTestimonio(t.id)} className="text-[#c62828] font-semibold hover:underline">Eliminar</button>
+                    <label className="flex items-center gap-3 p-3 rounded-lg border border-gray-100 hover:bg-gray-50 cursor-pointer transition">
+                      <input type="checkbox" checked={newDir.principal} onChange={(e) => setNewDir({ ...newDir, principal: e.target.checked })} className="w-4 h-4 text-[#C1583B] rounded border-gray-300 focus:ring-[#C1583B]" />
+                      <span className="text-sm font-medium text-gray-700">Marcar como principal</span>
+                    </label>
+                    <button className="w-full py-3 bg-[#904939] text-white rounded-xl font-bold shadow-md hover:bg-[#7a3e30] transition-all duration-300 hover:-translate-y-0.5">
+                      Agregar Dirección
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              {/* Lista de Direcciones */}
+              <div className="lg:col-span-2 space-y-4">
+                {data.direcciones?.length === 0 ? (
+                  <div className="bg-white rounded-3xl p-10 text-center border border-dashed border-gray-300 animate-fade-in">
+                    <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400">
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                    </div>
+                    <p className="text-gray-500 font-medium">No tienes direcciones guardadas.</p>
                   </div>
-                ))}
-                {!data.testimonios?.length && <p className="text-[#C1583B]">No has enviado testimonios aún.</p>}
+                ) : (
+                  data.direcciones?.map((d) => (
+                    <div key={d.id} className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex justify-between items-start group hover:border-[#E19D7E]/50 transition-all duration-300 hover:shadow-md animate-fade-in">
+                      <div className="flex gap-4">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300 ${d.principal ? 'bg-[#C1583B]/10 text-[#C1583B]' : 'bg-gray-100 text-gray-500 group-hover:bg-[#E19D7E]/10 group-hover:text-[#C1583B]'}`}>
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h4 className="font-bold text-gray-800">{d.alias || 'Dirección'}</h4>
+                            {d.principal && <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#C1583B] text-white uppercase animate-pulse">Principal</span>}
+                          </div>
+                          <p className="text-gray-600 text-sm">{d.linea1}</p>
+                          {d.linea2 && <p className="text-gray-500 text-xs mt-0.5">{d.linea2}</p>}
+                          <p className="text-gray-400 text-xs mt-1">{d.ciudad}, {d.cp}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => deleteDireccion(d.id)}
+                        className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200"
+                        title="Eliminar dirección"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                      </button>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}
 
           {activeTab === 'seguridad' && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl">🔒</span>
-                <h3 className="text-xl font-bold text-[#904939]">Seguridad</h3>
+            <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
+              <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 transition-all duration-300 hover:shadow-md">
+                <div className="mb-6">
+                  <h2 className="text-xl font-bold text-[#904939] flex items-center gap-2">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                    Cambiar Contraseña
+                  </h2>
+                  <p className="text-gray-500 text-sm">Asegura tu cuenta actualizando tu contraseña periódicamente.</p>
+                </div>
+                <form onSubmit={changePassword} className="space-y-4">
+                  <InputGroup label="Contraseña Actual" type="password" value={passwordForm.passwordActual} onChange={(v) => setPasswordForm({ ...passwordForm, passwordActual: v })} required />
+                  <InputGroup label="Nueva Contraseña" type="password" value={passwordForm.nuevaPassword} onChange={(v) => setPasswordForm({ ...passwordForm, nuevaPassword: v })} required />
+                  <div className="pt-2">
+                    <button className="w-full py-3 bg-gray-800 text-white rounded-xl font-bold shadow hover:bg-black transition-all duration-300 hover:-translate-y-0.5">
+                      Actualizar Seguridad
+                    </button>
+                  </div>
+                </form>
               </div>
-              <form onSubmit={changePassword} className="grid md:grid-cols-2 gap-3 bg-white p-5 rounded-2xl shadow border border-[#f0e5dd]">
-                <Input label="Contraseña actual" type="password" value={passwordForm.passwordActual} onChange={(v) => setPasswordForm({ ...passwordForm, passwordActual: v })} required />
-                <Input label="Nueva contraseña" type="password" value={passwordForm.nuevaPassword} onChange={(v) => setPasswordForm({ ...passwordForm, nuevaPassword: v })} required />
-                <button className="md:col-span-2 px-4 py-3 bg-gradient-to-r from-[#C1583B] to-[#904939] text-white rounded-lg font-semibold shadow hover:shadow-lg transition">
-                  Actualizar contraseña
-                </button>
-              </form>
-              <div className="p-4 rounded-xl bg-red-50 border border-red-100 shadow-sm">
-                <p className="text-red-700 font-semibold mb-2">Eliminar cuenta</p>
-                <p className="text-sm text-red-700 mb-2">Esta acción es permanente. Contacta soporte para confirmarlo.</p>
-                <button className="px-4 py-3 bg-red-600 text-white rounded-lg font-semibold opacity-60 cursor-not-allowed">
-                  Solicitar eliminación
+
+              <div className="bg-red-50 rounded-3xl p-6 border border-red-100 flex items-start gap-4 transition-all duration-300 hover:bg-red-100/50">
+                <div className="p-3 bg-red-100 text-red-600 rounded-full">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                </div>
+                <div>
+                  <h3 className="text-red-800 font-bold">Zona de Peligro</h3>
+                  <p className="text-red-600 text-sm mt-1 mb-3">La eliminación de la cuenta es irreversible. Todos tus datos serán borrados permanentemente.</p>
+                  <button className="px-4 py-2 bg-red-600 text-white text-sm font-bold rounded-lg opacity-50 cursor-not-allowed" title="Contacta a soporte para eliminar tu cuenta">
+                    Eliminar Cuenta
+                  </button>
+                </div>
+              </div>
+
+              {/* Botón Logout Móvil */}
+              <div className="md:hidden pt-4">
+                <button
+                  onClick={handleLogout}
+                  className="w-full py-3 bg-gray-200 text-gray-700 rounded-xl font-bold shadow hover:bg-gray-300 transition-all duration-300"
+                >
+                  Cerrar Sesión
                 </button>
               </div>
             </div>
           )}
         </div>
       </div>
-    </section>
+    </div>
   );
 };
 
-const Input = ({ label, value, onChange, type = 'text', required, min, max }) => (
-  <label className="flex flex-col gap-1 text-[#904939] font-semibold">
-    <span>{label}</span>
+const InputGroup = ({ label, value, onChange, type = 'text', required, disabled, small }) => (
+  <div className="space-y-1.5">
+    <label className={`block font-bold text-[#904939] ${small ? 'text-xs' : 'text-sm'}`}>{label}</label>
     <input
       type={type}
-      min={min}
-      max={max}
       value={value}
       required={required}
+      disabled={disabled}
       onChange={(e) => onChange(e.target.value)}
-      className="px-4 py-3 rounded-lg border border-[#E19D7E] bg-white focus:outline-none focus:ring-2 focus:ring-[#C1583B]"
+      className={`w-full rounded-xl border-gray-200 bg-gray-50 text-gray-800 focus:border-[#C1583B] focus:ring-[#C1583B] transition-all duration-200 ${small ? 'px-3 py-2 text-sm' : 'px-4 py-3'
+        } ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
     />
-  </label>
+  </div>
 );
 
 export default Perfil;

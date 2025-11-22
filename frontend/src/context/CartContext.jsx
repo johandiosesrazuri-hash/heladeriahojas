@@ -1,14 +1,15 @@
 import { createContext, useContext, useReducer, useEffect } from "react";
-import { useAuth } from "../context/AuthContext"; // AJUSTA ESTA RUTA
+import { useAuth } from "../context/AuthContext";
 
 const CartContext = createContext();
 
 const getInitialState = (email) => {
   try {
     const raw = localStorage.getItem(`cart_${email}`);
-    return raw ? JSON.parse(raw) : { items: [], total: 0 };
+    const parsed = raw ? JSON.parse(raw) : { items: [], total: 0 };
+    return { ...parsed, isCartOpen: false };
   } catch {
-    return { items: [], total: 0 };
+    return { items: [], total: 0, isCartOpen: false };
   }
 };
 
@@ -16,7 +17,10 @@ const cartReducer = (state, action) => {
   switch (action.type) {
 
     case "SET_CART":
-      return action.payload;
+      return { ...action.payload, isCartOpen: false };
+
+    case "TOGGLE_CART":
+      return { ...state, isCartOpen: !state.isCartOpen };
 
     case "ADD_ITEM": {
       const existing = state.items.find((i) => i.id === action.payload.id);
@@ -37,7 +41,7 @@ const cartReducer = (state, action) => {
         0
       );
 
-      return { items: newItems, total: newTotal };
+      return { ...state, items: newItems, total: newTotal };
     }
 
     case "REMOVE_ITEM": {
@@ -47,7 +51,7 @@ const cartReducer = (state, action) => {
         0
       );
 
-      return { items: newItems, total: newTotal };
+      return { ...state, items: newItems, total: newTotal };
     }
 
     case "UPDATE_QUANTITY": {
@@ -62,11 +66,11 @@ const cartReducer = (state, action) => {
         0
       );
 
-      return { items: newItems, total: newTotal };
+      return { ...state, items: newItems, total: newTotal };
     }
 
     case "CLEAR_CART":
-      return { items: [], total: 0 };
+      return { ...state, items: [], total: 0 };
 
     default:
       return state;
@@ -75,7 +79,7 @@ const cartReducer = (state, action) => {
 
 export const CartProvider = ({ children }) => {
 
-  const { user } = useAuth();          // OBTENER EMAIL DE USUARIO
+  const { user } = useAuth();
   const email = user?.email || "guest";
 
   const [state, dispatch] = useReducer(cartReducer, getInitialState(email));
@@ -88,7 +92,9 @@ export const CartProvider = ({ children }) => {
 
   // 🔥 Guardar el carrito asociado a un usuario
   useEffect(() => {
-    localStorage.setItem(`cart_${email}`, JSON.stringify(state));
+    // Don't save isCartOpen to localStorage
+    const { isCartOpen, ...stateToSave } = state;
+    localStorage.setItem(`cart_${email}`, JSON.stringify(stateToSave));
   }, [state, email]);
 
   // Métodos públicos
@@ -97,10 +103,11 @@ export const CartProvider = ({ children }) => {
   const updateQuantity = (id, quantity) =>
     dispatch({ type: "UPDATE_QUANTITY", payload: { id, quantity } });
   const clearCart = () => dispatch({ type: "CLEAR_CART" });
+  const toggleCart = () => dispatch({ type: "TOGGLE_CART" });
 
   return (
     <CartContext.Provider
-      value={{ ...state, addItem, removeItem, updateQuantity, clearCart }}
+      value={{ ...state, addItem, removeItem, updateQuantity, clearCart, toggleCart }}
     >
       {children}
     </CartContext.Provider>

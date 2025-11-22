@@ -19,10 +19,10 @@ public class PerfilService {
     private final PasswordEncoder passwordEncoder;
 
     public PerfilService(UsuarioRepository usuarioRepository,
-                         DireccionRepository direccionRepository,
-                         PedidoRepository pedidoRepository,
-                         TestimonioRepository testimonioRepository,
-                         PasswordEncoder passwordEncoder) {
+            DireccionRepository direccionRepository,
+            PedidoRepository pedidoRepository,
+            TestimonioRepository testimonioRepository,
+            PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.direccionRepository = direccionRepository;
         this.pedidoRepository = pedidoRepository;
@@ -46,9 +46,19 @@ public class PerfilService {
     public Usuario actualizarPerfil(String email, Usuario cambios) {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
         usuario.setNombre(cambios.getNombre());
         usuario.setTelefono(cambios.getTelefono());
         usuario.setAvatarUrl(cambios.getAvatarUrl());
+
+        // Validar y actualizar email si cambió
+        if (cambios.getEmail() != null && !cambios.getEmail().equals(usuario.getEmail())) {
+            if (usuarioRepository.existsByEmail(cambios.getEmail())) {
+                throw new RuntimeException("El correo electrónico ya está en uso por otro usuario");
+            }
+            usuario.setEmail(cambios.getEmail());
+        }
+
         return usuarioRepository.save(usuario);
     }
 
