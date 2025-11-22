@@ -31,12 +31,12 @@ const Menu = () => {
       image: `http://localhost:8080${producto.imagen}` || '/img/default.png',
       quantity: 1
     });
-    
+
     setNotification({
       show: true,
       message: `${producto.nombre} agregado al carrito`
     });
-    
+
     setTimeout(() => {
       setNotification({ show: false, message: '' });
     }, 3000);
@@ -46,11 +46,11 @@ const Menu = () => {
   const normalizarCategoria = (categoria) => {
     if (!categoria) return null;
     const valor = categoria.toString().trim().toLowerCase();
-    
+
     if (valor.startsWith('beb')) return 'Bebidas';
     if (valor.startsWith('hel')) return 'Helados';
     if (valor === 'cafe' || valor === 'café') return 'Bebidas';
-    
+
     return null;
   };
 
@@ -59,37 +59,37 @@ const Menu = () => {
     // Usar el campo 'tipo' o 'categoria' si existen
     const tipoPorCampo = normalizarCategoria(producto.tipo) || normalizarCategoria(producto.categoria);
     if (tipoPorCampo) return tipoPorCampo;
-    
+
     // Inferir el tipo por el nombre del producto como respaldo
     const nombre = (producto.nombre || '').toLowerCase();
-    
+
     const palabrasBebidas = [
-      'bebida', 'jugo', 'refresco', 'malteada', 'batido', 'smoothie', 
+      'bebida', 'jugo', 'refresco', 'malteada', 'batido', 'smoothie',
       'agua', 'soda', 'té', 'café', 'limonada', 'horchata', 'chicha'
     ];
-    
+
     const esBebida = palabrasBebidas.some(palabra => nombre.includes(palabra));
-    
+
     return esBebida ? 'Bebidas' : 'Helados';
   };
 
   // Filtrar productos por categoría
-  const productosFiltrados = categoriaActiva === 'Todos' 
-    ? productos 
+  const productosFiltrados = categoriaActiva === 'Todos'
+    ? productos
     : productos.filter(producto => getTipoProducto(producto) === categoriaActiva);
 
   // Obtener color de la categoría
   const getColorCategoria = (categoria) => {
-    switch(categoria) {
-      case 'Helados': return 'bg-[#E19D7E] text-[#904939]';
-      case 'Bebidas': return 'bg-[#E19D7E] text-[#904939]';
-      default: return 'bg-[#DDD4CE] text-[#904939]';
+    switch (categoria) {
+      case 'Helados': return 'bg-primary/20 text-primary-dark';
+      case 'Bebidas': return 'bg-secondary/20 text-secondary-dark';
+      default: return 'bg-neutral-100 text-neutral-600';
     }
   };
 
   // Obtener icono de la categoría
   const getIconoCategoria = (categoria) => {
-    switch(categoria) {
+    switch (categoria) {
       case 'Helados': return '🍦';
       case 'Bebidas': return '🥤';
       default: return '📋';
@@ -97,15 +97,15 @@ const Menu = () => {
   };
 
   return (
-    <section className="py-12 px-4 md:px-8 lg:px-16 min-h-screen bg-[#DDD4CE]">
+    <section className="py-12 px-4 md:px-8 lg:px-16 min-h-screen bg-neutral-50">
       {/* Notificación temporal */}
       {notification.show && (
         <div className="fixed bottom-4 right-4 z-50 animate-fade-in">
-          <div className="bg-[#E19D7E] text-[#904939] px-6 py-3 rounded-full shadow-lg flex items-center">
+          <div className="bg-primary text-white px-6 py-3 rounded-full shadow-lg flex items-center">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
-            <span className="font-medium">{notification.message}</span>
+            <span className="font-medium font-body">{notification.message}</span>
           </div>
         </div>
       )}
@@ -114,26 +114,25 @@ const Menu = () => {
       <div className="max-w-7xl mx-auto">
         {/* Encabezado */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold text-[#904939] mb-4 font-serif">
+          <h1 className="section-title">
             Nuestro Menú
           </h1>
-          <p className="text-lg text-[#904939] max-w-2xl mx-auto font-sans">
+          <p className="text-lg text-neutral-500 max-w-2xl mx-auto font-body">
             Descubre nuestra deliciosa variedad de helados artesanales y refrescantes bebidas
           </p>
         </div>
 
         {/* Filtros de Categoría */}
         <div className="flex justify-center mb-10">
-          <div className="inline-flex bg-white rounded-full p-1 shadow-md border border-[#E19D7E]">
+          <div className="inline-flex bg-white rounded-full p-1.5 shadow-soft border border-neutral-100">
             {categorias.map((categoria) => (
               <button
                 key={categoria}
                 onClick={() => setCategoriaActiva(categoria)}
-                className={`px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 flex items-center font-sans ${
-                  categoriaActiva === categoria
-                    ? 'bg-[#E19D7E] text-[#904939] shadow-sm hover:bg-[#904939] hover:text-white'
-                    : 'text-[#904939] hover:bg-[#E19D7E]'
-                }`}
+                className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-300 flex items-center font-body ${categoriaActiva === categoria
+                    ? 'bg-primary text-white shadow-md transform scale-105'
+                    : 'text-neutral-500 hover:bg-neutral-50 hover:text-primary'
+                  }`}
               >
                 <span className="mr-2">{getIconoCategoria(categoria)}</span>
                 {categoria}
@@ -146,8 +145,8 @@ const Menu = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {productosFiltrados.length === 0 ? (
             <div className="col-span-full text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#E19D7E] border-t-transparent"></div>
-              <p className="mt-4 text-[#904939] text-lg font-sans">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
+              <p className="mt-4 text-neutral-500 text-lg font-body">
                 Cargando productos...
               </p>
             </div>
@@ -157,21 +156,21 @@ const Menu = () => {
               return (
                 <div
                   key={producto.id}
-                  className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group border border-[#E19D7E]"
+                  className="bg-white rounded-3xl shadow-card overflow-hidden transition-all duration-300 hover:shadow-hover hover:-translate-y-2 group border border-neutral-100"
                 >
                   {/* Imagen del Producto con efecto zoom */}
-                  <div className="relative h-64 overflow-hidden">
+                  <div className="relative h-64 overflow-hidden bg-neutral-50">
                     <img
                       src={`http://localhost:8080${producto.imagen}`}
                       alt={producto.nombre}
-                      className="w-full h-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
                       onError={(e) => {
                         e.target.src = '/img/default.png';
                       }}
                     />
-                    
+
                     {/* Badge de Tipo */}
-                    <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold flex items-center ${getColorCategoria(tipo)}`}>
+                    <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold flex items-center backdrop-blur-sm ${getColorCategoria(tipo)}`}>
                       <span className="mr-1">{getIconoCategoria(tipo)}</span>
                       {tipo}
                     </div>
@@ -179,25 +178,25 @@ const Menu = () => {
 
                   {/* Contenido de la Tarjeta */}
                   <div className="p-6">
-                    <h3 className="text-xl font-bold text-[#904939] mb-2 font-serif">
+                    <h3 className="text-xl font-bold text-neutral-800 mb-2 font-title group-hover:text-primary transition-colors">
                       {producto.nombre}
                     </h3>
-                    
-                    <p className="text-[#904939] text-sm mb-4 line-clamp-2 font-sans">
+
+                    <p className="text-neutral-500 text-sm mb-4 line-clamp-2 font-body leading-relaxed">
                       {producto.descripcion}
                     </p>
 
                     {/* Precio y Botón */}
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl font-bold text-[#904939] font-serif">
+                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-neutral-50">
+                      <span className="text-2xl font-bold text-primary font-title">
                         S/ {Number(producto.precio).toFixed(2)}
                       </span>
-                      
+
                       <button
                         onClick={() => handleAddToCart(producto)}
-                        className="px-4 py-2 bg-[#E19D7E] hover:bg-[#904939] text-white hover:text-[#DDD4CE] rounded-full font-medium transition-colors duration-300 flex items-center font-sans"
+                        className="px-5 py-2.5 bg-neutral-900 text-white rounded-full font-bold text-sm transition-all duration-300 flex items-center font-title hover:bg-primary hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
                       >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
                           <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
                         </svg>
                         Agregar
@@ -212,14 +211,14 @@ const Menu = () => {
 
         {/* Mensaje cuando no hay productos en una categoría */}
         {productosFiltrados.length === 0 && productos.length > 0 && (
-          <div className="col-span-full text-center py-12">
-            <div className="text-6xl mb-4">
+          <div className="col-span-full text-center py-16">
+            <div className="text-6xl mb-6 animate-bounce-slow">
               {categoriaActiva === 'Helados' ? '🍦' : '🥤'}
             </div>
-            <h3 className="text-2xl font-bold text-[#904939] mb-2 font-serif">
+            <h3 className="text-2xl font-bold text-neutral-800 mb-2 font-title">
               No hay {categoriaActiva.toLowerCase()} disponibles
             </h3>
-            <p className="text-[#904939] font-sans">
+            <p className="text-neutral-500 font-body">
               Prueba seleccionando otra categoría
             </p>
           </div>
@@ -228,17 +227,6 @@ const Menu = () => {
 
       {/* Estilos */}
       <style jsx global>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
         .line-clamp-2 {
           display: -webkit-box;
           -webkit-line-clamp: 2;
@@ -251,5 +239,3 @@ const Menu = () => {
 };
 
 export default Menu;
-
-

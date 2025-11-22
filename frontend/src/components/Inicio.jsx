@@ -22,32 +22,27 @@ const Inicio = () => {
     return () => window.removeEventListener('hashchange', scrollToHash);
   }, []);
 
-  const handleCTA = (id) => {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
   return (
-    <div className="bg-gradient-to-br from-[#DDD4CE] to-[#DDD4CE]">
+    <div className="bg-neutral-50 min-h-screen">
 
       {/* Secciones ancladas con margen para el navbar fijo */}
-      <div id="sobre-nosotros" className="scroll-mt-24">
+      <div id="sobre-nosotros" className="scroll-mt-20">
         <SobreNosotros />
       </div>
 
-      <div id="menu" className="scroll-mt-24">
+      <div id="menu" className="scroll-mt-20">
         <Menu />
       </div>
 
-      <div id="promociones" className="scroll-mt-24">
+      <div id="promociones" className="scroll-mt-20">
         <Promociones />
       </div>
 
-      <div id="contacto" className="scroll-mt-24">
+      <div id="contacto" className="scroll-mt-20">
         <Contacto />
       </div>
 
-      <div id="testimonios" className="scroll-mt-24">
+      <div id="testimonios" className="scroll-mt-20">
         <Testimonios />
       </div>
     </div>
@@ -55,7 +50,3 @@ const Inicio = () => {
 };
 
 export default Inicio;
-
-
-
-

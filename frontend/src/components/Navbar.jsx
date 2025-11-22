@@ -31,10 +31,6 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/');
-  };
 
   const scrollToSection = (sectionId) => {
     const el = document.getElementById(sectionId);
@@ -55,18 +51,18 @@ const Navbar = () => {
   return (
     <>
       <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled
-          ? 'bg-white/90 backdrop-blur-md shadow-md py-2'
-          : 'bg-transparent py-4'
+        ? 'bg-white/80 backdrop-blur-md shadow-soft py-2 border-b border-white/20'
+        : 'bg-white/100 py-5 h-20  border-b border-white/20'
         }`}>
         <div className="container-custom px-4 md:px-8 lg:px-16">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <Link to="/" className="flex items-center">
-                <div className="w-10 h-10 bg-[#E19D7E] rounded-full flex items-center justify-center mr-3">
+              <Link to="/" className="flex items-center group">
+                <div className="w-10 h-10 bg-primary-light/20 rounded-full flex items-center justify-center mr-3 transition-transform group-hover:scale-110">
                   <img alt="LOGO" className="h-6 w-6" src="/img/ice-cream.png" />
                 </div>
-                <span className="text-2xl font-bold text-[#904939] font-cinzel">ChoccoDelight</span>
+                <span className="text-2xl font-bold text-primary font-title tracking-tight">ChoccoDelight</span>
               </Link>
             </div>
 
@@ -84,10 +80,10 @@ const Navbar = () => {
                     <button
                       type="button"
                       onClick={() => handleNavClick(item.section)}
-                      className="text-[#C1583B] hover:text-[#904939] font-medium font-quicksand transition-colors duration-200 relative group"
+                      className="text-neutral-800 hover:text-primary font-medium font-body transition-colors duration-200 relative group"
                     >
                       {item.name}
-                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-[#E19D7E] transition-all duration-300 group-hover:w-full"></span>
+                      <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
                     </button>
                   </li>
                 ))}
@@ -99,13 +95,13 @@ const Navbar = () => {
               {/* Cart */}
               <button
                 onClick={toggleCart}
-                className="relative p-2 text-[#C1583B] hover:text-[#904939] transition-colors duration-200"
+                className="relative p-2 text-neutral-800 hover:text-primary transition-colors duration-200 group"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
                 {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-[#E19D7E] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-pulse">
+                  <span className="absolute -top-1 -right-1 bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center animate-fade-in shadow-sm">
                     {totalItems}
                   </span>
                 )}
@@ -115,24 +111,24 @@ const Navbar = () => {
               {user ? (
                 <Link
                   to="/perfil"
-                  className="flex items-center space-x-2 text-[#C1583B] hover:text-[#904939] font-medium font-quicksand transition-colors duration-200 px-3 py-1.5 rounded-full hover:bg-[#E19D7E]/10"
+                  className="flex items-center space-x-2 text-neutral-800 hover:text-primary font-medium font-body transition-colors duration-200 px-3 py-1.5 rounded-full hover:bg-primary/5"
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#E19D7E] flex items-center justify-center text-white font-bold text-sm">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-dark flex items-center justify-center text-white font-bold text-sm shadow-sm">
                     {user.nombre ? user.nombre.charAt(0).toUpperCase() : 'U'}
                   </div>
-                  <span>{user.nombre}</span>
+                  <span className="hidden lg:inline">{user.nombre}</span>
                 </Link>
               ) : (
                 <div className="flex items-center space-x-3">
                   <Link
                     to="/login"
-                    className="px-4 py-2 text-[#C1583B] hover:text-[#904939] font-medium font-quicksand transition-colors duration-200"
+                    className="px-4 py-2 text-neutral-800 hover:text-primary font-medium font-body transition-colors duration-200"
                   >
                     Iniciar Sesión
                   </Link>
                   <Link
                     to="/register"
-                    className="px-4 py-2 bg-[#E19D7E] hover:bg-[#3aa38f] text-[#904939] rounded-full font-semibold transition-all duration-300 hover:shadow-md font-montserrat"
+                    className="px-5 py-2 bg-primary hover:bg-primary-dark text-white rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 font-title text-sm"
                   >
                     Registrarse
                   </Link>
@@ -144,7 +140,7 @@ const Navbar = () => {
             <div className="md:hidden">
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-[#C1583B] hover:text-[#904939] focus:outline-none"
+                className="text-neutral-800 hover:text-primary focus:outline-none"
               >
                 {isMenuOpen ? (
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -162,7 +158,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-white/95 backdrop-blur-md shadow-lg">
+          <div className="md:hidden bg-white/95 backdrop-blur-md shadow-lg border-t border-gray-100">
             <div className="px-4 pt-2 pb-3 space-y-1">
               {[
                 { name: 'Inicio', section: 'inicio' },
@@ -176,27 +172,27 @@ const Navbar = () => {
                   type="button"
                   key={item.name}
                   onClick={() => handleNavClick(item.section)}
-                  className="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-[#C1583B] hover:text-[#904939] hover:bg-[#DDD4CE] font-quicksand"
+                  className="block w-full text-left px-3 py-3 rounded-xl text-base font-medium text-neutral-800 hover:text-primary hover:bg-primary/5 font-body transition-colors"
                 >
                   {item.name}
                 </button>
               ))}
 
-              <div className="border-t border-gray-200 pt-4 mt-4">
+              <div className="border-t border-gray-100 pt-4 mt-4">
                 <div className="flex items-center justify-between px-3 py-2">
                   <button
                     onClick={() => {
                       toggleCart();
                       setIsMenuOpen(false);
                     }}
-                    className="flex items-center text-[#C1583B] hover:text-[#904939] font-medium font-quicksand w-full text-left"
+                    className="flex items-center text-neutral-800 hover:text-primary font-medium font-body w-full text-left"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                     Carrito
                     {totalItems > 0 && (
-                      <span className="ml-1 bg-[#E19D7E] text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      <span className="ml-auto bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                         {totalItems}
                       </span>
                     )}
@@ -206,28 +202,28 @@ const Navbar = () => {
                 {user ? (
                   <Link
                     to="/perfil"
-                    className="block px-3 py-2 rounded-md text-base font-medium text-[#C1583B] hover:text-[#904939] hover:bg-[#DDD4CE] font-quicksand"
+                    className="block px-3 py-3 rounded-xl text-base font-medium text-neutral-800 hover:text-primary hover:bg-primary/5 font-body transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Mi Perfil
                   </Link>
                 ) : (
-                  <>
+                  <div className="px-3 pt-2 space-y-2">
                     <Link
                       to="/login"
-                      className="block px-3 py-2 rounded-md text-base font-medium text-[#C1583B] hover:text-[#904939] hover:bg-[#DDD4CE] font-quicksand"
+                      className="block w-full text-center px-3 py-2 rounded-xl text-base font-medium text-neutral-800 hover:bg-gray-50 font-body border border-gray-200"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Iniciar Sesión
                     </Link>
                     <Link
                       to="/register"
-                      className="block px-3 py-2 mt-2 bg-[#E19D7E] hover:bg-[#3aa38f] text-[#904939] rounded-md text-base font-semibold text-center font-montserrat"
+                      className="block w-full text-center px-3 py-2 bg-primary hover:bg-primary-dark text-white rounded-xl text-base font-semibold font-title shadow-sm"
                       onClick={() => setIsMenuOpen(false)}
                     >
                       Registrarse
                     </Link>
-                  </>
+                  </div>
                 )}
               </div>
             </div>

@@ -4,7 +4,7 @@
 @tailwind utilities;
 
 /* Importar fuentes de Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Open+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap');
 
 /* Capa de estilos base personalizados */
 @layer base {
@@ -13,41 +13,37 @@
   }
 
   body {
-    @apply font-body text-primary-dark bg-[#DDD4CE] min-h-screen;
+    @apply font-body text-neutral-800 bg-neutral-50 min-h-screen;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-title font-semibold tracking-wide text-primary-dark;
+    @apply font-title font-bold tracking-tight text-neutral-900;
   }
 
-  /* Ajustar familias usadas en clases existentes */
+  /* Compatibilidad con clases antiguas */
   .font-cinzel, .font-serif, .font-title {
-    font-family: 'Comfortaa', sans-serif;
+    font-family: 'Montserrat', sans-serif;
   }
 
   .font-quicksand, .font-montserrat, .font-sans, .font-body, .font-accent {
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Roboto', sans-serif;
   }
 
   p {
-    @apply leading-relaxed text-gray-700;
+    @apply leading-relaxed text-neutral-800;
   }
 
   /* Personalizar scrollbar */
   ::-webkit-scrollbar {
-    @apply w-2.5;
+    @apply w-2;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-gray-100;
+    @apply bg-neutral-100;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-primary-accent rounded-md;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-primary-brown;
+    @apply bg-primary/50 rounded-full hover:bg-primary;
   }
 }
 
@@ -55,44 +51,44 @@
 @layer components {
   /* Botones */
   .btn-primary {
-    @apply px-6 py-3 bg-primary-brown text-white 
+    @apply px-6 py-3 bg-primary text-white 
            rounded-full font-semibold transition-all duration-300 
-           hover:bg-primary-accent hover:text-white hover:shadow-large hover:-translate-y-1 active:translate-y-0;
+           hover:bg-primary-dark hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0;
   }
 
   .btn-secondary {
-    @apply px-6 py-3 bg-white text-primary-brown border-2 border-primary-brown 
+    @apply px-6 py-3 bg-white text-primary border-2 border-primary 
            rounded-full font-semibold transition-all duration-300 
-           hover:bg-primary-brown hover:text-white hover:-translate-y-1;
+           hover:bg-primary-light/10 hover:-translate-y-0.5;
   }
 
   /* Tarjetas */
   .card {
-    @apply bg-white rounded-2xl shadow-medium transition-all duration-300 
-           hover:shadow-large hover:-translate-y-2;
+    @apply bg-white rounded-2xl shadow-card transition-all duration-300 
+           hover:shadow-hover hover:-translate-y-1 border border-neutral-100;
   }
 
   /* Inputs de formulario */
   .form-input {
-    @apply w-full px-4 py-3 border-2 border-gray-200 rounded-lg 
-           transition-all duration-300 focus:border-primary-accent 
-           focus:ring-4 focus:ring-primary-accent/10 focus:outline-none;
+    @apply w-full px-4 py-3 border border-neutral-200 rounded-xl bg-white
+           transition-all duration-300 focus:border-primary 
+           focus:ring-4 focus:ring-primary/10 focus:outline-none;
   }
 
   .form-label {
-    @apply block text-chocolate-dark font-medium mb-2;
+    @apply block text-neutral-800 font-medium mb-2 text-sm;
   }
 
   /* Títulos de sección */
   .section-title {
-    @apply text-4xl md:text-5xl text-primary-dark text-center 
-           font-title font-bold mb-8 relative pb-4;
+    @apply text-4xl md:text-5xl text-neutral-900 text-center 
+           font-title font-bold mb-12 relative pb-4;
   }
 
   .section-title::after {
     content: '';
-    @apply absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 
-           bg-gradient-to-r from-accent-gold to-accent-rose rounded-full;
+    @apply absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-1.5 
+           bg-gradient-to-r from-primary to-secondary rounded-full;
   }
 
   /* Contenedores */
@@ -103,22 +99,15 @@
   /* Badges */
   .badge {
     @apply inline-flex items-center px-3 py-1 rounded-full 
-           text-sm font-semibold;
+           text-xs font-bold uppercase tracking-wider;
   }
 
   .badge-primary {
-    @apply bg-primary-accent/20 text-primary-dark;
+    @apply bg-primary/10 text-primary-dark;
   }
 
-  .badge-accent {
-    @apply bg-accent-rose/20 text-accent-punch;
-  }
-
-  /* Superficie opcional oscura */
-  .surface {
-    background-color: #DDD4CE;
-    color: #DDD4CE;
-    border: 1px solid #2f2f33;
+  .badge-secondary {
+    @apply bg-secondary/20 text-secondary-dark;
   }
 }
 
@@ -126,46 +115,29 @@
 @layer utilities {
   /* Gradientes personalizados */
   .gradient-primary {
-    @apply bg-gradient-to-br from-[#C1583B] to-[#E19D7E];
+    @apply bg-gradient-to-br from-primary to-primary-dark;
   }
 
-  .gradient-secondary {
-    @apply bg-gradient-to-br from-[#DDD4CE] to-[#E19D7E];
+  .gradient-pastel {
+    @apply bg-gradient-to-br from-primary-light via-white to-secondary-light;
   }
 
   .gradient-hero {
-    @apply bg-gradient-to-br from-[#C1583B]/15 via-[#DDD4CE]/40 to-[#C1583B]/10;
+    @apply bg-gradient-to-br from-primary-light/20 via-neutral-50 to-secondary-light/20;
   }
 
-  /* Efectos de texto */
-  .text-shadow {
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  .text-shadow-lg {
-    text-shadow: 2px 2px 20px rgba(0, 0, 0, 0.3);
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-dark;
   }
 
   /* Backdrop blur */
   .glass {
-    @apply bg-white/60 backdrop-blur-xl;
+    @apply bg-white/80 backdrop-blur-md border border-white/20;
   }
 
   /* Animaciones personalizadas */
   .animate-fade-in {
     animation: fadeIn 0.6s ease-out forwards;
-  }
-
-  .animation-delay-300 {
-    animation-delay: 300ms;
-  }
-
-  .delay-300 {
-    animation-delay: 300ms;
-  }
-
-  .delay-1000 {
-    animation-delay: 1000ms;
   }
 }
 
@@ -180,5 +152,3 @@
     transform: translateY(0);
   }
 }
-
-

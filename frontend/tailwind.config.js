@@ -9,113 +9,70 @@ const config = {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    // Fuente base para utilidades Tailwind
-    fontFamily: {
-      sans: ['Open Sans', 'sans-serif'],
-      serif: ['Comfortaa', 'sans-serif'],
-    },
     extend: {
-      // Paleta de colores personalizada para ChoccoDelight
+      fontFamily: {
+        sans: ['Roboto', 'sans-serif'],
+        title: ['Montserrat', 'sans-serif'],
+        body: ['Roboto', 'sans-serif'],
+      },
       colors: {
         gray: colors.gray,
+        // Paleta "Heladería Moderna"
         primary: {
-          dark: '#904939',   // Profundo
-          brown: '#C1583B',  // Tono medio
-          accent: '#E19D7E', // Claro
+          light: '#FFC1CC', // Pastel Pink
+          DEFAULT: '#FF8FA3', // Strawberry
+          dark: '#FF6B81', // Deep Strawberry
         },
         secondary: {
-          warm: '#E19D7E',   // Intermedio suave
-          cream: '#DDD4CE',  // Fondo claro Linen
+          light: '#C7F9CC', // Mint Light
+          DEFAULT: '#80ED99', // Mint
+          dark: '#57CC99', // Deep Mint
         },
         accent: {
-          gold: '#E19D7E',   // Acento suave
-          rose: '#C1583B',   // Acento medio
-          punch: '#904939',  // Contraste oscuro
+          blue: '#A2D2FF', // Pastel Blue
+          yellow: '#FEE440', // Soft Yellow
+          purple: '#CDB4DB', // Soft Purple
+          rose: '#FF8FA3',   // Alias for compatibility
         },
+        neutral: {
+          50: '#F9F7F2', // Cream White (Background)
+          100: '#F0EFEB',
+          200: '#E2E2DF',
+          800: '#4A4E69', // Dark Text
+          900: '#22223B', // Darker Text
+        },
+        // Alias para compatibilidad con componentes existentes (mapeados a la nueva paleta)
         chocolate: {
-          dark: '#904939',
-          medium: '#C1583B',
-        },
-        pastel: {
-          brown: '#E19D7E',
-          pink: '#DDD4CE',
-          cream: '#E19D7E',
-        },
+          dark: '#22223B',
+          medium: '#4A4E69',
+        }
       },
-      
-      // Fuentes personalizadas adicionales
-      fontFamily: {
-        title: ['Comfortaa', 'sans-serif'],
-        body: ['Open Sans', 'sans-serif'],
-        accent: ['Open Sans', 'sans-serif'],
-      },
-      
-      // Sombras personalizadas
       boxShadow: {
-        'soft': '0 2px 8px rgba(0, 0, 0, 0.08)',
-        'medium': '0 5px 15px rgba(0, 0, 0, 0.1)',
-        'large': '0 10px 25px rgba(0, 0, 0, 0.12)',
-        'xl': '0 20px 40px rgba(0, 0, 0, 0.15)',
+        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+        'medium': '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
+        'large': '0 20px 40px -5px rgba(0, 0, 0, 0.1)',
+        'card': '0 0 0 1px rgba(0,0,0,0.03), 0 2px 8px rgba(0,0,0,0.04)',
+        'hover': '0 10px 30px -5px rgba(0, 0, 0, 0.15)',
       },
-      
-      // Espaciado personalizado
-      spacing: {
-        '18': '4.5rem',
-        '88': '22rem',
-        '112': '28rem',
-      },
-      
-      // Animaciones personalizadas
       animation: {
-        'float': 'float 8s ease-in-out infinite',
-        'slide-in-left': 'slideInLeft 0.8s ease-out',
-        'slide-in-right': 'slideInRight 0.8s ease-out',
-        'fade-in': 'fadeIn 0.6s ease-out',
-        'bounce-slow': 'bounce 2s infinite',
+        'float': 'float 6s ease-in-out infinite',
+        'fade-in-up': 'fadeInUp 0.8s ease-out',
+        'pulse-slow': 'pulse 3s infinite',
       },
-      
       keyframes: {
         float: {
-          '0%, 100%': { transform: 'translateY(0px)' },
-          '50%': { transform: 'translateY(-30px)' },
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-10px)' },
         },
-        slideInLeft: {
-          'from': {
-            opacity: '0',
-            transform: 'translateX(-50px)',
-          },
-          'to': {
-            opacity: '1',
-            transform: 'translateX(0)',
-          },
-        },
-        slideInRight: {
-          'from': {
-            opacity: '0',
-            transform: 'translateX(50px)',
-          },
-          'to': {
-            opacity: '1',
-            transform: 'translateX(0)',
-          },
-        },
-        fadeIn: {
-          'from': { opacity: '0' },
-          'to': { opacity: '1' },
-        },
-      },
-      
-      // Transiciones suaves
-      transitionTimingFunction: {
-        'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
-        'bounce-custom': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
-      },
+        fadeInUp: {
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        }
+      }
     },
   },
   plugins: [
-    // Plugin para formularios (opcional pero recomendado)
     forms,
-    // Plugin para aspectos ratio
     aspectRatio,
   ],
 };

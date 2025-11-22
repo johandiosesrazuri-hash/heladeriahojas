@@ -106,26 +106,24 @@ const Pedido = () => {
 
   if (items.length === 0) {
     return (
-      <section className="py-16 px-4 md:px-8 lg:px-16 min-h-screen relative overflow-hidden">
+      <section className="py-16 px-4 md:px-8 lg:px-16 min-h-screen relative overflow-hidden bg-neutral-50">
         {/* Fondo decorativo */}
         <div className="absolute inset-0 z-0">
           <div className="absolute top-0 left-0 w-full h-full gradient-hero"></div>
-          <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmNWYwZTAiIGZpbGwtb3BhY2l0eT0iMC4zIiBkPSJNMzYgMzRjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC00LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS40LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
-          <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDgwIDgwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmOGU1ZDAiIGZpbGwtb3BhY2l0eT0iMC4yIiBkPSJNNDAgNDBjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC40LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS40LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-30"></div>
         </div>
 
         {/* Notificación temporal */}
         {notification.show && (
           <div className="fixed top-4 right-4 z-50 animate-fade-in">
-            <div className={`px-6 py-4 rounded-lg shadow-lg flex items-center ${notification.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-              <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 mr-3 ${notification.type === 'success' ? 'text-green-500' : 'text-red-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div className={`px-6 py-4 rounded-xl shadow-lg flex items-center ${notification.type === 'success' ? 'bg-secondary-light text-secondary-dark' : 'bg-red-100 text-red-800'}`}>
+              <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 mr-3 ${notification.type === 'success' ? 'text-secondary-dark' : 'text-red-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {notification.type === 'success' ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 ) : (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 )}
               </svg>
-              <span className="font-medium">{notification.message}</span>
+              <span className="font-medium font-body">{notification.message}</span>
             </div>
           </div>
         )}
@@ -139,72 +137,51 @@ const Pedido = () => {
               opacity: animate ? 1 : 0
             }}
           >
-            <div className="mb-8">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 mx-auto text-[#E19D7E]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707L17 22h-2m0 0l-2.293-2.293c-.63-.63-1.077-.184-1.707.707L7 13H5m2 0h2m0 0h6m2 0h2m-6 0v2m0 0v-2" />
+            <div className="mb-8 bg-white p-6 rounded-full inline-block shadow-soft">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 mx-auto text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707L17 22h-2m0 0l-2.293-2.293c-.63-.63-1.077-.184-1.707.707L7 13H5m2 0h2m0 0h6m2 0h2m-6 0v2m0 0v-2" />
               </svg>
             </div>
-            <h2 className="text-4xl md:text-5xl text-[#904939] font-bold mb-4 font-cinzel">Tu carrito está vacío</h2>
-            <p className="text-lg text-[#C1583B] mb-8 font-quicksand">
+            <h2 className="text-4xl md:text-5xl text-neutral-900 font-bold mb-4 font-title">Tu carrito está vacío</h2>
+            <p className="text-lg text-neutral-500 mb-8 font-body">
               Agrega algunos productos deliciosos para comenzar
             </p>
             <div className="flex justify-center">
               <button
                 onClick={() => navigate('/menu')}
-                className="px-8 py-3 bg-[#E19D7E] hover:bg-[#3aa38f] text-[#904939] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform flex items-center justify-center"
+                className="px-8 py-3 bg-primary hover:bg-primary-dark text-white rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform flex items-center justify-center font-title"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1h3a1 1 0 110 2h-3v3a1 1 0 11-2 0V6H6a1 1 0 010-2h3V3a1 1 0 01-1-1zm-1 9a1 1 0 100-2v-1a1 1 0 00-1 1v1H6a1 1 0 100 2v1a1 1 0 001 1v1h3a1 1 0 100 2v-1a1 1 0 001-1v-1h3a1 1 0 100-2v-1a1 1 0 00-1-1v-1z" clipRule="evenodd" />
+                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1h3a1 1 0 110 2h-3v3a1 1 0 11-2 0V6H6a1 1 0 010-2h3V3a1 1 0 01-1-1zm-1 9a1 1 0 100-2v-1a1 1 0 00-1 1v1H6a1 1 0 100 2v1a1 1 0 001 1v1h3a1 1 0 100 2v-1a1 1 0 00-1-1v-1z" clipRule="evenodd" />
                 </svg>
                 Ver Menú
               </button>
             </div>
           </div>
         </div>
-
-        {/* Estilos de Animación y Fuentes */}
-        <style jsx global>{`
-
-          .gradient-hero {
-            background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
-          }
-          
-          @keyframes fadeInUp {
-            from {
-              opacity: 0;
-              transform: translateY(30px);
-            }
-            to {
-              opacity: 1;
-              transform: translateY(0);
-            }
-          }
-        `}</style>
       </section>
     );
   }
 
   return (
-    <section className="py-16 px-4 md:px-8 lg:px-16 min-h-screen relative overflow-hidden">
+    <section className="py-16 px-4 md:px-8 lg:px-16 min-h-screen relative overflow-hidden bg-neutral-50">
       {/* Fondo decorativo */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-0 left-0 w-full h-full gradient-hero"></div>
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmNWYwZTAiIGZpbGwtb3BhY2l0eT0iMC4zIiBkPSJNMzYgMzRjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC40LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS40LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4MCIgaGVpZ2h0PSI4MCIgdmlld0JveD0iMCAwIDgwIDgwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmOGU1ZDAiIGZpbGwtb3BhY2l0eT0iMC4yIiBkPSJNNDAgNDBjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC40LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS40LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-30"></div>
       </div>
 
       {/* Notificación temporal */}
       {notification.show && (
         <div className="fixed top-4 right-4 z-50 animate-fade-in">
-          <div className={`px-6 py-4 rounded-lg shadow-lg flex items-center ${notification.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-            <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 mr-3 ${notification.type === 'success' ? 'text-green-500' : 'text-red-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className={`px-6 py-4 rounded-xl shadow-lg flex items-center ${notification.type === 'success' ? 'bg-secondary-light text-secondary-dark' : 'bg-red-100 text-red-800'}`}>
+            <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 mr-3 ${notification.type === 'success' ? 'text-secondary-dark' : 'text-red-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               {notification.type === 'success' ? (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               ) : (
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               )}
             </svg>
-            <span className="font-medium">{notification.message}</span>
+            <span className="font-medium font-body">{notification.message}</span>
           </div>
         </div>
       )}
@@ -213,18 +190,18 @@ const Pedido = () => {
       <div className="relative z-10 container-custom">
         <div className="text-center mb-16">
           <h2
-            className="text-4xl md:text-5xl text-[#904939] text-center font-bold mb-4 relative pb-4 font-cinzel"
+            className="text-4xl md:text-5xl text-neutral-900 text-center font-bold mb-4 relative pb-4 font-title"
             style={{
               animation: animate ? `fadeInUp 0.6s ease-out 0.1s both` : 'none',
               opacity: animate ? 1 : 0
             }}
           >
             Finalizar Pedido
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#E19D7E] to-[#904939] rounded-full"></span>
+            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-24 h-1.5 bg-gradient-to-r from-primary to-secondary rounded-full"></span>
           </h2>
 
           <p
-            className="text-center text-[#C1583B] mb-12 text-lg max-w-2xl mx-auto font-quicksand"
+            className="text-center text-neutral-500 mb-12 text-lg max-w-2xl mx-auto font-body"
             style={{
               animation: animate ? `fadeInUp 0.6s ease-out 0.3s both` : 'none',
               opacity: animate ? 1 : 0
@@ -243,21 +220,28 @@ const Pedido = () => {
               opacity: animate ? 1 : 0
             }}
           >
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-[#DDD4CE]">
-              <h3 className="text-2xl font-bold text-[#904939] mb-6 font-cinzel">Resumen del Pedido</h3>
+            <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-lg p-8 border border-white/50">
+              <h3 className="text-2xl font-bold text-neutral-800 mb-6 font-title flex items-center">
+                <span className="bg-primary/10 p-2 rounded-lg mr-3 text-primary">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </span>
+                Resumen del Pedido
+              </h3>
 
-              <div className="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2">
+              <div className="space-y-4 mb-6 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
                 {items.map((item, index) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between p-4 bg-white rounded-xl shadow-sm transition-all duration-300 hover:shadow-md"
+                    className="flex items-center justify-between p-4 bg-white rounded-2xl shadow-sm border border-neutral-100 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5"
                     style={{
                       animation: animate ? `fadeInUp 0.6s ease-out ${0.7 + index * 0.1}s both` : 'none',
                       opacity: animate ? 1 : 0
                     }}
                   >
                     <div className="flex items-center">
-                      <div className="w-16 h-16 flex-shrink-0 bg-gray-100 rounded-lg overflow-hidden mr-4 border border-gray-200">
+                      <div className="w-16 h-16 flex-shrink-0 bg-neutral-50 rounded-xl overflow-hidden mr-4 border border-neutral-100">
                         <img
                           src={item.image || '/img/placeholder.png'}
                           alt={item.name}
@@ -266,19 +250,19 @@ const Pedido = () => {
                         />
                       </div>
                       <div>
-                        <h3 className="font-medium text-gray-900 font-montserrat">{item.name}</h3>
-                        <p className="text-sm text-gray-500 font-quicksand">x{item.quantity}</p>
+                        <h3 className="font-bold text-neutral-800 font-title">{item.name}</h3>
+                        <p className="text-sm text-neutral-500 font-body">Cantidad: {item.quantity}</p>
                       </div>
                     </div>
-                    <span className="font-semibold text-gray-900 font-montserrat">S/ {((Number(item.price) || 0) * item.quantity).toFixed(2)}</span>
+                    <span className="font-bold text-primary font-body text-lg">S/ {((Number(item.price) || 0) * item.quantity).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
 
-              <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="mt-6 pt-6 border-t border-neutral-100">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-medium text-[#904939] font-montserrat">Total:</span>
-                  <span className="text-2xl font-bold text-[#C1583B] font-montserrat">S/ {(total || 0).toFixed(2)}</span>
+                  <span className="text-lg font-medium text-neutral-600 font-body">Total a Pagar:</span>
+                  <span className="text-3xl font-bold text-primary font-title">S/ {(total || 0).toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -292,13 +276,21 @@ const Pedido = () => {
               opacity: animate ? 1 : 0
             }}
           >
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 border border-[#DDD4CE]">
-              <h3 className="text-2xl font-bold text-[#904939] mb-6 font-cinzel">Datos de Entrega</h3>
+            <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-lg p-8 border border-white/50">
+              <h3 className="text-2xl font-bold text-neutral-800 mb-6 font-title flex items-center">
+                <span className="bg-secondary/10 p-2 rounded-lg mr-3 text-secondary-dark">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </span>
+                Datos de Entrega
+              </h3>
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <label htmlFor="nombreReceptor" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
-                    Nombre del Receptor <span className="text-red-500">*</span>
+                  <label htmlFor="nombreReceptor" className="block text-sm font-bold text-neutral-700 mb-2 font-body">
+                    Nombre del Receptor <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="text"
@@ -307,14 +299,14 @@ const Pedido = () => {
                     value={formData.nombreReceptor}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
+                    className="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-body bg-white"
                     placeholder="Nombre completo"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="direccion" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
-                    Dirección de Entrega <span className="text-red-500">*</span>
+                  <label htmlFor="direccion" className="block text-sm font-bold text-neutral-700 mb-2 font-body">
+                    Dirección de Entrega <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="text"
@@ -323,14 +315,14 @@ const Pedido = () => {
                     value={formData.direccion}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
+                    className="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-body bg-white"
                     placeholder="Dirección completa"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="telefono" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
-                    Teléfono de Contacto <span className="text-red-500">*</span>
+                  <label htmlFor="telefono" className="block text-sm font-bold text-neutral-700 mb-2 font-body">
+                    Teléfono de Contacto <span className="text-red-400">*</span>
                   </label>
                   <input
                     type="tel"
@@ -339,15 +331,15 @@ const Pedido = () => {
                     value={formData.telefono}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
+                    className="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-body bg-white"
                     placeholder="Número de teléfono"
                   />
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div>
-                    <label htmlFor="ciudad" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
-                      Ciudad <span className="text-red-500">*</span>
+                    <label htmlFor="ciudad" className="block text-sm font-bold text-neutral-700 mb-2 font-body">
+                      Ciudad <span className="text-red-400">*</span>
                     </label>
                     <input
                       type="text"
@@ -356,13 +348,13 @@ const Pedido = () => {
                       value={formData.ciudad}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
+                      className="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-body bg-white"
                       placeholder="Ciudad"
                     />
                   </div>
 
                   <div>
-                    <label htmlFor="codigoPostal" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
+                    <label htmlFor="codigoPostal" className="block text-sm font-bold text-neutral-700 mb-2 font-body">
                       Código Postal
                     </label>
                     <input
@@ -371,14 +363,14 @@ const Pedido = () => {
                       name="codigoPostal"
                       value={formData.codigoPostal}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
+                      className="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-body bg-white"
                       placeholder="Código postal"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="instrucciones" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
+                  <label htmlFor="instrucciones" className="block text-sm font-bold text-neutral-700 mb-2 font-body">
                     Instrucciones de Entrega
                   </label>
                   <textarea
@@ -387,14 +379,14 @@ const Pedido = () => {
                     value={formData.instrucciones}
                     onChange={handleChange}
                     rows="3"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
+                    className="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-body bg-white"
                     placeholder="Ej: Tocar el timbre, dejar en portería, etc."
                   ></textarea>
                 </div>
 
                 <div>
-                  <label htmlFor="metodoPago" className="block text-sm font-medium text-[#904939] mb-1 font-montserrat">
-                    Método de Pago <span className="text-red-500">*</span>
+                  <label htmlFor="metodoPago" className="block text-sm font-bold text-neutral-700 mb-2 font-body">
+                    Método de Pago <span className="text-red-400">*</span>
                   </label>
                   <select
                     id="metodoPago"
@@ -402,7 +394,7 @@ const Pedido = () => {
                     value={formData.metodoPago}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E19D7E] focus:border-[#E19D7E] transition-all duration-200 font-quicksand"
+                    className="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-body bg-white"
                   >
                     <option value="efectivo">💵 Efectivo (Pago contra entrega)</option>
                     <option value="transferencia">🏦 Transferencia bancaria</option>
@@ -413,9 +405,9 @@ const Pedido = () => {
                 <button
                   type="submit"
                   disabled={isProcessing || formData.metodoPago === 'tarjeta'}
-                  className={`w-full py-4 px-6 rounded-lg font-semibold text-white shadow-lg transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E19D7E] font-montserrat ${isProcessing || formData.metodoPago === 'tarjeta'
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] hover:from-[#3aa38f] hover:to-[#c4a08d] hover:shadow-xl'
+                  className={`w-full py-4 px-6 rounded-full font-bold text-white shadow-lg transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-primary/30 font-title mt-4 ${isProcessing || formData.metodoPago === 'tarjeta'
+                      ? 'bg-neutral-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-primary to-primary-dark hover:shadow-xl'
                     }`}
                 >
                   {isProcessing ? (
@@ -435,25 +427,6 @@ const Pedido = () => {
           </div>
         </div>
       </div>
-
-      {/* Estilos de Animación y Fuentes */}
-      <style jsx global>{`
-
-        .gradient-hero {
-          background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
-        }
-        
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </section>
   );
 };
