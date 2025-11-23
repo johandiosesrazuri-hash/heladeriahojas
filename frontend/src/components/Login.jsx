@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [animate, setAnimate] = useState(false);
@@ -42,8 +43,22 @@ const Login = () => {
     setIsProcessing(true);
     setError('');
 
+    // Validaciones
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError('Por favor ingresa un email válido');
+      setIsProcessing(false);
+      return;
+    }
+
+    if (!formData.password) {
+      setError('La contraseña es obligatoria');
+      setIsProcessing(false);
+      return;
+    }
+
     try {
-      await login(formData.email, formData.password);
+      await login(formData.email, formData.password, rememberMe);
       setNotification({
         show: true,
         message: "¡Inicio de sesión exitoso!",
@@ -51,12 +66,7 @@ const Login = () => {
       });
       setTimeout(() => navigate('/'), 1500);
     } catch (error) {
-      setError('Error al iniciar sesión. Por favor verifica tus credenciales.');
-      setNotification({
-        show: true,
-        message: "Credenciales incorrectas. Inténtalo de nuevo.",
-        type: "error"
-      });
+      setError('Credenciales incorrectas. Por favor verifica tu email y contraseña.');
     } finally {
       setIsProcessing(false);
     }
@@ -103,6 +113,18 @@ const Login = () => {
             <h2 className="text-3xl font-bold text-neutral-900 mb-2 font-title">Iniciar Sesión</h2>
             <p className="text-neutral-500 font-body">Ingresa tus credenciales para acceder</p>
           </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-700 rounded-r shadow-sm animate-fade-in">
+              <div className="flex items-center">
+                <svg className="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+                <p className="font-bold">Error</p>
+              </div>
+              <p className="text-sm mt-1 ml-7">{error}</p>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -157,6 +179,8 @@ const Login = () => {
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
                   className="h-4 w-4 text-primary focus:ring-primary/20 border-neutral-300 rounded"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-neutral-600 font-body">
@@ -165,9 +189,9 @@ const Login = () => {
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-primary hover:text-primary-dark font-body">
+                <Link to="/forgot-password" className="font-medium text-primary hover:text-primary-dark font-body">
                   ¿Olvidaste tu contraseña?
-                </a>
+                </Link>
               </div>
             </div>
 
@@ -176,8 +200,8 @@ const Login = () => {
                 type="submit"
                 disabled={isProcessing}
                 className={`w-full py-3.5 px-4 rounded-full font-bold text-white shadow-lg transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-4 focus:ring-primary/20 font-title ${isProcessing
-                    ? 'bg-neutral-400 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-primary to-secondary hover:shadow-xl'
+                  ? 'bg-neutral-400 cursor-not-allowed'
+                  : 'bg-gradient-to-r from-primary to-secondary hover:shadow-xl'
                   }`}
               >
                 {isProcessing ? (

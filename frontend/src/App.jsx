@@ -9,6 +9,8 @@ import CartModal from './components/CartModal'
 // Páginas públicas
 import Login from './components/Login'
 import Register from './components/Register'
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 import Menu from './components/Menu'
 import Promociones from './components/Promociones'
 import Contacto from './components/Contacto'
@@ -52,6 +54,9 @@ function App() {
             {/* Rutas públicas */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            {/* Rutas protegidas para usuarios autenticados */}
             <Route path="/menu" element={<Menu />} />
             <Route path="/pedidos" element={<Pedido />} />
             <Route path="/promociones" element={<Promociones />} />

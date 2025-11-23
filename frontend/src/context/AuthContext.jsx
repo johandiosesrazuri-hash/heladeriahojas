@@ -8,8 +8,8 @@ export const AuthProvider = ({ children }) => {
     try {
       const u = localStorage.getItem('user');
       return u ? JSON.parse(u) : null;
-    } catch { 
-      return null; 
+    } catch {
+      return null;
     }
   });
   const [token, setToken] = useState(() => localStorage.getItem('token'));
@@ -21,27 +21,27 @@ export const AuthProvider = ({ children }) => {
         email,
         password
       });
-      
+
       const data = response.data;
       console.log('✅ Respuesta del login:', data);
-      
+
       const tokenResp = data.token;
-      const userResp = { 
-        id: data.id, 
-        email: data.email, 
-        nombre: data.nombre, 
-        rol: data.rol 
+      const userResp = {
+        id: data.id,
+        email: data.email,
+        nombre: data.nombre,
+        rol: data.rol
       };
-      
+
       console.log('🔵 Token guardado:', tokenResp);
       console.log('👤 Usuario guardado:', userResp);
-      
+
       localStorage.setItem('token', tokenResp);
       localStorage.setItem('user', JSON.stringify(userResp));
-      
+
       setToken(tokenResp);
       setUser(userResp);
-      
+
       return true;
     } catch (error) {
       console.error('❌ Error during login:', error);
@@ -54,16 +54,16 @@ export const AuthProvider = ({ children }) => {
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       const response = await axios.post(`${api}/api/auth/register`, userData);
       const data = response.data;
-      
+
       if (data && data.token) {
         const tokenResp = data.token;
-        const userResp = { 
-          id: data.id, 
-          email: data.email, 
-          nombre: data.nombre, 
-          rol: data.rol 
+        const userResp = {
+          id: data.id,
+          email: data.email,
+          nombre: data.nombre,
+          rol: data.rol
         };
-        
+
         localStorage.setItem('token', tokenResp);
         localStorage.setItem('user', JSON.stringify(userResp));
         setToken(tokenResp);

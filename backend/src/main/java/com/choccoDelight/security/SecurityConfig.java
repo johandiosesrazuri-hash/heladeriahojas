@@ -55,56 +55,58 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            // DESHABILITAR CSRF
-            .csrf(csrf -> csrf.disable())
-            
-            // CONFIGURAR CORS PRIMERO
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            
-            .authorizeHttpRequests(auth -> auth
-                // Preflight CORS sin autenticación
-                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                // DESHABILITAR CSRF
+                .csrf(csrf -> csrf.disable())
 
-                // PERMITIR /api/auth/** SIN AUTENTICACIÓN
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/auth/login").permitAll()
-                .requestMatchers("/api/auth/register").permitAll()
-                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
-                .requestMatchers("/api/perfil").permitAll()
-                
-                // PERMITIR PRODUCTOS Y PROMOCIONES
-                .requestMatchers(HttpMethod.GET, "/api/productos").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/promociones").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/promociones/**").permitAll()
-                
-                // PERMITIR CONTACTO Y INFO
-                .requestMatchers(HttpMethod.POST, "/api/contacto").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/contacto/**").permitAll()
-                .requestMatchers("/api/sobre-nosotros/**").permitAll()
-                .requestMatchers("/img/**").permitAll()
-                
-                // TESTIMONIOS
-                .requestMatchers(HttpMethod.GET, "/api/testimonios").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/testimonios").authenticated()
-                .requestMatchers(HttpMethod.DELETE, "/api/testimonios/**").authenticated()
+                // CONFIGURAR CORS PRIMERO
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // ADMIN SOLO
-                .requestMatchers("/api/admin/**").authenticated()
-                
-                // USUARIO AUTENTICADO
-                .requestMatchers("/api/pedidos/**").permitAll()
-                .requestMatchers("/api/delivery/**").authenticated()
-                .requestMatchers("/api/usuarios/**").authenticated()
-                
-                .anyRequest().authenticated()
-            )
-            
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            
-            .authenticationProvider(authenticationProvider())
-            
-            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                .authorizeHttpRequests(auth -> auth
+                        // Preflight CORS sin autenticación
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+
+                        // PERMITIR /api/auth/** SIN AUTENTICACIÓN
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/register").permitAll()
+                        .requestMatchers("/api/auth/forgot-password").permitAll()
+                        .requestMatchers("/api/auth/validate-token").permitAll()
+                        .requestMatchers("/api/auth/reset-password").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/perfil").permitAll()
+
+                        // PERMITIR PRODUCTOS Y PROMOCIONES
+                        .requestMatchers(HttpMethod.GET, "/api/productos").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/promociones").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/promociones/**").permitAll()
+
+                        // PERMITIR CONTACTO Y INFO
+                        .requestMatchers(HttpMethod.POST, "/api/contacto").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/contacto/**").permitAll()
+                        .requestMatchers("/api/sobre-nosotros/**").permitAll()
+                        .requestMatchers("/img/**").permitAll()
+
+                        // TESTIMONIOS
+                        .requestMatchers(HttpMethod.GET, "/api/testimonios").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/testimonios").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/testimonios/**").authenticated()
+
+                        // ADMIN SOLO
+                        .requestMatchers("/api/admin/**").authenticated()
+
+                        // USUARIO AUTENTICADO
+                        .requestMatchers("/api/pedidos/**").permitAll()
+                        .requestMatchers("/api/delivery/**").authenticated()
+                        .requestMatchers("/api/usuarios/**").authenticated()
+
+                        .anyRequest().authenticated())
+
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+                .authenticationProvider(authenticationProvider())
+
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -112,35 +114,31 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
+
         configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:5173"
-        ));
-        
+                "http://localhost:5173"));
+
         configuration.setAllowedMethods(Arrays.asList(
-            "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"
-        ));
-        
+                "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
+
         configuration.setAllowedHeaders(Arrays.asList(
-            "Content-Type",
-            "Authorization",
-            "X-Requested-With",
-            "Accept",
-            "Origin"
-        ));
-        
+                "Content-Type",
+                "Authorization",
+                "X-Requested-With",
+                "Accept",
+                "Origin"));
+
         configuration.setExposedHeaders(Arrays.asList(
-            "Authorization",
-            "Content-Type"
-        ));
-        
+                "Authorization",
+                "Content-Type"));
+
         configuration.setAllowCredentials(true);
-        
+
         configuration.setMaxAge(3600L);
-        
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-        
+
         return source;
     }
 }
