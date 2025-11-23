@@ -5,7 +5,9 @@ import com.choccoDelight.entity.Delivery;
 import com.choccoDelight.entity.Pedido;
 import com.choccoDelight.entity.Producto;
 import com.choccoDelight.entity.Usuario;
+import com.choccoDelight.entity.Promocion;
 import com.choccoDelight.repository.ProductoRepository;
+import com.choccoDelight.repository.PromocionRepository;
 import com.choccoDelight.repository.UsuarioRepository;
 import com.choccoDelight.service.DeliveryService;
 import com.choccoDelight.service.PedidoService;
@@ -31,6 +33,9 @@ public class PedidoController {
 
     @Autowired
     private ProductoRepository productoRepository;
+
+    @Autowired
+    private PromocionRepository promocionRepository;
 
     @Autowired
     private DeliveryService deliveryService;
@@ -75,29 +80,42 @@ public class PedidoController {
         List<DetallePedido> detalles = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;
 
-        // Procesar los items enviados desde React
+        // Procesar los items enviados desde React (producto o promocion)
         for (Item it : body.getItems()) {
+            if (it.getProductoId() == null && it.getPromocionId() == null) {
+                throw new RuntimeException("Cada item debe tener productoId o promocionId");
+            }
 
-            // Buscar producto real en BD
-            Producto producto = productoRepository.findById(it.getProductoId())
-                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-
-            // Crear detalle
             DetallePedido det = new DetallePedido();
-            det.setProducto(producto);
             det.setCantidad(it.getCantidad());
 
-            // Precio real del producto desde DB (ignora el del front)
-            det.setPrecioUnitario(producto.getPrecio());
+            if (it.getProductoId() != null) {
+                // Producto individual
+                Producto producto = productoRepository.findById(it.getProductoId())
+                        .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                det.setProducto(producto);
+                det.setPrecioUnitario(producto.getPrecio());
+                BigDecimal subtotal = producto.getPrecio()
+                        .multiply(BigDecimal.valueOf(it.getCantidad()));
+                det.setSubtotal(subtotal);
+                total = total.add(subtotal);
+            } else {
+                // Promoción completa
+                Promocion promo = promocionRepository.findById(it.getPromocionId())
+                        .orElseThrow(() -> new RuntimeException("Promoción no encontrada"));
+                det.setPromocion(promo);
 
-            // Subtotal
-            BigDecimal subtotal = producto.getPrecio()
-                    .multiply(BigDecimal.valueOf(it.getCantidad()));
+                BigDecimal precioPromo = promo.getPrecioTotal() != null
+                        ? promo.getPrecioTotal()
+                        : BigDecimal.ZERO;
 
-            det.setSubtotal(subtotal);
+                det.setPrecioUnitario(precioPromo);
+                BigDecimal subtotal = precioPromo.multiply(BigDecimal.valueOf(it.getCantidad()));
+                det.setSubtotal(subtotal);
+                total = total.add(subtotal);
+            }
+
             detalles.add(det);
-
-            total = total.add(subtotal);
         }
 
         pedido.setTotal(total);
@@ -155,6 +173,7 @@ public class PedidoController {
 
     public static class Item {
         private Long productoId;
+        private Long promocionId;
         private Integer cantidad;
 
         public Long getProductoId() {
@@ -163,6 +182,14 @@ public class PedidoController {
 
         public void setProductoId(Long productoId) {
             this.productoId = productoId;
+        }
+
+        public Long getPromocionId() {
+            return promocionId;
+        }
+
+        public void setPromocionId(Long promocionId) {
+            this.promocionId = promocionId;
         }
 
         public Integer getCantidad() {

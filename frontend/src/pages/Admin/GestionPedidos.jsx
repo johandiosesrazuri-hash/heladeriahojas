@@ -74,6 +74,36 @@ const GestionPedidos = () => {
     }
   };
 
+  const handleEliminarPedido = async (id) => {
+    const confirmar = window.confirm(`¿Eliminar el pedido #${id}? Esta acción no se puede deshacer.`);
+    if (!confirmar) return;
+
+    try {
+      const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+      await axios.delete(
+        `${api}/api/admin/dashboard/pedidos/${id}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setNotification({
+        show: true,
+        message: `Pedido #${id} eliminado correctamente.`,
+        type: "success"
+      });
+      // Si el modal estaba abierto para este pedido, ciérralo
+      if (detallesModal?.id === id) {
+        setDetallesModal(null);
+      }
+      fetchPedidos();
+    } catch (error) {
+      console.error('Error eliminando pedido:', error);
+      setNotification({
+        show: true,
+        message: "No se pudo eliminar el pedido. Inténtalo de nuevo.",
+        type: "error"
+      });
+    }
+  };
+
   const pedidosFiltrados = filtro === 'TODOS' 
     ? pedidos 
     : pedidos.filter(p => p.estado === filtro);
@@ -134,85 +164,77 @@ const GestionPedidos = () => {
   }
 
   return (
-    <section className="py-16 px-4 md:px-8 lg:px-16 min-h-screen relative overflow-hidden">
-      {/* Fondo decorativo */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 left-0 w-full h-full gradient-hero"></div>
-      </div>
+    <section className="relative min-h-screen px-4 py-10 md:px-8 lg:px-12 overflow-hidden bg-gradient-to-br from-[#DDD4CE] via-white to-[#E19D7E]/40">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_10%_20%,rgba(225,157,126,0.15),transparent_30%),radial-gradient(circle_at_90%_10%,rgba(58,163,143,0.12),transparent_30%),radial-gradient(circle_at_30%_80%,rgba(144,73,57,0.1),transparent_30%)]"></div>
 
-      {/* Notificación temporal */}
+      {/* Notificación */}
       {notification.show && (
-        <div className="fixed top-4 right-4 z-50 animate-fade-in">
-          <div className={`px-6 py-4 rounded-lg shadow-lg flex items-center ${notification.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-            <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 mr-3 ${notification.type === 'success' ? 'text-green-500' : 'text-red-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              {notification.type === 'success' ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              )}
-            </svg>
-            <span className="font-medium">{notification.message}</span>
+        <div className="fixed top-4 right-4 z-50 animate-[fadeIn_0.2s_ease-out]">
+          <div
+            className={`px-6 py-4 rounded-2xl shadow-xl border flex items-center gap-3 ${
+              notification.type === 'success'
+                ? 'bg-[#e0f2f1] text-[#2f7669] border-[#b2dfdb]'
+                : 'bg-[#fde7e7] text-[#c53030] border-[#fbd5d5]'
+            }`}
+          >
+            <span className="text-xl">{notification.type === 'success' ? '✅' : '⚠️'}</span>
+            <span className="font-semibold">{notification.message}</span>
           </div>
         </div>
       )}
 
-      {/* Contenido principal */}
-      <div className="relative z-10 container-custom">
+      <div className="relative z-10 container-custom space-y-8">
         {/* Encabezado */}
-        <div className="mb-12 text-center">
-          <h1 
-            className="text-4xl md:text-5xl text-[#904939] font-bold mb-4 relative pb-4 font-cinzel"
-            style={{ 
-              animation: animate ? `fadeInUp 0.6s ease-out 0.1s both` : 'none',
-              opacity: animate ? 1 : 0
-            }}
-          >
-            Gestión de Pedidos
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#E19D7E] to-[#904939] rounded-full"></span>
-          </h1>
-          <p 
-            className="text-lg text-[#C1583B] font-quicksand"
-            style={{ 
-              animation: animate ? `fadeInUp 0.6s ease-out 0.3s both` : 'none',
-              opacity: animate ? 1 : 0
-            }}
-          >
-            Total: {pedidos.length} pedidos
-          </p>
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm uppercase tracking-[0.2em] text-[#904939] font-semibold">Panel Admin</p>
+            <h1
+              className="text-3xl md:text-4xl font-bold text-[#904939] font-cinzel mt-1"
+              style={{ animation: animate ? `fadeInUp 0.6s ease-out 0.1s both` : 'none' }}
+            >
+              Gestión de Pedidos
+            </h1>
+            <p className="text-[#C1583B] mt-1 font-quicksand">Total: {pedidos.length} pedidos</p>
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={fetchPedidos}
+              className="inline-flex items-center gap-2 rounded-xl bg-white/80 px-4 py-2 text-[#904939] shadow-sm ring-1 ring-[#f0e5dd] hover:shadow-md hover:-translate-y-0.5 transition-all"
+            >
+              🔄 Refrescar
+            </button>
+          </div>
         </div>
 
         {/* Filtros */}
-        <div 
-          className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6 mb-8"
-          style={{ 
-            animation: animate ? `fadeInUp 0.6s ease-out 0.5s both` : 'none',
-            opacity: animate ? 1 : 0
-          }}
+        <div
+          className="bg-white/85 backdrop-blur-md rounded-2xl shadow-xl border border-white/70 p-5"
+          style={{ animation: animate ? `fadeInUp 0.6s ease-out 0.25s both` : 'none' }}
         >
           <div className="flex flex-wrap gap-3">
             <button
               onClick={() => setFiltro('TODOS')}
-              className={`px-4 py-2 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 font-montserrat ${
+              className={`px-4 py-2 rounded-full font-semibold transition-all duration-300 flex items-center gap-2 font-montserrat ${
                 filtro === 'TODOS'
-                  ? 'bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] text-white shadow-md'
-                  : 'bg-[#DDD4CE] text-[#904939] hover:bg-[#E19D7E]'
+                  ? 'bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] text-white shadow-lg shadow-[#E19D7E]/50'
+                  : 'bg-[#DDD4CE] text-[#904939] hover:bg-[#E19D7E]/60'
               }`}
             >
-              Todos ({pedidos.length})
+              🌐 Todos ({pedidos.length})
             </button>
-            {estadosDisponibles.map(estado => {
-              const cantidad = pedidos.filter(p => p.estado === estado).length;
+            {estadosDisponibles.map((estado) => {
+              const cantidad = pedidos.filter((p) => p.estado === estado).length;
               return (
                 <button
                   key={estado}
                   onClick={() => setFiltro(estado)}
-                  className={`px-4 py-2 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 font-montserrat flex items-center ${
+                  className={`px-4 py-2 rounded-full font-semibold transition-all duration-300 flex items-center gap-2 font-montserrat ${
                     filtro === estado
-                      ? 'bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] text-white shadow-md'
-                      : `${estadoColores[estado] || 'bg-[#DDD4CE] text-[#904939]'} hover:opacity-80`
+                      ? 'bg-[#904939] text-white shadow-lg shadow-[#904939]/40'
+                      : 'bg-white text-[#904939] border border-[#f0e5dd] hover:border-[#E19D7E]'
                   }`}
                 >
-                  <span className="mr-2">{estadoIconos[estado]}</span>
+                  <span>{estadoIconos[estado]}</span>
                   {estado.replace('_', ' ')} ({cantidad})
                 </button>
               );
@@ -220,28 +242,25 @@ const GestionPedidos = () => {
           </div>
         </div>
 
-        {/* Tabla de Pedidos */}
-        <div 
-          className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden"
-          style={{ 
-            animation: animate ? `fadeInUp 0.6s ease-out 0.7s both` : 'none',
-            opacity: animate ? 1 : 0
-          }}
+        {/* Tabla */}
+        <div
+          className="bg-white/90 backdrop-blur-md rounded-3xl shadow-2xl border border-white/70 overflow-hidden"
+          style={{ animation: animate ? `fadeInUp 0.6s ease-out 0.4s both` : 'none' }}
         >
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gradient-to-r from-[#8d6e63] to-[#C1583B] text-white">
-                <tr>
-                  <th className="px-6 py-4 text-left font-cinzel">ID Pedido</th>
-                  <th className="px-6 py-4 text-left font-cinzel">Cliente</th>
-                  <th className="px-6 py-4 text-left font-cinzel">Fecha</th>
-                  <th className="px-6 py-4 text-left font-cinzel">Total</th>
-                  <th className="px-6 py-4 text-left font-cinzel">Estado</th>
-                  <th className="px-6 py-4 text-left font-cinzel">Método Pago</th>
-                  <th className="px-6 py-4 text-left font-cinzel">Acciones</th>
+              <thead className="bg-gradient-to-r from-[#904939] to-[#E19D7E] text-white">
+                <tr className="text-left text-sm uppercase tracking-wider font-montserrat">
+                  <th className="px-6 py-4">ID</th>
+                  <th className="px-6 py-4">Cliente</th>
+                  <th className="px-6 py-4">Fecha</th>
+                  <th className="px-6 py-4">Total</th>
+                  <th className="px-6 py-4">Estado</th>
+                  <th className="px-6 py-4">Pago</th>
+                  <th className="px-6 py-4">Acciones</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-[#f0e5dd]">
                 {pedidosFiltrados.length === 0 ? (
                   <tr>
                     <td colSpan="7" className="px-6 py-8 text-center text-[#C1583B] font-quicksand">
@@ -250,61 +269,71 @@ const GestionPedidos = () => {
                   </tr>
                 ) : (
                   pedidosFiltrados.map((pedido, index) => (
-                    <tr 
-                      key={pedido.id} 
-                      className="border-t border-[#DDD4CE] hover:bg-[#DDD4CE] transition-colors duration-200"
-                      style={{ 
-                        animation: animate ? `fadeInUp 0.6s ease-out ${0.8 + index * 0.1}s both` : 'none',
-                        opacity: animate ? 1 : 0
+                    <tr
+                      key={pedido.id}
+                      className="hover:bg-[#fef6f1] transition-colors"
+                      style={{
+                        animation: animate ? `fadeInUp 0.6s ease-out ${0.5 + index * 0.05}s both` : 'none'
                       }}
                     >
-                      <td className="px-6 py-4 font-semibold text-[#C1583B] font-montserrat">#{pedido.id}</td>
+                      <td className="px-6 py-4 font-semibold text-[#904939] font-montserrat">#{pedido.id}</td>
                       <td className="px-6 py-4">
-                        <div>
-                          <p className="font-semibold text-[#904939] font-montserrat">{pedido.usuarioNombre}</p>
-                          <p className="text-sm text-[#C1583B] font-quicksand">{pedido.usuarioEmail}</p>
-                        </div>
+                        <p className="font-semibold text-[#904939] font-montserrat">{pedido.usuarioNombre}</p>
+                        <p className="text-sm text-[#C1583B] font-quicksand">{pedido.usuarioEmail}</p>
                       </td>
                       <td className="px-6 py-4 text-sm text-[#C1583B] font-quicksand">
                         {new Date(pedido.fecha).toLocaleDateString('es-ES')}
                       </td>
-                      <td className="px-6 py-4 font-bold text-[#4caf50] font-montserrat">
+                      <td className="px-6 py-4 font-bold text-[#3aa38f] font-montserrat">
                         S/ {Number(pedido.total).toFixed(2)}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${estadoColores[pedido.estado] || 'bg-[#DDD4CE]'}`}>
-                          {estadoIconos[pedido.estado]} {pedido.estado.replace('_', ' ')}
+                        <span
+                          className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold ${
+                            estadoColores[pedido.estado] || 'bg-[#DDD4CE] text-[#904939]'
+                          }`}
+                        >
+                          <span>{estadoIconos[pedido.estado]}</span>
+                          {pedido.estado.replace('_', ' ')}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="px-2 py-1 bg-[#DDD4CE] rounded text-xs font-medium text-[#904939] font-quicksand">
+                        <span className="inline-flex px-3 py-1 rounded-full text-xs font-medium bg-[#DDD4CE] text-[#904939] font-quicksand">
                           {pedido.metodoPago?.toUpperCase() || 'NO ESPECIFICADO'}
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <button
-                          onClick={() => setDetallesModal(pedido)}
-                          className="text-[#C1583B] hover:text-[#904939] font-semibold text-sm mr-3 font-montserrat transition-colors"
-                        >
-                          Ver Detalles
-                        </button>
-                        <select
-                          onChange={(e) => {
-                            if (e.target.value) {
-                              handleCambiarEstado(pedido.id, e.target.value);
-                              e.target.value = '';
-                            }
-                          }}
-                          className="text-sm border border-[#E19D7E] rounded px-2 py-1 text-[#904939] bg-white hover:border-[#E19D7E] font-quicksand transition-colors"
-                          defaultValue=""
-                        >
-                          <option value="">Cambiar estado...</option>
-                          {estadosDisponibles.map(estado => (
-                            <option key={estado} value={estado}>
-                              {estadoIconos[estado]} {estado.replace('_', ' ')}
-                            </option>
-                          ))}
-                        </select>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={() => setDetallesModal(pedido)}
+                            className="px-3 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] hover:brightness-110 transition-all shadow-sm"
+                          >
+                            Ver Detalles
+                          </button>
+                          <button
+                            onClick={() => handleEliminarPedido(pedido.id)}
+                            className="px-3 py-2 rounded-lg text-sm font-semibold text-white bg-rose-500 hover:bg-rose-600 transition-all shadow-sm"
+                          >
+                            Eliminar
+                          </button>
+                          <select
+                            onChange={(e) => {
+                              if (e.target.value) {
+                                handleCambiarEstado(pedido.id, e.target.value);
+                                e.target.value = '';
+                              }
+                            }}
+                            className="text-sm border border-[#E19D7E] rounded-lg px-3 py-2 text-[#904939] bg-white hover:border-[#904939] transition-all"
+                            defaultValue=""
+                          >
+                            <option value="">Cambiar estado...</option>
+                            {estadosDisponibles.map((estado) => (
+                              <option key={estado} value={estado}>
+                                {estadoIconos[estado]} {estado.replace('_', ' ')}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -417,7 +446,7 @@ const GestionPedidos = () => {
                 {/* Botón Cerrar */}
                 <button
                   onClick={() => setDetallesModal(null)}
-                  className="w-full bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] hover:from-[#3aa38f] hover:to-[#c4a08d] text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-montserrat shadow-md hover:shadow-lg"
+                  className="w-full bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] hover:brightness-110 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 shadow-lg"
                 >
                   Cerrar
                 </button>

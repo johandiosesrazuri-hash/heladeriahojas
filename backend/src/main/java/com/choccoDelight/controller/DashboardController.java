@@ -39,6 +39,10 @@ public class DashboardController {
     private PromocionRepository promocionRepository;
     @Autowired
     private PromocionService promocionService;
+    @Autowired
+    private DetallePedidoRepository detallePedidoRepository;
+    @Autowired
+    private DeliveryRepository deliveryRepository;
 
     // 📊 Estadísticas generales
     @GetMapping("/stats")
@@ -194,6 +198,31 @@ public class DashboardController {
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
         return new PedidoDTO(pedido);
+    }
+
+    @DeleteMapping("/pedidos/{id}")
+    @Transactional
+    public Map<String, String> eliminarPedido(@PathVariable Long id) {
+        System.out.println("🗑️ DELETE /api/admin/dashboard/pedidos/" + id);
+
+        Pedido pedido = pedidoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+
+        // Eliminar detalles asociados
+        List<DetallePedido> detalles = detallePedidoRepository.findByPedidoId(id);
+        if (!detalles.isEmpty()) {
+            detallePedidoRepository.deleteAll(detalles);
+        }
+
+        // Eliminar delivery asociado si existe
+        deliveryRepository.findByPedidoId(id)
+                .ifPresent(deliveryRepository::delete);
+
+        // Eliminar pedido
+        pedidoRepository.delete(pedido);
+
+        System.out.println("✅ Pedido eliminado: " + id);
+        return Map.of("mensaje", "Pedido eliminado correctamente", "id", id.toString());
     }
 
     @PutMapping("/pedidos/{id}/estado")

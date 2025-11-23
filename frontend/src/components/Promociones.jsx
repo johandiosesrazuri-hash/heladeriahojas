@@ -42,6 +42,7 @@ const Promociones = () => {
 
     addItem({
       id: `promo-${promo.id}`,
+      promocionId: promo.id,
       name: promo.nombrePromo,
       price: Number(promo.precioTotal) || 0,
       image: imageUrl,
