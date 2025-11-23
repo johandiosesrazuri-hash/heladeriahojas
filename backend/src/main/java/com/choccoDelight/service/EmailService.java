@@ -72,7 +72,7 @@ public class EmailService {
         } catch (Exception e) {
             System.err.println("Error sending email: " + e.getMessage());
             e.printStackTrace();
-            // Fallback or rethrow depending on requirements
+            throw new RuntimeException("Error sending email: " + e.getMessage(), e);
         }
     }
 
@@ -83,7 +83,7 @@ public class EmailService {
         email.setFrom(new InternetAddress(from));
         email.addRecipient(jakarta.mail.Message.RecipientType.TO, new InternetAddress(to));
         email.setSubject(subject);
-        email.setText(bodyText);
+        email.setContent(bodyText, "text/html; charset=utf-8");
         return email;
     }
 

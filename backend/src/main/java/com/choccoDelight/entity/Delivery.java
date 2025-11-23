@@ -3,6 +3,7 @@ package com.choccoDelight.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "deliveries")
 public class Delivery {
@@ -36,6 +37,12 @@ public class Delivery {
     @Column(name = "nombre_receptor")
     private String nombreReceptor;
 
+    @Column
+    private Double latitud;
+
+    @Column
+    private Double longitud;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EstadoDelivery estado;
@@ -56,24 +63,99 @@ public class Delivery {
     }
 
     // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public Pedido getPedido() { return pedido; }
-    public void setPedido(Pedido pedido) { this.pedido = pedido; }
-    public String getDireccion() { return direccion; }
-    public void setDireccion(String direccion) { this.direccion = direccion; }
-    public String getTelefono() { return telefono; }
-    public void setTelefono(String telefono) { this.telefono = telefono; }
-    public LocalDateTime getFechaEnvio() { return fechaEnvio; }
-    public void setFechaEnvio(LocalDateTime fechaEnvio) { this.fechaEnvio = fechaEnvio; }
-    public String getCiudad() { return ciudad; }
-    public void setCiudad(String ciudad) { this.ciudad = ciudad; }
-    public String getCodigoPostal() { return codigoPostal; }
-    public void setCodigoPostal(String codigoPostal) { this.codigoPostal = codigoPostal; }
-    public String getInstruccionesEspeciales() { return instruccionesEspeciales; }
-    public void setInstruccionesEspeciales(String instruccionesEspeciales) { this.instruccionesEspeciales = instruccionesEspeciales; }
-    public String getNombreReceptor() { return nombreReceptor; }
-    public void setNombreReceptor(String nombreReceptor) { this.nombreReceptor = nombreReceptor; }
-    public EstadoDelivery getEstado() { return estado; }
-    public void setEstado(EstadoDelivery estado) { this.estado = estado; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Pedido getPedido() {
+        return pedido;
+    }
+
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
+    }
+
+    public String getDireccion() {
+        return direccion;
+    }
+
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    public LocalDateTime getFechaEnvio() {
+        return fechaEnvio;
+    }
+
+    public void setFechaEnvio(LocalDateTime fechaEnvio) {
+        this.fechaEnvio = fechaEnvio;
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
+    }
+
+    public String getCodigoPostal() {
+        return codigoPostal;
+    }
+
+    public void setCodigoPostal(String codigoPostal) {
+        this.codigoPostal = codigoPostal;
+    }
+
+    public String getInstruccionesEspeciales() {
+        return instruccionesEspeciales;
+    }
+
+    public void setInstruccionesEspeciales(String instruccionesEspeciales) {
+        this.instruccionesEspeciales = instruccionesEspeciales;
+    }
+
+    public String getNombreReceptor() {
+        return nombreReceptor;
+    }
+
+    public void setNombreReceptor(String nombreReceptor) {
+        this.nombreReceptor = nombreReceptor;
+    }
+
+    public Double getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(Double latitud) {
+        this.latitud = latitud;
+    }
+
+    public Double getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(Double longitud) {
+        this.longitud = longitud;
+    }
+
+    public EstadoDelivery getEstado() {
+        return estado;
+    }
+
+    public void setEstado(EstadoDelivery estado) {
+        this.estado = estado;
+    }
 }

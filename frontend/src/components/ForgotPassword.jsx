@@ -39,12 +39,13 @@ const ForgotPassword = () => {
             if (response.ok) {
                 setNotification({
                     show: true,
-                    message: "Si el correo existe, recibirás un enlace de recuperación.",
+                    message: "Recibirás un enlace de recuperación.",
                     type: "success"
                 });
                 setTimeout(() => navigate('/login'), 3000);
             } else {
-                setError("Error al procesar la solicitud. Inténtalo de nuevo.");
+                const data = await response.json();
+                setError(data.error || "Error al procesar la solicitud. Inténtalo de nuevo.");
             }
         } catch (error) {
             setError("Error de conexión. Inténtalo más tarde.");

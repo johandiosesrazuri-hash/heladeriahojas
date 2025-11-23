@@ -12,6 +12,7 @@ const Testimonios = () => {
   const [notification, setNotification] = useState({ show: false, message: "", type: "" });
   const [currentIndex, setCurrentIndex] = useState(0);
   const [animate, setAnimate] = useState(false);
+  const [viewMode, setViewMode] = useState('all'); // 'all' or 'mine'
 
   const [formData, setFormData] = useState({
     calificacion: 5,
@@ -232,17 +233,23 @@ const Testimonios = () => {
           }}
         >
           <div className="inline-flex bg-white/80 backdrop-blur-md rounded-full p-1.5 border border-white/50 shadow-soft">
-            <button className="px-6 py-2.5 rounded-full bg-primary text-white font-bold font-title transition-all duration-300 shadow-sm">
+            <button
+              onClick={() => setViewMode('all')}
+              className={`px-6 py-2.5 rounded-full font-bold font-title transition-all duration-300 ${viewMode === 'all' ? 'bg-primary text-white shadow-sm' : 'text-neutral-500 hover:bg-neutral-100'}`}
+            >
               Todos los Testimonios
             </button>
-            <button className="px-6 py-2.5 rounded-full text-neutral-500 font-bold font-title hover:bg-neutral-100 transition-all duration-300">
+            <button
+              onClick={() => setViewMode('mine')}
+              className={`px-6 py-2.5 rounded-full font-bold font-title transition-all duration-300 ${viewMode === 'mine' ? 'bg-primary text-white shadow-sm' : 'text-neutral-500 hover:bg-neutral-100'}`}
+            >
               Mis Testimonios ({miTestimonio ? 1 : 0})
             </button>
           </div>
         </div>
 
         {/* Carrusel de testimonios */}
-        {testimonios.length === 0 ? (
+        {(viewMode === 'all' ? testimonios : (miTestimonio ? [miTestimonio] : [])).length === 0 ? (
           <div
             className="bg-white/80 backdrop-blur-md rounded-3xl shadow-card p-12 text-center border border-white/50 mb-12"
             style={{
@@ -254,8 +261,12 @@ const Testimonios = () => {
               <svg xmlns="http://www.w3.org/2000/svg" className="h-16 w-16 mx-auto text-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
               </svg>
-              <h3 className="text-2xl font-bold text-neutral-800 mb-2 font-title">Aún no hay testimonios</h3>
-              <p className="text-neutral-500 font-body">¡Sé el primero en compartir tu experiencia con nosotros!</p>
+              <h3 className="text-2xl font-bold text-neutral-800 mb-2 font-title">
+                {viewMode === 'mine' ? 'Aún no has dejado un testimonio' : 'Aún no hay testimonios'}
+              </h3>
+              <p className="text-neutral-500 font-body">
+                {viewMode === 'mine' ? '¡Comparte tu experiencia con nosotros!' : '¡Sé el primero en compartir tu experiencia con nosotros!'}
+              </p>
             </div>
           </div>
         ) : (
@@ -272,9 +283,9 @@ const Testimonios = () => {
                 className="flex transition-transform duration-500 ease-in-out"
                 style={{ transform: `translateX(-${currentIndex * 100}%)` }}
               >
-                {testimonios.map((test, index) => (
+                {(viewMode === 'all' ? testimonios : [miTestimonio]).map((test, index) => (
                   <div
-                    key={test.id}
+                    key={test.id || index}
                     className="w-full flex-shrink-0 px-4"
                   >
                     <div className="bg-white rounded-3xl shadow-card overflow-hidden max-w-3xl mx-auto border border-neutral-100">
@@ -326,49 +337,55 @@ const Testimonios = () => {
               </div>
             </div>
 
-            {/* Botones de navegación */}
-            <button
-              onClick={prevTestimonio}
-              className="absolute left-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-primary hover:text-white text-neutral-400 transition-all duration-300 z-10 hover:scale-110"
-              style={{
-                animation: animate ? `fadeInUp 0.6s ease-out 0.9s both` : 'none',
-                opacity: animate ? 1 : 0
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button
-              onClick={nextTestimonio}
-              className="absolute right-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-primary hover:text-white text-neutral-400 transition-all duration-300 z-10 hover:scale-110"
-              style={{
-                animation: animate ? `fadeInUp 0.6s ease-out 0.9s both` : 'none',
-                opacity: animate ? 1 : 0
-              }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+            {/* Botones de navegación - Solo mostrar si hay más de 1 testimonio */}
+            {(viewMode === 'all' ? testimonios : [miTestimonio]).length > 1 && (
+              <>
+                <button
+                  onClick={prevTestimonio}
+                  className="absolute left-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-primary hover:text-white text-neutral-400 transition-all duration-300 z-10 hover:scale-110"
+                  style={{
+                    animation: animate ? `fadeInUp 0.6s ease-out 0.9s both` : 'none',
+                    opacity: animate ? 1 : 0
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={nextTestimonio}
+                  className="absolute right-0 top-1/2 -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:bg-primary hover:text-white text-neutral-400 transition-all duration-300 z-10 hover:scale-110"
+                  style={{
+                    animation: animate ? `fadeInUp 0.6s ease-out 0.9s both` : 'none',
+                    opacity: animate ? 1 : 0
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </>
+            )}
 
             {/* Indicadores del carrusel */}
-            <div
-              className="flex justify-center mt-8 space-x-2"
-              style={{
-                animation: animate ? `fadeInUp 0.6s ease-out 1.1s both` : 'none',
-                opacity: animate ? 1 : 0
-              }}
-            >
-              {testimonios.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentIndex(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex ? 'bg-primary scale-125' : 'bg-neutral-300 hover:bg-primary/50'
-                    }`}
-                />
-              ))}
-            </div>
+            {(viewMode === 'all' ? testimonios : [miTestimonio]).length > 1 && (
+              <div
+                className="flex justify-center mt-8 space-x-2"
+                style={{
+                  animation: animate ? `fadeInUp 0.6s ease-out 1.1s both` : 'none',
+                  opacity: animate ? 1 : 0
+                }}
+              >
+                {(viewMode === 'all' ? testimonios : [miTestimonio]).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentIndex(index)}
+                    className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentIndex ? 'bg-primary scale-125' : 'bg-neutral-300 hover:bg-primary/50'
+                      }`}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         )}
 

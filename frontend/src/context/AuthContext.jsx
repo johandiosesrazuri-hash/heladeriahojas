@@ -6,15 +6,15 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     try {
-      const u = localStorage.getItem('user');
+      const u = localStorage.getItem('user') || sessionStorage.getItem('user');
       return u ? JSON.parse(u) : null;
     } catch {
       return null;
     }
   });
-  const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const [token, setToken] = useState(() => localStorage.getItem('token') || sessionStorage.getItem('token'));
 
-  const login = async (email, password) => {
+  const login = async (email, password, rememberMe = false) => {
     try {
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       const response = await axios.post(`${api}/api/auth/login`, {
@@ -36,8 +36,19 @@ export const AuthProvider = ({ children }) => {
       console.log('🔵 Token guardado:', tokenResp);
       console.log('👤 Usuario guardado:', userResp);
 
-      localStorage.setItem('token', tokenResp);
-      localStorage.setItem('user', JSON.stringify(userResp));
+      if (rememberMe) {
+        localStorage.setItem('token', tokenResp);
+        localStorage.setItem('user', JSON.stringify(userResp));
+        // Limpiar sessionStorage para evitar conflictos
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
+      } else {
+        sessionStorage.setItem('token', tokenResp);
+        sessionStorage.setItem('user', JSON.stringify(userResp));
+        // Limpiar localStorage para asegurar que no persista una sesión anterior
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
 
       setToken(tokenResp);
       setUser(userResp);
@@ -64,8 +75,12 @@ export const AuthProvider = ({ children }) => {
           rol: data.rol
         };
 
+        // Por defecto usamos localStorage para registro (mejor UX), pero limpiamos session
         localStorage.setItem('token', tokenResp);
         localStorage.setItem('user', JSON.stringify(userResp));
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('user');
+
         setToken(tokenResp);
         setUser(userResp);
       }
@@ -80,6 +95,8 @@ export const AuthProvider = ({ children }) => {
     console.log('🔴 Logout ejecutado');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('user');
     setToken(null);
     setUser(null);
   };
@@ -92,7 +109,13 @@ export const AuthProvider = ({ children }) => {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUser(response.data);
-      localStorage.setItem('user', JSON.stringify(response.data));
+
+      // Actualizar el storage correcto dependiendo de dónde esté el token
+      if (localStorage.getItem('token')) {
+        localStorage.setItem('user', JSON.stringify(response.data));
+      } else if (sessionStorage.getItem('token')) {
+        sessionStorage.setItem('user', JSON.stringify(response.data));
+      }
     } catch (error) {
       console.error('❌ Error checking auth:', error);
       logout();

@@ -57,15 +57,15 @@ public class PedidoController {
         switch (metodoPago) {
             case "efectivo":
                 pedido.setEstado(Pedido.EstadoPedido.PENDIENTE);
-                pedido.setPagado(false);  // Se paga al recibir
+                pedido.setPagado(false); // Se paga al recibir
                 break;
             case "transferencia":
                 pedido.setEstado(Pedido.EstadoPedido.PENDIENTE_PAGO);
-                pedido.setPagado(false);  // Esperando confirmación
+                pedido.setPagado(false); // Esperando confirmación
                 break;
             case "tarjeta":
                 pedido.setEstado(Pedido.EstadoPedido.PENDIENTE);
-                pedido.setPagado(true);  // Pago procesado
+                pedido.setPagado(true); // Pago procesado
                 break;
             default:
                 pedido.setEstado(Pedido.EstadoPedido.PENDIENTE);
@@ -120,32 +120,57 @@ public class PedidoController {
         return ResponseEntity.ok(pedidoService.listarPedidosPorUsuario(usuarioId));
     }
 
-    // DTOs 
+    // DTOs
 
     public static class PedidoRequest {
         private List<Item> items;
         private Delivery delivery;
         private String metodoPago;
 
-        public List<Item> getItems() { return items; }
-        public void setItems(List<Item> items) { this.items = items; }
+        public List<Item> getItems() {
+            return items;
+        }
 
-        public Delivery getDelivery() { return delivery; }
-        public void setDelivery(Delivery delivery) { this.delivery = delivery; }
+        public void setItems(List<Item> items) {
+            this.items = items;
+        }
+
+        public Delivery getDelivery() {
+            return delivery;
+        }
+
+        public void setDelivery(Delivery delivery) {
+            this.delivery = delivery;
+        }
 
         // ✅ AGREGAR GETTER Y SETTER
-        public String getMetodoPago() { return metodoPago; }
-        public void setMetodoPago(String metodoPago) { this.metodoPago = metodoPago; }
+        public String getMetodoPago() {
+            return metodoPago;
+        }
+
+        public void setMetodoPago(String metodoPago) {
+            this.metodoPago = metodoPago;
+        }
     }
 
     public static class Item {
         private Long productoId;
         private Integer cantidad;
 
-        public Long getProductoId() { return productoId; }
-        public void setProductoId(Long productoId) { this.productoId = productoId; }
+        public Long getProductoId() {
+            return productoId;
+        }
 
-        public Integer getCantidad() { return cantidad; }
-        public void setCantidad(Integer cantidad) { this.cantidad = cantidad; }
+        public void setProductoId(Long productoId) {
+            this.productoId = productoId;
+        }
+
+        public Integer getCantidad() {
+            return cantidad;
+        }
+
+        public void setCantidad(Integer cantidad) {
+            this.cantidad = cantidad;
+        }
     }
 }
