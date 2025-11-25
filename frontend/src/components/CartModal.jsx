@@ -1,16 +1,23 @@
 import React from 'react';
 import { useCart } from '../context/CartContext';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 
 const CartModal = () => {
     const { isCartOpen, toggleCart, items, total, removeItem, updateQuantity } = useCart();
     const navigate = useNavigate();
+    const toast = useToast();
 
     if (!isCartOpen) return null;
 
     const handleCheckout = () => {
         toggleCart();
         navigate('/pedidos');
+    };
+
+    const handleRemoveItem = (itemId, itemName) => {
+        removeItem(itemId);
+        toast.warning(`${itemName} eliminado del carrito`);
     };
 
     return (
@@ -79,7 +86,7 @@ const CartModal = () => {
                                     <div className="flex justify-between items-start mb-1">
                                         <h3 className="font-bold text-neutral-800 truncate pr-2 font-title">{item.name}</h3>
                                         <button
-                                            onClick={() => removeItem(item.id)}
+                                            onClick={() => handleRemoveItem(item.id, item.name)}
                                             className="text-neutral-400 hover:text-red-500 transition-colors p-1 hover:bg-red-50 rounded-full"
                                         >
                                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

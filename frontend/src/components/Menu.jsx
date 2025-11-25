@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 import axios from 'axios';
 import ProductSkeleton from './skeletons/ProductSkeleton';
 import useScrollAnimation from '../hooks/useScrollAnimation';
@@ -8,13 +9,16 @@ import ProductModal from './ProductModal';
 const Menu = () => {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [notification, setNotification] = useState({ show: false, message: '' });
   const [categorias, setCategorias] = useState(['Todos', 'Helados', 'Bebidas']);
   const [categoriaActiva, setCategoriaActiva] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [ordenPrecio, setOrdenPrecio] = useState(''); // '', 'asc', 'desc'
+  const [rangoPrecios, setRangoPrecios] = useState({ min: 0, max: 100 });
+  const [showFilters, setShowFilters] = useState(false);
   const { addItem } = useCart();
+  const toast = useToast();
 
   useEffect(() => {
     const fetchProductos = async () => {
@@ -42,14 +46,7 @@ const Menu = () => {
       quantity: 1
     });
 
-    setNotification({
-      show: true,
-      message: `${producto.nombre} agregado al carrito`
-    });
-
-    setTimeout(() => {
-      setNotification({ show: false, message: '' });
-    }, 3000);
+    toast.cart(`${producto.nombre} agregado al carrito`, '¡Añadido! 🛒');
   };
 
   // Normaliza la categoría recibida desde la API o el formulario admin
@@ -83,15 +80,33 @@ const Menu = () => {
     return esBebida ? 'Bebidas' : 'Helados';
   };
 
-  // Filtrar productos por categoría y búsqueda
+  // Filtrar productos por categoría, búsqueda y precio
   const productosFiltrados = productos
     .filter(producto => {
       const matchCategoria = categoriaActiva === 'Todos' || getTipoProducto(producto) === categoriaActiva;
       const matchBusqueda = searchTerm === '' || 
         producto.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (producto.descripcion && producto.descripcion.toLowerCase().includes(searchTerm.toLowerCase()));
-      return matchCategoria && matchBusqueda;
+      const precio = Number(producto.precio) || 0;
+      const matchPrecio = precio >= rangoPrecios.min && precio <= rangoPrecios.max;
+      return matchCategoria && matchBusqueda && matchPrecio;
+    })
+    .sort((a, b) => {
+      if (ordenPrecio === 'asc') return (Number(a.precio) || 0) - (Number(b.precio) || 0);
+      if (ordenPrecio === 'desc') return (Number(b.precio) || 0) - (Number(a.precio) || 0);
+      return 0;
     });
+
+  // Limpiar todos los filtros
+  const limpiarFiltros = () => {
+    setSearchTerm('');
+    setCategoriaActiva('Todos');
+    setOrdenPrecio('');
+    setRangoPrecios({ min: 0, max: 100 });
+  };
+
+  // Verificar si hay filtros activos
+  const hayFiltrosActivos = searchTerm || categoriaActiva !== 'Todos' || ordenPrecio || rangoPrecios.min > 0 || rangoPrecios.max < 100;
 
   // Obtener color de la categoría
   const getColorCategoria = (categoria) => {
@@ -113,18 +128,6 @@ const Menu = () => {
 
   return (
     <section className="py-12 px-4 md:px-8 lg:px-16 min-h-screen bg-neutral-50">
-      {/* Notificación temporal */}
-      {notification.show && (
-        <div className="fixed bottom-4 right-4 z-50 animate-fade-in">
-          <div className="bg-primary text-white px-6 py-3 rounded-full shadow-lg flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span className="font-medium font-body">{notification.message}</span>
-          </div>
-        </div>
-      )}
-
       {/* Contenido principal */}
       <div className="max-w-7xl mx-auto">
         {/* Encabezado */}
@@ -137,29 +140,116 @@ const Menu = () => {
           </p>
         </div>
 
-        {/* Barra de búsqueda */}
-        <div className="max-w-2xl mx-auto mb-8">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Buscar productos..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-6 py-4 pl-14 bg-white border-2 border-neutral-200 rounded-full focus:outline-none focus:border-primary transition-all duration-300 font-body shadow-soft"
-            />
-            <svg className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm('')}
-                className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            )}
+        {/* Barra de búsqueda y filtros */}
+        <div className="max-w-4xl mx-auto mb-8 space-y-4">
+          {/* Búsqueda principal */}
+          <div className="flex gap-3">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="Buscar helados, bebidas..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full px-6 py-4 pl-14 bg-white border-2 border-neutral-200 rounded-2xl focus:outline-none focus:border-primary transition-all duration-300 font-body shadow-soft"
+              />
+              <svg className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              )}
+            </div>
+            
+            {/* Botón de filtros avanzados */}
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`px-5 py-4 rounded-2xl font-bold transition-all duration-300 flex items-center gap-2 ${
+                showFilters || hayFiltrosActivos
+                  ? 'bg-primary text-white shadow-lg'
+                  : 'bg-white border-2 border-neutral-200 text-neutral-600 hover:border-primary hover:text-primary'
+              }`}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+              </svg>
+              <span className="hidden sm:inline">Filtros</span>
+              {hayFiltrosActivos && (
+                <span className="w-2 h-2 bg-white rounded-full animate-pulse" />
+              )}
+            </button>
+          </div>
+
+          {/* Panel de filtros expandible */}
+          <div className={`overflow-hidden transition-all duration-300 ${showFilters ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className="bg-white rounded-2xl p-6 shadow-soft border border-neutral-100 space-y-5">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-neutral-800 font-title">Filtros avanzados</h3>
+                {hayFiltrosActivos && (
+                  <button
+                    onClick={limpiarFiltros}
+                    className="text-sm text-primary hover:text-primary-dark font-medium transition-colors flex items-center gap-1"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Limpiar filtros
+                  </button>
+                )}
+              </div>
+
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Ordenar por precio */}
+                <div>
+                  <label className="block text-sm font-medium text-neutral-600 mb-2 font-body">Ordenar por precio</label>
+                  <select
+                    value={ordenPrecio}
+                    onChange={(e) => setOrdenPrecio(e.target.value)}
+                    className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:border-primary transition-colors font-body"
+                  >
+                    <option value="">Sin ordenar</option>
+                    <option value="asc">Menor a mayor</option>
+                    <option value="desc">Mayor a menor</option>
+                  </select>
+                </div>
+
+                {/* Precio mínimo */}
+                <div>
+                  <label className="block text-sm font-medium text-neutral-600 mb-2 font-body">Precio mínimo</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">S/</span>
+                    <input
+                      type="number"
+                      min="0"
+                      value={rangoPrecios.min}
+                      onChange={(e) => setRangoPrecios({ ...rangoPrecios, min: Number(e.target.value) || 0 })}
+                      className="w-full pl-10 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:border-primary transition-colors font-body"
+                    />
+                  </div>
+                </div>
+
+                {/* Precio máximo */}
+                <div>
+                  <label className="block text-sm font-medium text-neutral-600 mb-2 font-body">Precio máximo</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-400 font-medium">S/</span>
+                    <input
+                      type="number"
+                      min="0"
+                      value={rangoPrecios.max}
+                      onChange={(e) => setRangoPrecios({ ...rangoPrecios, max: Number(e.target.value) || 100 })}
+                      className="w-full pl-10 pr-4 py-3 bg-neutral-50 border border-neutral-200 rounded-xl focus:outline-none focus:border-primary transition-colors font-body"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -181,6 +271,16 @@ const Menu = () => {
             ))}
           </div>
         </div>
+
+        {/* Contador de resultados */}
+        {!loading && (
+          <div className="text-center mb-6">
+            <p className="text-neutral-500 font-body">
+              {productosFiltrados.length} {productosFiltrados.length === 1 ? 'producto encontrado' : 'productos encontrados'}
+              {hayFiltrosActivos && ' con los filtros aplicados'}
+            </p>
+          </div>
+        )}
 
         {/* Contenedor de Productos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

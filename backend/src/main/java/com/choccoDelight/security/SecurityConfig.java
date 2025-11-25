@@ -98,8 +98,12 @@ public class SecurityConfig {
                         // ADMIN SOLO
                         .requestMatchers("/api/admin/**").authenticated()
 
+                        // PEDIDOS - requiere autenticación para crear, pero permitir GET para listar
+                        .requestMatchers(HttpMethod.POST, "/api/pedidos").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/pedidos/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/api/pedidos/**").authenticated()
+
                         // USUARIO AUTENTICADO
-                        .requestMatchers("/api/pedidos/**").permitAll()
                         .requestMatchers("/api/delivery/**").authenticated()
                         .requestMatchers("/api/usuarios/**").authenticated()
 

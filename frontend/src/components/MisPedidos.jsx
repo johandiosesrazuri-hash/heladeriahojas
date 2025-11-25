@@ -2,16 +2,17 @@ import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useToast } from '../context/ToastContext';
 import axios from 'axios';
 import OrderProgress from './OrderProgress';
 
 const MisPedidos = ({ embedded = false }) => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
   const [pedidos, setPedidos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [animate, setAnimate] = useState(false);
-  const [notification, setNotification] = useState({ show: false, message: "", type: "" });
   const [detalleModal, setDetalleModal] = useState(null);
 
   // Activar animación
@@ -19,48 +20,34 @@ const MisPedidos = ({ embedded = false }) => {
     setTimeout(() => setAnimate(true), 10);
   }, []);
 
-  // Ocultar notificación
-  useEffect(() => {
-    if (notification.show) {
-      const timer = setTimeout(() => {
-        setNotification({ show: false, message: "", type: "" });
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [notification.show]);
-
   useEffect(() => {
     if (!user) {
-      setNotification({
-        show: true,
-        message: "Debes iniciar sesión para ver tus pedidos",
-        type: "error"
-      });
-      setTimeout(() => navigate('/login'), 1500);
+      setTimeout(() => {
+        toast?.error?.('Debes iniciar sesión para ver tus pedidos');
+        navigate('/login');
+      }, 100);
       return;
     }
     fetchPedidos();
   }, [user]);
 
   const fetchPedidos = async () => {
+    if (!user?.id || !token) return;
+    
     try {
       setLoading(true);
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       const response = await axios.get(`${api}/api/pedidos/usuario/${user.id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-            const pedidosOrdenados = response.data.sort((a, b) => 
+      const pedidosOrdenados = response.data.sort((a, b) => 
         new Date(b.fecha) - new Date(a.fecha)
       );
       
       setPedidos(pedidosOrdenados);
     } catch (error) {
       console.error('Error cargando pedidos:', error);
-      setNotification({
-        show: true,
-        message: "Error al cargar tus pedidos. Inténtalo de nuevo.",
-        type: "error"
-      });
+      toast?.error?.('Error al cargar tus pedidos. Inténtalo de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -105,11 +92,7 @@ const MisPedidos = ({ embedded = false }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      setNotification({
-        show: true,
-        message: "Pedido cancelado exitosamente",
-        type: "success"
-      });
+      toast?.success?.('Pedido cancelado exitosamente');
 
       // Actualizar la lista de pedidos
       fetchPedidos();
@@ -120,11 +103,7 @@ const MisPedidos = ({ embedded = false }) => {
       }
     } catch (error) {
       console.error('Error al cancelar pedido:', error);
-      setNotification({
-        show: true,
-        message: error.response?.data?.message || "Error al cancelar el pedido. Inténtalo de nuevo.",
-        type: "error"
-      });
+      toast?.error?.(error.response?.data?.message || 'Error al cancelar el pedido. Inténtalo de nuevo.');
     }
   };
 
@@ -153,12 +132,6 @@ const MisPedidos = ({ embedded = false }) => {
 
     return (
       <div className="space-y-4">
-        {notification.show && (
-          <div className={`px-4 py-3 rounded-lg shadow-sm flex items-center ${notification.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
-            <span className="font-medium font-body">{notification.message}</span>
-          </div>
-        )}
-
         {pedidos.length === 0 ? (
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -339,22 +312,6 @@ const MisPedidos = ({ embedded = false }) => {
 
   return (
     <section className="py-12 px-4 md:px-8 lg:px-16 min-h-screen bg-neutral-50">
-      {/* Notificación */}
-      {notification.show && (
-        <div className="fixed top-4 right-4 z-50 animate-fade-in">
-          <div className={`px-6 py-4 rounded-lg shadow-lg flex items-center ${notification.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-            <svg xmlns="http://www.w3.org/2000/svg" className={`h-6 w-6 mr-3 ${notification.type === 'success' ? 'text-green-500' : 'text-red-500'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              {notification.type === 'success' ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              )}
-            </svg>
-            <span className="font-medium">{notification.message}</span>
-          </div>
-        </div>
-      )}
-
       {/* Contenido principal */}
       <div className="max-w-6xl mx-auto">
         {/* Encabezado */}

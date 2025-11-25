@@ -23,7 +23,7 @@ const HeroSection = () => {
     },
     {
       title: "Calidad Premium en Cada Bocado",
-      subtitle: "Más de 50 sabores para todos los gustos y ocasiones",
+      subtitle: "Más de 20 sabores para todos los gustos y ocasiones",
       cta: "Pedir Ahora",
       image: "/img/hero-3.jpg",
       gradient: "from-accent-purple/90 to-primary/90"

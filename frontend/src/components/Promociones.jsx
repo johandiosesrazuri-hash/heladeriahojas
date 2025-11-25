@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 import PromoSkeleton from './skeletons/PromoSkeleton';
 import PromoModal from './PromoModal';
 
 const Promociones = () => {
   const [promociones, setPromociones] = useState([]);
-  const [notification, setNotification] = useState({ show: false, message: '' });
   const [loading, setLoading] = useState(true);
   const [selectedPromo, setSelectedPromo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { addItem } = useCart();
+  const toast = useToast();
 
   useEffect(() => {
     const fetchPromos = async () => {
@@ -27,11 +28,7 @@ const Promociones = () => {
         }
       } catch (error) {
         console.error("❌ Error al cargar promociones:", error);
-        setNotification({
-          show: true,
-          message: "Error al cargar promociones. Inténtalo de nuevo.",
-          type: "error",
-        });
+        toast.error("Error al cargar promociones. Inténtalo de nuevo.");
       } finally {
         setLoading(false);
       }
@@ -55,30 +52,11 @@ const Promociones = () => {
       productos: promo.productos
     });
 
-    setNotification({
-      show: true,
-      message: `${promo.nombrePromo} agregado al carrito`
-    });
-
-    setTimeout(() => {
-      setNotification({ show: false, message: '' });
-    }, 3000);
+    toast.cart(`${promo.nombrePromo} agregado al carrito`, '¡Promoción añadida! 🎁');
   };
 
   return (
     <section className="py-16 px-4 md:px-8 lg:px-16 min-h-screen bg-neutral-50">
-      {/* Notificación temporal */}
-      {notification.show && (
-        <div className="fixed bottom-4 right-4 z-50 animate-fade-in">
-          <div className="bg-primary text-white px-6 py-3 rounded-full shadow-lg flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
-            <span className="font-medium font-body">{notification.message}</span>
-          </div>
-        </div>
-      )}
-
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Encabezado */}
         <div className="text-center mb-16">
