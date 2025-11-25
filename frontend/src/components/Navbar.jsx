@@ -50,9 +50,9 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled
-        ? 'bg-white/80 backdrop-blur-md shadow-soft py-2 border-b border-white/20'
-        : 'bg-white/100 py-5 h-20  border-b border-white/20'
+      <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-500 ${isScrolled
+        ? 'bg-white/70 backdrop-blur-xl shadow-2xl py-2 border-b border-white/30 supports-[backdrop-filter]:bg-white/60'
+        : 'bg-white/90 backdrop-blur-sm py-5 h-20 border-b border-white/20'
         }`}>
         <div className="container-custom px-4 md:px-8 lg:px-16">
           <div className="flex items-center justify-between">
@@ -69,8 +69,24 @@ const Navbar = () => {
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-8">
               <ul className="flex space-x-6">
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (location.pathname === '/') {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      } else {
+                        navigate('/');
+                      }
+                      setIsMenuOpen(false);
+                    }}
+                    className="text-neutral-800 hover:text-primary font-medium font-body transition-colors duration-200 relative group"
+                  >
+                    Inicio
+                    <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                  </button>
+                </li>
                 {[
-                  { name: 'Inicio', section: 'sobre-nosotros' },
                   { name: 'Menú', section: 'menu' },
                   { name: 'Promociones', section: 'promociones' },
                   { name: 'Contacto', section: 'contacto' },
@@ -160,9 +176,21 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden bg-white/95 backdrop-blur-md shadow-lg border-t border-gray-100">
             <div className="px-4 pt-2 pb-3 space-y-1">
+              <button
+                type="button"
+                onClick={() => {
+                  if (location.pathname === '/') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  } else {
+                    navigate('/');
+                  }
+                  setIsMenuOpen(false);
+                }}
+                className="block w-full text-left px-3 py-3 rounded-xl text-base font-medium text-neutral-800 hover:text-primary hover:bg-primary/5 font-body transition-colors"
+              >
+                Inicio
+              </button>
               {[
-                { name: 'Inicio', section: 'inicio' },
-                { name: 'Sobre Nosotros', section: 'sobre-nosotros' },
                 { name: 'Menú', section: 'menu' },
                 { name: 'Promociones', section: 'promociones' },
                 { name: 'Contacto', section: 'contacto' },

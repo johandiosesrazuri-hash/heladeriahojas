@@ -387,46 +387,7 @@ const SobreNosotros = () => {
         </section>
       )}
 
-      {/* 🎯 Call to Action - Llamada a la acción impactante */}
-      <section
-        className="py-24 px-4 relative overflow-hidden"
-        style={{
-          animation: animate ? `fadeInUp 0.6s ease-out 1.7s both` : 'none',
-          opacity: animate ? 1 : 0
-        }}
-      >
-        {/* Fondo con patrón */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#904939] via-[#E19D7E] to-[#904939]"></div>
-
-        {/* Círculos decorativos */}
-        <div className="absolute top-10 left-10 w-72 h-72 bg-white/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-white/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-
-        <div className="max-w-4xl mx-auto text-center relative z-10">
-          <span className="text-7xl mb-6 block animate-bounce">🍦</span>
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 font-title drop-shadow-lg">
-            ¿Listo para probar nuestros helados?
-          </h2>
-          <p className="text-xl text-white/95 mb-10 font-accent max-w-2xl mx-auto">
-            Visítanos hoy y descubre por qué somos los favoritos de la ciudad
-          </p>
-
-          <button
-            onClick={() => window.location.href = '/menu'}
-            className="px-12 py-5 bg-white text-[#C1583B] rounded-full font-bold text-lg
-                     hover:bg-[#C1583B] hover:text-white transition-all duration-300
-                     hover:scale-110 hover:shadow-2xl transform active:scale-95
-                     flex items-center gap-3 mx-auto group"
-          >
-            <span>Ver Menú Completo</span>
-            <svg className="w-6 h-6 group-hover:translate-x-2 transition-transform"
-              fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </button>
-        </div>
-      </section>
+      
       <style jsx global>{`
          
         @keyframes fadeInUp {

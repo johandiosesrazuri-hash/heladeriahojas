@@ -31,12 +31,24 @@ const Pedido = () => {
 
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Verificar autenticación al cargar
+  useEffect(() => {
+    if (!user || !token) {
+      setNotification({
+        show: true,
+        message: 'Debes iniciar sesión para realizar un pedido',
+        type: 'error'
+      });
+      setTimeout(() => navigate('/login'), 1500);
+    }
+  }, [user, token, navigate]);
+
   // Animación de entrada
   useEffect(() => {
     setTimeout(() => setAnimate(true), 10);
   }, []);
 
-  // Ocultar notificación después de 3 s
+  // Ocultar notificación después de 3 s
   useEffect(() => {
     if (notification.show) {
       const timer = setTimeout(
@@ -54,6 +66,17 @@ const Pedido = () => {
 
   const handleSubmit = async e => {
     e.preventDefault();
+
+    // Verificar autenticación
+    if (!user || !token) {
+      setNotification({
+        show: true,
+        message: 'Debes iniciar sesión para realizar un pedido',
+        type: 'error'
+      });
+      setTimeout(() => navigate('/login'), 1500);
+      return;
+    }
 
     // Validaciones básicas
     if (!formData.direccion || !formData.telefono || !formData.ciudad) {

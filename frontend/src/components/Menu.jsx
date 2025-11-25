@@ -1,22 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 import axios from 'axios';
+import ProductSkeleton from './skeletons/ProductSkeleton';
+import useScrollAnimation from '../hooks/useScrollAnimation';
+import ProductModal from './ProductModal';
 
 const Menu = () => {
   const [productos, setProductos] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [notification, setNotification] = useState({ show: false, message: '' });
   const [categorias, setCategorias] = useState(['Todos', 'Helados', 'Bebidas']);
   const [categoriaActiva, setCategoriaActiva] = useState('Todos');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { addItem } = useCart();
 
   useEffect(() => {
     const fetchProductos = async () => {
       try {
+        setLoading(true);
         const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
         const response = await axios.get(`${api}/api/productos`);
         setProductos(response.data);
       } catch (error) {
         console.error('Error al cargar productos:', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchProductos();
@@ -73,10 +83,15 @@ const Menu = () => {
     return esBebida ? 'Bebidas' : 'Helados';
   };
 
-  // Filtrar productos por categoría
-  const productosFiltrados = categoriaActiva === 'Todos'
-    ? productos
-    : productos.filter(producto => getTipoProducto(producto) === categoriaActiva);
+  // Filtrar productos por categoría y búsqueda
+  const productosFiltrados = productos
+    .filter(producto => {
+      const matchCategoria = categoriaActiva === 'Todos' || getTipoProducto(producto) === categoriaActiva;
+      const matchBusqueda = searchTerm === '' || 
+        producto.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (producto.descripcion && producto.descripcion.toLowerCase().includes(searchTerm.toLowerCase()));
+      return matchCategoria && matchBusqueda;
+    });
 
   // Obtener color de la categoría
   const getColorCategoria = (categoria) => {
@@ -122,6 +137,32 @@ const Menu = () => {
           </p>
         </div>
 
+        {/* Barra de búsqueda */}
+        <div className="max-w-2xl mx-auto mb-8">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Buscar productos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full px-6 py-4 pl-14 bg-white border-2 border-neutral-200 rounded-full focus:outline-none focus:border-primary transition-all duration-300 font-body shadow-soft"
+            />
+            <svg className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+
         {/* Filtros de Categoría */}
         <div className="flex justify-center mb-10">
           <div className="inline-flex bg-white rounded-full p-1.5 shadow-soft border border-neutral-100">
@@ -143,11 +184,16 @@ const Menu = () => {
 
         {/* Contenedor de Productos */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-          {productosFiltrados.length === 0 ? (
+          {loading ? (
+            <>
+              {[...Array(6)].map((_, index) => (
+                <ProductSkeleton key={index} />
+              ))}
+            </>
+          ) : productosFiltrados.length === 0 ? (
             <div className="col-span-full text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
-              <p className="mt-4 text-neutral-500 text-lg font-body">
-                Cargando productos...
+              <p className="text-neutral-500 text-lg font-body">
+                No hay productos disponibles
               </p>
             </div>
           ) : (
@@ -156,10 +202,16 @@ const Menu = () => {
               return (
                 <div
                   key={producto.id}
-                  className="bg-white rounded-3xl shadow-card overflow-hidden transition-all duration-300 hover:shadow-hover hover:-translate-y-2 group border border-neutral-100"
+                  className="bg-white rounded-3xl shadow-card overflow-hidden transition-all duration-500 hover:shadow-hover hover:-translate-y-2 group border border-neutral-100"
                 >
                   {/* Imagen del Producto con efecto zoom */}
-                  <div className="relative h-64 overflow-hidden bg-neutral-50">
+                  <div 
+                    className="relative h-64 overflow-hidden bg-neutral-50 cursor-pointer"
+                    onClick={() => {
+                      setSelectedProduct(producto);
+                      setIsModalOpen(true);
+                    }}
+                  >
                     <img
                       src={`http://localhost:8080${producto.imagen}`}
                       alt={producto.nombre}
@@ -173,6 +225,11 @@ const Menu = () => {
                     <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold flex items-center backdrop-blur-sm ${getColorCategoria(tipo)}`}>
                       <span className="mr-1">{getIconoCategoria(tipo)}</span>
                       {tipo}
+                    </div>
+
+                    {/* Overlay de "Ver detalle" */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <span className="text-white font-bold text-lg font-title">Ver Detalle</span>
                     </div>
                   </div>
 
@@ -213,17 +270,27 @@ const Menu = () => {
         {productosFiltrados.length === 0 && productos.length > 0 && (
           <div className="col-span-full text-center py-16">
             <div className="text-6xl mb-6 animate-bounce-slow">
-              {categoriaActiva === 'Helados' ? '🍦' : '🥤'}
+              {searchTerm ? '🔍' : categoriaActiva === 'Helados' ? '🍦' : '🥤'}
             </div>
             <h3 className="text-2xl font-bold text-neutral-800 mb-2 font-title">
-              No hay {categoriaActiva.toLowerCase()} disponibles
+              {searchTerm ? `No se encontraron resultados para "${searchTerm}"` : `No hay ${categoriaActiva.toLowerCase()} disponibles`}
             </h3>
             <p className="text-neutral-500 font-body">
-              Prueba seleccionando otra categoría
+              {searchTerm ? 'Intenta con otro término de búsqueda' : 'Prueba seleccionando otra categoría'}
             </p>
           </div>
         )}
       </div>
+
+      {/* Modal de producto */}
+      <ProductModal
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedProduct(null);
+        }}
+      />
 
       {/* Estilos */}
       <style jsx global>{`

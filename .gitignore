@@ -4,4 +4,22 @@ tokens/
 **/credentials.json
 **/client_secret.json
 .env
+.env.local
+.env.production
 .DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*.iml
+
+# Logs
+*.log
+logs/
+
+# Build artifacts
+dist/
+build/

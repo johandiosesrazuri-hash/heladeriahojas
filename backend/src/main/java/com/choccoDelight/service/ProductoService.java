@@ -2,6 +2,8 @@ package com.choccoDelight.service;
 
 import com.choccoDelight.entity.Producto;
 import com.choccoDelight.repository.ProductoRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +16,10 @@ public class ProductoService {
 
     public List<Producto> listarProductos() {
         return productoRepository.findByActivoTrue();
+    }
+
+    public Page<Producto> listarProductosPaginados(Pageable pageable) {
+        return productoRepository.findByActivoTrue(pageable);
     }
 
     public Producto obtenerProducto(Long id) {

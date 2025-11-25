@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import OrderProgress from './OrderProgress';
 
-const     MisPedidos = ({ embedded = false }) => {
+const MisPedidos = ({ embedded = false }) => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const [pedidos, setPedidos] = useState([]);
@@ -64,6 +66,68 @@ const     MisPedidos = ({ embedded = false }) => {
     }
   };
 
+  // Verificar si un pedido puede ser cancelado
+  const puedeCancelar = (pedido) => {
+    if (!pedido) return false;
+    
+    const estadosPermitidos = ['PENDIENTE', 'PENDIENTE_PAGO', 'CONFIRMADO'];
+    const tiempoLimite = 30 * 60 * 1000; // 30 minutos en milisegundos
+    
+    // Validar estado
+    const estadoValido = estadosPermitidos.includes(pedido.estado);
+    
+    // Validar tiempo (si la fecha no existe o es inválida, permitir cancelación)
+    let dentroDelTiempo = true;
+    if (pedido.fecha) {
+      try {
+        const fechaPedido = new Date(pedido.fecha);
+        const tiempoTranscurrido = Date.now() - fechaPedido.getTime();
+        dentroDelTiempo = tiempoTranscurrido <= tiempoLimite;
+      } catch (e) {
+        console.error('Error procesando fecha del pedido:', e);
+      }
+    }
+    
+    return estadoValido && dentroDelTiempo;
+  };
+
+  // Cancelar pedido
+  const handleCancelarPedido = async (pedidoId) => {
+    if (!window.confirm('¿Estás seguro de que deseas cancelar este pedido? Esta acción no se puede deshacer.')) {
+      return;
+    }
+
+    try {
+      const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+      await axios.put(
+        `${api}/api/pedidos/${pedidoId}/estado`,
+        { estado: 'CANCELADO' },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setNotification({
+        show: true,
+        message: "Pedido cancelado exitosamente",
+        type: "success"
+      });
+
+      // Actualizar la lista de pedidos
+      fetchPedidos();
+      
+      // Cerrar el modal si está abierto
+      if (detalleModal && detalleModal.id === pedidoId) {
+        setDetalleModal(null);
+      }
+    } catch (error) {
+      console.error('Error al cancelar pedido:', error);
+      setNotification({
+        show: true,
+        message: error.response?.data?.message || "Error al cancelar el pedido. Inténtalo de nuevo.",
+        type: "error"
+      });
+    }
+  };
+
   // Mapeo de estados con colores y iconos
   const estadoInfo = {
     'PENDIENTE': { color: 'bg-yellow-100 text-yellow-800', icono: '⏱️', texto: 'Pendiente' },
@@ -78,9 +142,11 @@ const     MisPedidos = ({ embedded = false }) => {
   if (embedded) {
     if (loading) {
       return (
-        <div className="flex items-center gap-3 text-[#904939]">
-          <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-4 border-[#E19D7E]"></div>
-          <span className="font-semibold">Cargando tus pedidos...</span>
+        <div className="flex items-center justify-center py-12">
+          <div className="flex flex-col items-center gap-3">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+            <span className="text-neutral-600 font-medium font-body">Cargando pedidos...</span>
+          </div>
         </div>
       );
     }
@@ -88,50 +154,50 @@ const     MisPedidos = ({ embedded = false }) => {
     return (
       <div className="space-y-4">
         {notification.show && (
-          <div className={`px-4 py-3 rounded-lg shadow flex items-center ${notification.type === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-            <span className="font-medium">{notification.message}</span>
+          <div className={`px-4 py-3 rounded-lg shadow-sm flex items-center ${notification.type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+            <span className="font-medium font-body">{notification.message}</span>
           </div>
         )}
 
-        <div className="flex items-center justify-between">
-          <h3 className="text-2xl font-bold text-[#904939]">Mis pedidos</h3>
-          <span className="text-sm text-[#C1583B]">Total: {pedidos.length}</span>
-        </div>
-
         {pedidos.length === 0 ? (
-          <div className="bg-white rounded-xl border border-[#f0e5dd] p-6 text-center">
-            <p className="text-[#C1583B]">Aún no tienes pedidos.</p>
+          <div className="text-center py-12">
+            <div className="w-16 h-16 bg-neutral-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+            </div>
+            <p className="text-neutral-500 font-body">No tienes pedidos aún</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4">
+          <div className="space-y-3">
             {pedidos.map((pedido) => {
               const estado = estadoInfo[pedido.estado] || estadoInfo['PENDIENTE'];
               return (
-                <div key={pedido.id} className="bg-white rounded-xl border border-[#f0e5dd] p-4 flex flex-col gap-2">
-                  <div className="flex justify-between items-start">
+                <div key={pedido.id} className="bg-neutral-50 rounded-xl p-4 hover:bg-neutral-100 transition-colors border border-neutral-200">
+                  <div className="flex justify-between items-start mb-3">
                     <div>
-                      <p className="text-lg font-bold text-[#904939]">Pedido #{pedido.id}</p>
-                      <p className="text-sm text-[#C1583B]">
+                      <p className="text-base font-bold text-neutral-800 font-title">Pedido #{pedido.id}</p>
+                      <p className="text-xs text-neutral-500 font-body mt-0.5">
                         {new Date(pedido.fecha).toLocaleDateString('es-ES', {
                           year: 'numeric',
-                          month: 'long',
+                          month: 'short',
                           day: 'numeric',
                           hour: '2-digit',
                           minute: '2-digit'
                         })}
                       </p>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${estado.color}`}>
+                    <span className={`px-3 py-1 rounded-lg text-xs font-semibold ${estado.color}`}>
                       {estado.icono} {estado.texto}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-[#C1583B]">Método: {pedido.metodoPago?.toUpperCase() || 'EFECTIVO'}</span>
-                    <span className="text-lg font-bold text-[#4caf50]">S/ {Number(pedido.total).toFixed(2)}</span>
+                  <div className="flex justify-between items-center pt-3 border-t border-neutral-200">
+                    <span className="text-sm text-neutral-600 font-body">{pedido.metodoPago?.toUpperCase() || 'EFECTIVO'}</span>
+                    <span className="text-lg font-bold text-neutral-800 font-title">S/ {Number(pedido.total).toFixed(2)}</span>
                   </div>
                   <button
                     onClick={() => setDetalleModal(pedido)}
-                    className="self-start text-sm font-semibold text-[#1976d2] hover:underline"
+                    className="mt-3 w-full py-2 bg-white hover:bg-neutral-50 text-neutral-700 text-sm font-medium rounded-lg transition-all border border-neutral-200 font-body"
                   >
                     Ver detalles
                   </button>
@@ -141,71 +207,114 @@ const     MisPedidos = ({ embedded = false }) => {
           </div>
         )}
 
-        {/* Modal reusa el mismo diseño */}
-        {detalleModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
-            <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-              <div className="bg-gradient-to-r from-[#8d6e63] to-[#C1583B] text-white p-6 flex justify-between items-center rounded-t-2xl">
-                <h2 className="text-2xl font-bold font-cinzel">Pedido #{detalleModal.id}</h2>
+        {/* Modal con diseño profesional */}
+        {detalleModal && ReactDOM.createPortal(
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in" style={{ zIndex: 9999 }}>
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="bg-neutral-900 text-white p-6 flex justify-between items-center">
+                <h2 className="text-xl font-bold font-title">Pedido #{detalleModal.id}</h2>
                 <button
                   onClick={() => setDetalleModal(null)}
-                  className="text-white hover:text-[#DDD4CE] text-2xl font-bold transition-colors"
+                  className="text-white hover:text-neutral-300 transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10"
                 >
-                  ✕
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </div>
               <div className="p-6">
-                <div className="mb-6 pb-6 border-b border-[#DDD4CE]">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className={`px-4 py-2 rounded-full text-sm font-semibold ${estadoInfo[detalleModal.estado]?.color || 'bg-gray-100'}`}>
+                <div className="mb-6 pb-6 border-b border-neutral-200">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className={`px-4 py-2 rounded-lg text-sm font-semibold ${estadoInfo[detalleModal.estado]?.color || 'bg-gray-100'}`}>
                       {estadoInfo[detalleModal.estado]?.icono} {estadoInfo[detalleModal.estado]?.texto}
                     </span>
-                    <span className="text-3xl font-bold text-[#4caf50]">
+                    <span className="text-2xl font-bold text-neutral-800 font-title">
                       S/ {Number(detalleModal.total).toFixed(2)}
                     </span>
                   </div>
-                  <p className="text-sm text-[#C1583B]">
-                    Realizado el {new Date(detalleModal.fecha).toLocaleString('es-ES')}
+                  <p className="text-sm text-neutral-500 font-body">
+                    {new Date(detalleModal.fecha).toLocaleDateString('es-ES', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
                   </p>
                 </div>
-                <div className="mb-6 pb-6 border-b border-[#DDD4CE]">
-                  <h3 className="text-lg font-bold text-[#904939] mb-3 font-cinzel">Información de Pago</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-[#C1583B]">Método de Pago</p>
-                      <p className="font-semibold">{detalleModal.metodoPago?.toUpperCase()}</p>
+                <div className="mb-6 pb-6 border-b border-neutral-200">
+                  <h3 className="text-base font-bold text-neutral-800 mb-4 font-title">Progreso del Pedido</h3>
+                  <OrderProgress estado={detalleModal.estado} />
+                </div>
+                <div className="mb-6 pb-6 border-b border-neutral-200">
+                  <h3 className="text-base font-bold text-neutral-800 mb-4 font-title">Información de Pago</h3>
+                  <div className="bg-neutral-50 rounded-lg p-4 space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-neutral-600 font-body">Método de Pago</span>
+                      <span className="font-semibold text-neutral-800 font-body">{detalleModal.metodoPago?.toUpperCase()}</span>
                     </div>
-                    <div>
-                      <p className="text-sm text-[#C1583B]">Estado de Pago</p>
-                      <p className={`font-semibold ${detalleModal.pagado ? 'text-green-600' : 'text-red-600'}`}>
-                        {detalleModal.pagado ? '✓ Pagado' : '✗ Pendiente'}
-                      </p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-neutral-600 font-body">Estado de Pago</span>
+                      <span className={`font-semibold ${detalleModal.pagado ? 'text-green-600' : 'text-orange-600'}`}>
+                        {detalleModal.pagado ? '✓ Pagado' : 'Pendiente'}
+                      </span>
                     </div>
                   </div>
                 </div>
                 {detalleModal.delivery && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-bold text-[#904939] mb-3 font-cinzel">Información de Entrega</h3>
-                    <div className="bg-[#DDD4CE] p-4 rounded-lg space-y-2">
-                      <p className="text-sm"><strong>Receptor:</strong> {detalleModal.delivery.nombreReceptor}</p>
-                      <p className="text-sm"><strong>Dirección:</strong> {detalleModal.delivery.direccion}</p>
-                      <p className="text-sm"><strong>Ciudad:</strong> {detalleModal.delivery.ciudad}</p>
-                      <p className="text-sm"><strong>Teléfono:</strong> {detalleModal.delivery.telefono}</p>
+                    <h3 className="text-base font-bold text-neutral-800 mb-4 font-title">Información de Entrega</h3>
+                    <div className="bg-neutral-50 rounded-lg p-4 space-y-2.5 text-sm font-body">
+                      <div className="flex gap-2">
+                        <span className="text-neutral-600 min-w-[100px]">Receptor:</span>
+                        <span className="text-neutral-800 font-medium">{detalleModal.delivery.nombreReceptor}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <span className="text-neutral-600 min-w-[100px]">Dirección:</span>
+                        <span className="text-neutral-800 font-medium">{detalleModal.delivery.direccion}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <span className="text-neutral-600 min-w-[100px]">Ciudad:</span>
+                        <span className="text-neutral-800 font-medium">{detalleModal.delivery.ciudad}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <span className="text-neutral-600 min-w-[100px]">Teléfono:</span>
+                        <span className="text-neutral-800 font-medium">{detalleModal.delivery.telefono}</span>
+                      </div>
                       {detalleModal.delivery.instruccionesEspeciales && (
-                        <p className="text-sm"><strong>Instrucciones:</strong> {detalleModal.delivery.instruccionesEspeciales}</p>
+                        <div className="flex gap-2 pt-2 border-t border-neutral-200">
+                          <span className="text-neutral-600 min-w-[100px]">Instrucciones:</span>
+                          <span className="text-neutral-800 font-medium">{detalleModal.delivery.instruccionesEspeciales}</span>
+                        </div>
                       )}
                     </div>
                   </div>
                 )}
-                <button
-                  onClick={() => setDetalleModal(null)}
-                  className="w-full bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] hover:from-[#3aa38f] hover:to-[#c4a08d] text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300"
-                >
-                  Cerrar
-                </button>
+
+                {/* Botones de acción */}
+                <div className="flex gap-3">
+                  {puedeCancelar(detalleModal) && (
+                    <button
+                      onClick={() => handleCancelarPedido(detalleModal.id)}
+                      className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-title flex items-center justify-center gap-2"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      Cancelar Pedido
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setDetalleModal(null)}
+                    className={`${puedeCancelar(detalleModal) ? 'flex-1' : 'w-full'} bg-neutral-900 hover:bg-neutral-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-title`}
+                  >
+                    Cerrar
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
     );
@@ -229,13 +338,7 @@ const     MisPedidos = ({ embedded = false }) => {
   }
 
   return (
-    <section className="py-16 px-4 md:px-8 lg:px-16 min-h-screen relative overflow-hidden">
-      {/* Fondo decorativo */}
-      <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 left-0 w-full h-full gradient-hero"></div>
-        <div className="absolute top-0 left-0 w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgdmlld0JveD0iMCAwIDYwIDYwIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiNmNWYwZTAiIGZpbGwtb3BhY2l0eT0iMC4zIiBkPSJNMzYgMzRjMC0yLjIwOTEzOSAxLjc5MDg2MS00IDQtNCAyLjIwOTEzOSAwIDQgMS43OTA4NjEgNCA0IDAgMi4yMDkxMzktMS43OTA4NjEgNC00IDQtMi4yMDkxMzkgMC00LTEuNzkwODYxLTQtNHptMCAwYzAtMi4yMDkxMzkgMS43OTA4NjEtNCA0LTQgMi4yMDkxMzkgMCA0IDEuNzkwODYxIDQgNCAwIDIuMjA5MTM5LTEuNzkwODYxIDQtNCA0LTIuMjA5MTM5IDAtNC0xLjc5MDg2MS00LTR6Ii8+PC9nPjwvc3ZnPg==')] opacity-20"></div>
-      </div>
-
+    <section className="py-12 px-4 md:px-8 lg:px-16 min-h-screen bg-neutral-50">
       {/* Notificación */}
       {notification.show && (
         <div className="fixed top-4 right-4 z-50 animate-fade-in">
@@ -253,81 +356,55 @@ const     MisPedidos = ({ embedded = false }) => {
       )}
 
       {/* Contenido principal */}
-      <div className="relative z-10 container-custom">
+      <div className="max-w-6xl mx-auto">
         {/* Encabezado */}
-        <div className="mb-12 text-center">
-          <h1 
-            className="text-4xl md:text-5xl text-[#904939] font-bold mb-4 relative pb-4 font-cinzel"
-            style={{ 
-              animation: animate ? `fadeInUp 0.6s ease-out 0.1s both` : 'none',
-              opacity: animate ? 1 : 0
-            }}
-          >
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-neutral-800 mb-2 font-title">
             Mis Pedidos
-            <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-20 h-1 bg-gradient-to-r from-[#E19D7E] to-[#904939] rounded-full"></span>
           </h1>
-          <p 
-            className="text-lg text-[#C1583B] font-quicksand"
-            style={{ 
-              animation: animate ? `fadeInUp 0.6s ease-out 0.3s both` : 'none',
-              opacity: animate ? 1 : 0
-            }}
-          >
-            Historial de {pedidos.length} pedido{pedidos.length !== 1 ? 's' : ''}
+          <p className="text-neutral-500 font-body">
+            {pedidos.length} {pedidos.length === 1 ? 'pedido realizado' : 'pedidos realizados'}
           </p>
         </div>
 
         {/* Lista de pedidos o mensaje vacío */}
         {pedidos.length === 0 ? (
-          <div 
-            className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-12 text-center"
-            style={{ 
-              animation: animate ? `fadeInUp 0.6s ease-out 0.5s both` : 'none',
-              opacity: animate ? 1 : 0
-            }}
-          >
+          <div className="bg-white rounded-2xl shadow-sm border border-neutral-200 p-12 text-center">
             <div className="max-w-md mx-auto">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-24 w-24 mx-auto text-[#E19D7E] mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-20 w-20 mx-auto text-neutral-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
-              <h3 className="text-2xl font-bold text-[#904939] mb-2 font-cinzel">No tienes pedidos aún</h3>
-              <p className="text-[#C1583B] mb-6 font-quicksand">¡Haz tu primer pedido y disfruta de nuestros deliciosos helados!</p>
+              <h3 className="text-xl font-bold text-neutral-800 mb-2 font-title">No tienes pedidos aún</h3>
+              <p className="text-neutral-500 mb-6 font-body">Comienza a explorar nuestro menú y realiza tu primer pedido</p>
               <button 
                 onClick={() => navigate('/menu')}
-                className="px-8 py-3 bg-[#E19D7E] hover:bg-[#3aa38f] text-[#904939] rounded-full font-semibold transition-all duration-300 hover:shadow-lg hover:-translate-y-1 active:translate-y-0 transform inline-flex items-center"
+                className="px-6 py-3 bg-neutral-900 hover:bg-primary text-white rounded-lg font-semibold transition-all duration-300 hover:shadow-lg inline-flex items-center font-title"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 2a1 1 0 011 1v1h3a1 1 0 110 2h-3v3a1 1 0 11-2 0V6H6a1 1 0 010-2h3V3a1 1 0 011-1zm-1 9a1 1 0 100-2v-1a1 1 0 00-1 1v1H6a1 1 0 100 2v1a1 1 0 001 1v1h3a1 1 0 100 2v-1a1 1 0 001-1v-1h3a1 1 0 100-2v-1a1 1 0 00-1-1v-1z" clipRule="evenodd" />
-                </svg>
                 Ver Menú
               </button>
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-6">
-            {pedidos.map((pedido, index) => {
+          <div className="space-y-4">
+            {pedidos.map((pedido) => {
               const estado = estadoInfo[pedido.estado] || estadoInfo['PENDIENTE'];
               
               return (
                 <div 
                   key={pedido.id}
-                  className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300"
-                  style={{ 
-                    animation: animate ? `fadeInUp 0.6s ease-out ${0.5 + index * 0.1}s both` : 'none',
-                    opacity: animate ? 1 : 0
-                  }}
+                  className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden hover:shadow-md transition-all duration-300"
                 >
                   <div className="p-6">
                     {/* Encabezado del pedido */}
                     <div className="flex flex-wrap justify-between items-start mb-4 gap-4">
                       <div>
-                        <h3 className="text-xl font-bold text-[#904939] font-montserrat">
+                        <h3 className="text-lg font-bold text-neutral-800 font-title mb-1">
                           Pedido #{pedido.id}
                         </h3>
-                        <p className="text-sm text-[#C1583B] font-quicksand">
+                        <p className="text-sm text-neutral-500 font-body">
                           {new Date(pedido.fecha).toLocaleDateString('es-ES', {
                             year: 'numeric',
-                            month: 'long',
+                            month: 'short',
                             day: 'numeric',
                             hour: '2-digit',
                             minute: '2-digit'
@@ -336,37 +413,37 @@ const     MisPedidos = ({ embedded = false }) => {
                       </div>
                       
                       <div className="flex flex-col items-end gap-2">
-                        <span className={`px-4 py-2 rounded-full text-sm font-semibold ${estado.color}`}>
+                        <span className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${estado.color}`}>
                           {estado.icono} {estado.texto}
                         </span>
-                        <span className="text-2xl font-bold text-[#4caf50] font-montserrat">
+                        <span className="text-xl font-bold text-neutral-800 font-title">
                           S/ {Number(pedido.total).toFixed(2)}
                         </span>
                       </div>
                     </div>
 
                     {/* Información adicional */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                      <div className="flex items-center text-sm text-[#C1583B] font-quicksand">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-[#E19D7E]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <div className="flex flex-wrap gap-4 mb-4 text-sm text-neutral-600 font-body">
+                      <div className="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
                         </svg>
-                        <span>Método: <strong>{pedido.metodoPago?.toUpperCase() || 'EFECTIVO'}</strong></span>
+                        <span>{pedido.metodoPago?.toUpperCase() || 'EFECTIVO'}</span>
                       </div>
-                      <div className="flex items-center text-sm text-[#C1583B] font-quicksand">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-[#E19D7E]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span>Pagado: <strong>{pedido.pagado ? 'Sí ✓' : 'No ✗'}</strong></span>
+                        <span>{pedido.pagado ? 'Pagado' : 'Pendiente de pago'}</span>
                       </div>
                     </div>
 
                     {/* Botón ver detalles */}
                     <button
                       onClick={() => setDetalleModal(pedido)}
-                      className="w-full py-3 bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] hover:from-[#3aa38f] hover:to-[#c4a08d] text-white font-semibold rounded-lg transition-all duration-300 hover:shadow-lg flex items-center justify-center"
+                      className="w-full py-2.5 bg-neutral-50 hover:bg-neutral-100 text-neutral-700 font-medium rounded-lg transition-all duration-300 flex items-center justify-center gap-2 font-body border border-neutral-200"
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
@@ -380,50 +457,64 @@ const     MisPedidos = ({ embedded = false }) => {
         )}
 
         {/* Modal de Detalles */}
-        {detalleModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 animate-fade-in">
-            <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        {detalleModal && ReactDOM.createPortal(
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in" style={{ zIndex: 9999 }}>
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               {/* Encabezado del Modal */}
-              <div className="bg-gradient-to-r from-[#8d6e63] to-[#C1583B] text-white p-6 flex justify-between items-center rounded-t-2xl">
-                <h2 className="text-2xl font-bold font-cinzel">Pedido #{detalleModal.id}</h2>
+              <div className="bg-neutral-900 text-white p-6 flex justify-between items-center">
+                <h2 className="text-xl font-bold font-title">Pedido #{detalleModal.id}</h2>
                 <button
                   onClick={() => setDetalleModal(null)}
-                  className="text-white hover:text-[#DDD4CE] text-2xl font-bold transition-colors"
+                  className="text-white hover:text-neutral-300 transition-colors w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/10"
                 >
-                  ✕
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </div>
 
               {/* Contenido del Modal */}
               <div className="p-6">
                 {/* Estado y Total */}
-                <div className="mb-6 pb-6 border-b border-[#DDD4CE]">
-                  <div className="flex justify-between items-center mb-4">
-                    <span className={`px-4 py-2 rounded-full text-sm font-semibold ${estadoInfo[detalleModal.estado]?.color || 'bg-gray-100'}`}>
+                <div className="mb-6 pb-6 border-b border-neutral-200">
+                  <div className="flex justify-between items-center mb-3">
+                    <span className={`px-4 py-2 rounded-lg text-sm font-semibold ${estadoInfo[detalleModal.estado]?.color || 'bg-gray-100'}`}>
                       {estadoInfo[detalleModal.estado]?.icono} {estadoInfo[detalleModal.estado]?.texto}
                     </span>
-                    <span className="text-3xl font-bold text-[#4caf50]">
+                    <span className="text-2xl font-bold text-neutral-800 font-title">
                       S/ {Number(detalleModal.total).toFixed(2)}
                     </span>
                   </div>
-                  <p className="text-sm text-[#C1583B]">
-                    Realizado el {new Date(detalleModal.fecha).toLocaleString('es-ES')}
+                  <p className="text-sm text-neutral-500 font-body">
+                    {new Date(detalleModal.fecha).toLocaleDateString('es-ES', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
                   </p>
                 </div>
 
+                {/* Progreso del pedido */}
+                <div className="mb-6 pb-6 border-b border-neutral-200">
+                  <h3 className="text-base font-bold text-neutral-800 mb-4 font-title">Progreso del Pedido</h3>
+                  <OrderProgress estado={detalleModal.estado} />
+                </div>
+
                 {/* Información de Pago */}
-                <div className="mb-6 pb-6 border-b border-[#DDD4CE]">
-                  <h3 className="text-lg font-bold text-[#904939] mb-3 font-cinzel">Información de Pago</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-[#C1583B]">Método de Pago</p>
-                      <p className="font-semibold">{detalleModal.metodoPago?.toUpperCase()}</p>
+                <div className="mb-6 pb-6 border-b border-neutral-200">
+                  <h3 className="text-base font-bold text-neutral-800 mb-4 font-title">Información de Pago</h3>
+                  <div className="bg-neutral-50 rounded-lg p-4 space-y-3">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-neutral-600 font-body">Método de Pago</span>
+                      <span className="font-semibold text-neutral-800 font-body">{detalleModal.metodoPago?.toUpperCase()}</span>
                     </div>
-                    <div>
-                      <p className="text-sm text-[#C1583B]">Estado de Pago</p>
-                      <p className={`font-semibold ${detalleModal.pagado ? 'text-green-600' : 'text-red-600'}`}>
-                        {detalleModal.pagado ? '✓ Pagado' : '✗ Pendiente'}
-                      </p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-neutral-600 font-body">Estado de Pago</span>
+                      <span className={`font-semibold ${detalleModal.pagado ? 'text-green-600' : 'text-orange-600'}`}>
+                        {detalleModal.pagado ? '✓ Pagado' : 'Pendiente'}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -431,49 +522,60 @@ const     MisPedidos = ({ embedded = false }) => {
                 {/* Información de Entrega (si existe) */}
                 {detalleModal.delivery && (
                   <div className="mb-6">
-                    <h3 className="text-lg font-bold text-[#904939] mb-3 font-cinzel">Información de Entrega</h3>
-                    <div className="bg-[#DDD4CE] p-4 rounded-lg space-y-2">
-                      <p className="text-sm"><strong>Receptor:</strong> {detalleModal.delivery.nombreReceptor}</p>
-                      <p className="text-sm"><strong>Dirección:</strong> {detalleModal.delivery.direccion}</p>
-                      <p className="text-sm"><strong>Ciudad:</strong> {detalleModal.delivery.ciudad}</p>
-                      <p className="text-sm"><strong>Teléfono:</strong> {detalleModal.delivery.telefono}</p>
+                    <h3 className="text-base font-bold text-neutral-800 mb-4 font-title">Información de Entrega</h3>
+                    <div className="bg-neutral-50 rounded-lg p-4 space-y-2.5 text-sm font-body">
+                      <div className="flex gap-2">
+                        <span className="text-neutral-600 min-w-[100px]">Receptor:</span>
+                        <span className="text-neutral-800 font-medium">{detalleModal.delivery.nombreReceptor}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <span className="text-neutral-600 min-w-[100px]">Dirección:</span>
+                        <span className="text-neutral-800 font-medium">{detalleModal.delivery.direccion}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <span className="text-neutral-600 min-w-[100px]">Ciudad:</span>
+                        <span className="text-neutral-800 font-medium">{detalleModal.delivery.ciudad}</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <span className="text-neutral-600 min-w-[100px]">Teléfono:</span>
+                        <span className="text-neutral-800 font-medium">{detalleModal.delivery.telefono}</span>
+                      </div>
                       {detalleModal.delivery.instruccionesEspeciales && (
-                        <p className="text-sm"><strong>Instrucciones:</strong> {detalleModal.delivery.instruccionesEspeciales}</p>
+                        <div className="flex gap-2 pt-2 border-t border-neutral-200">
+                          <span className="text-neutral-600 min-w-[100px]">Instrucciones:</span>
+                          <span className="text-neutral-800 font-medium">{detalleModal.delivery.instruccionesEspeciales}</span>
+                        </div>
                       )}
                     </div>
                   </div>
                 )}
 
-                {/* Botón Cerrar */}
-                <button
-                  onClick={() => setDetalleModal(null)}
-                  className="w-full bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] hover:from-[#3aa38f] hover:to-[#c4a08d] text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300"
-                >
-                  Cerrar
-                </button>
+                {/* Botones de acción */}
+                <div className="flex gap-3">
+                  {puedeCancelar(detalleModal) && (
+                    <button
+                      onClick={() => handleCancelarPedido(detalleModal.id)}
+                      className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-title flex items-center justify-center gap-2"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      Cancelar Pedido
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setDetalleModal(null)}
+                    className={`${puedeCancelar(detalleModal) ? 'flex-1' : 'w-full'} bg-neutral-900 hover:bg-neutral-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-title`}
+                  >
+                    Cerrar
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
-
-      {/* Estilos */}
-      <style>{`
-        .gradient-hero {
-          background: linear-gradient(135deg, #DDD4CE 0%, #E19D7E 100%);
-        }
-        
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
     </section>
   );
 };

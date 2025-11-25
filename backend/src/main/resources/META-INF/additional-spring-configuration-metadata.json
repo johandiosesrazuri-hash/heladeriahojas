@@ -11,6 +11,11 @@
       "description": "Tiempo de expiración del token JWT en milisegundos (propiedad custom)."
     },
     {
+      "name": "jwt.refresh.expiration",
+      "type": "java.lang.Long",
+      "description": "Tiempo de expiración del refresh token JWT en milisegundos (propiedad custom)."
+    },
+    {
       "name": "spring.web.cors.allowed-origins",
       "type": "java.lang.String",
       "description": "Orígenes permitidos para CORS. Ejemplo: http://localhost:5173"

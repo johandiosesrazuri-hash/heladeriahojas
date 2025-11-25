@@ -2,6 +2,10 @@ package com.choccoDelight.controller;
 
 import com.choccoDelight.entity.Producto;
 import com.choccoDelight.service.ProductoService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +23,17 @@ public class ProductoController {
     @GetMapping
     public ResponseEntity<List<Producto>> listarProductos() {
         return ResponseEntity.ok(productoService.listarProductos());
+    }
+
+    @GetMapping("/paginated")
+    public ResponseEntity<Page<Producto>> listarProductosPaginados(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "nombre") String sortBy,
+            @RequestParam(defaultValue = "ASC") String sortDir) {
+        Sort sort = sortDir.equalsIgnoreCase("DESC") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+        Pageable pageable = PageRequest.of(page, size, sort);
+        return ResponseEntity.ok(productoService.listarProductosPaginados(pageable));
     }
 
     @GetMapping("/{id}")

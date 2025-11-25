@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useCart } from '../context/CartContext';
+import PromoSkeleton from './skeletons/PromoSkeleton';
+import PromoModal from './PromoModal';
 
 const Promociones = () => {
   const [promociones, setPromociones] = useState([]);
   const [notification, setNotification] = useState({ show: false, message: '' });
   const [loading, setLoading] = useState(true);
+  const [selectedPromo, setSelectedPromo] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { addItem } = useCart();
 
   useEffect(() => {
@@ -89,12 +93,11 @@ const Promociones = () => {
         {/* Contenedor de Promociones */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {loading ? (
-            <div className="col-span-full text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent"></div>
-              <p className="mt-4 text-neutral-500 text-lg font-body">
-                Cargando promociones...
-              </p>
-            </div>
+            <>
+              {[...Array(6)].map((_, index) => (
+                <PromoSkeleton key={index} />
+              ))}
+            </>
           ) : promociones.length === 0 ? (
             <div className="col-span-full text-center py-16">
               <div className="text-6xl mb-6 animate-bounce-slow">🎁</div>
@@ -109,10 +112,16 @@ const Promociones = () => {
             promociones.map((promo, index) => (
               <div
                 key={promo.id}
-                className="bg-white rounded-3xl shadow-card overflow-hidden transition-all duration-300 hover:shadow-hover hover:-translate-y-2 group flex flex-col border border-neutral-100"
+                className="bg-white rounded-3xl shadow-card overflow-hidden transition-all duration-500 hover:shadow-hover hover:-translate-y-2 group flex flex-col border border-neutral-100"
               >
                 {/* Imagen de la Promoción con efecto zoom */}
-                <div className="relative h-64 overflow-hidden flex-shrink-0 bg-neutral-50">
+                <div 
+                  className="relative h-64 overflow-hidden flex-shrink-0 bg-neutral-50 cursor-pointer"
+                  onClick={() => {
+                    setSelectedPromo(promo);
+                    setIsModalOpen(true);
+                  }}
+                >
                   <img
                     src={promo.imagenUrl ? `http://localhost:8080${promo.imagenUrl}` : "/img/promociones/default.png"}
                     alt={promo.nombrePromo}
@@ -131,6 +140,11 @@ const Promociones = () => {
                   <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-primary px-3 py-1 rounded-full text-xs font-bold flex items-center shadow-sm font-title">
                     <span className="mr-1">🎁</span>
                     Promoción
+                  </div>
+
+                  {/* Overlay de "Ver detalle" */}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <span className="text-white font-bold text-lg font-title">Ver Detalle</span>
                   </div>
                 </div>
 
@@ -188,6 +202,16 @@ const Promociones = () => {
           )}
         </div>
       </div>
+
+      {/* Modal de promoción */}
+      <PromoModal
+        promo={selectedPromo}
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedPromo(null);
+        }}
+      />
 
       {/* Estilos */}
       <style jsx global>{`

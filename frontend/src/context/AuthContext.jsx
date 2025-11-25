@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../services/api';
 
 const AuthContext = createContext();
 
@@ -16,8 +16,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password, rememberMe = false) => {
     try {
-      const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      const response = await axios.post(`${api}/api/auth/login`, {
+      const response = await api.post('/auth/login', {
         email,
         password
       });
@@ -26,6 +25,7 @@ export const AuthProvider = ({ children }) => {
       console.log('✅ Respuesta del login:', data);
 
       const tokenResp = data.token;
+      const refreshTokenResp = data.refreshToken;
       const userResp = {
         id: data.id,
         email: data.email,
@@ -36,19 +36,18 @@ export const AuthProvider = ({ children }) => {
       console.log('🔵 Token guardado:', tokenResp);
       console.log('👤 Usuario guardado:', userResp);
 
-      if (rememberMe) {
-        localStorage.setItem('token', tokenResp);
-        localStorage.setItem('user', JSON.stringify(userResp));
-        // Limpiar sessionStorage para evitar conflictos
-        sessionStorage.removeItem('token');
-        sessionStorage.removeItem('user');
-      } else {
-        sessionStorage.setItem('token', tokenResp);
-        sessionStorage.setItem('user', JSON.stringify(userResp));
-        // Limpiar localStorage para asegurar que no persista una sesión anterior
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-      }
+      const storage = rememberMe ? localStorage : sessionStorage;
+      const otherStorage = rememberMe ? sessionStorage : localStorage;
+
+      // Guardar en el storage correcto
+      storage.setItem('token', tokenResp);
+      storage.setItem('refreshToken', refreshTokenResp);
+      storage.setItem('user', JSON.stringify(userResp));
+
+      // Limpiar el otro storage
+      otherStorage.removeItem('token');
+      otherStorage.removeItem('refreshToken');
+      otherStorage.removeItem('user');
 
       setToken(tokenResp);
       setUser(userResp);
@@ -62,12 +61,12 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      const response = await axios.post(`${api}/api/auth/register`, userData);
+      const response = await api.post('/auth/register', userData);
       const data = response.data;
 
       if (data && data.token) {
         const tokenResp = data.token;
+        const refreshTokenResp = data.refreshToken;
         const userResp = {
           id: data.id,
           email: data.email,
@@ -75,10 +74,12 @@ export const AuthProvider = ({ children }) => {
           rol: data.rol
         };
 
-        // Por defecto usamos localStorage para registro (mejor UX), pero limpiamos session
+        // Por defecto usamos localStorage para registro (mejor UX)
         localStorage.setItem('token', tokenResp);
+        localStorage.setItem('refreshToken', refreshTokenResp);
         localStorage.setItem('user', JSON.stringify(userResp));
         sessionStorage.removeItem('token');
+        sessionStorage.removeItem('refreshToken');
         sessionStorage.removeItem('user');
 
         setToken(tokenResp);
@@ -94,20 +95,18 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     console.log('🔴 Logout ejecutado');
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     sessionStorage.removeItem('token');
+    sessionStorage.removeItem('refreshToken');
     sessionStorage.removeItem('user');
     setToken(null);
     setUser(null);
   };
-
   const checkAuth = async () => {
     if (!token) return;
     try {
-      const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      const response = await axios.get(`${api}/api/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/auth/me');
       setUser(response.data);
 
       // Actualizar el storage correcto dependiendo de dónde esté el token

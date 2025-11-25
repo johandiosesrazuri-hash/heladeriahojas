@@ -28,6 +28,9 @@ public class AuthService {
     @org.springframework.beans.factory.annotation.Autowired
     private AuthenticationManager authenticationManager;
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private RefreshTokenService refreshTokenService;
+
     public AuthResponse login(LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -36,15 +39,17 @@ public class AuthService {
         Usuario usuario = usuarioRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-    String token = jwtTokenUtil.generateToken(usuario);
+        String token = jwtTokenUtil.generateToken(usuario);
+        com.choccoDelight.entity.RefreshToken refreshToken = refreshTokenService.createRefreshToken(usuario.getId());
 
-    AuthResponse resp = new AuthResponse();
-    resp.setToken(token);
-    resp.setId(usuario.getId());
-    resp.setEmail(usuario.getEmail());
-    resp.setNombre(usuario.getNombre());
-    resp.setRol(usuario.getRol().name().startsWith("ROLE_") ? usuario.getRol().name().substring("ROLE_".length()) : usuario.getRol().name());
-    return resp;
+        AuthResponse resp = new AuthResponse();
+        resp.setToken(token);
+        resp.setRefreshToken(refreshToken.getToken());
+        resp.setId(usuario.getId());
+        resp.setEmail(usuario.getEmail());
+        resp.setNombre(usuario.getNombre());
+        resp.setRol(usuario.getRol().name().startsWith("ROLE_") ? usuario.getRol().name().substring("ROLE_".length()) : usuario.getRol().name());
+        return resp;
     }
 
     public AuthResponse register(RegisterRequest request) {
@@ -52,28 +57,47 @@ public class AuthService {
             throw new RuntimeException("El email ya está registrado");
         }
 
-    Usuario usuario = new Usuario();
-    usuario.setNombre(request.getNombre());
-    usuario.setEmail(request.getEmail());
-    usuario.setPassword(passwordEncoder.encode(request.getPassword()));
-    usuario.setRol(Usuario.Role.CLIENTE);
+        Usuario usuario = new Usuario();
+        usuario.setNombre(request.getNombre());
+        usuario.setEmail(request.getEmail());
+        usuario.setPassword(passwordEncoder.encode(request.getPassword()));
+        usuario.setRol(Usuario.Role.CLIENTE);
 
-    usuarioRepository.save(usuario);
+        usuarioRepository.save(usuario);
 
-    String token = jwtTokenUtil.generateToken(usuario);
+        String token = jwtTokenUtil.generateToken(usuario);
+        com.choccoDelight.entity.RefreshToken refreshToken = refreshTokenService.createRefreshToken(usuario.getId());
 
-    AuthResponse resp = new AuthResponse();
-    resp.setToken(token);
-    resp.setId(usuario.getId());
-    resp.setEmail(usuario.getEmail());
-    resp.setNombre(usuario.getNombre());
-    resp.setRol(usuario.getRol().name());
-    return resp;
+        AuthResponse resp = new AuthResponse();
+        resp.setToken(token);
+        resp.setRefreshToken(refreshToken.getToken());
+        resp.setId(usuario.getId());
+        resp.setEmail(usuario.getEmail());
+        resp.setNombre(usuario.getNombre());
+        resp.setRol(usuario.getRol().name().startsWith("ROLE_") ? usuario.getRol().name().substring("ROLE_".length()) : usuario.getRol().name());
+        return resp;
     }
 
     public Usuario getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return usuarioRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+    }
+
+    public AuthResponse refreshToken(String refreshTokenStr) {
+        com.choccoDelight.entity.RefreshToken refreshToken = refreshTokenService.findByToken(refreshTokenStr);
+        refreshTokenService.verifyExpiration(refreshToken);
+
+        Usuario usuario = refreshToken.getUsuario();
+        String newAccessToken = jwtTokenUtil.generateToken(usuario);
+
+        AuthResponse resp = new AuthResponse();
+        resp.setToken(newAccessToken);
+        resp.setRefreshToken(refreshTokenStr);
+        resp.setId(usuario.getId());
+        resp.setEmail(usuario.getEmail());
+        resp.setNombre(usuario.getNombre());
+        resp.setRol(usuario.getRol().name().startsWith("ROLE_") ? usuario.getRol().name().substring("ROLE_".length()) : usuario.getRol().name());
+        return resp;
     }
 }

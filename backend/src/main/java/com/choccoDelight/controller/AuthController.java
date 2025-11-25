@@ -16,31 +16,19 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<AuthResponse> login(@jakarta.validation.Valid @RequestBody LoginRequest request) {
         System.out.println("🔵 Login attempt: " + request.getEmail());
-        try {
-            AuthResponse response = authService.login(request);
-            System.out.println("✅ Login exitoso para: " + request.getEmail());
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            System.out.println("❌ Error en login: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(401).body(null);
-        }
+        AuthResponse response = authService.login(request);
+        System.out.println("✅ Login exitoso para: " + request.getEmail());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<AuthResponse> register(@jakarta.validation.Valid @RequestBody RegisterRequest request) {
         System.out.println("🔵 Register attempt: " + request.getEmail());
-        try {
-            AuthResponse response = authService.register(request);
-            System.out.println("✅ Registro exitoso para: " + request.getEmail());
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            System.out.println("❌ Error en registro: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(400).body(null);
-        }
+        AuthResponse response = authService.register(request);
+        System.out.println("✅ Registro exitoso para: " + request.getEmail());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/me")
@@ -51,5 +39,13 @@ public class AuthController {
             System.out.println("❌ Error obteniendo usuario actual: " + e.getMessage());
             return ResponseEntity.status(401).body(null);
         }
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<AuthResponse> refreshToken(@jakarta.validation.Valid @RequestBody com.choccoDelight.dto.RefreshTokenRequest request) {
+        System.out.println("🔵 Refresh token attempt");
+        AuthResponse response = authService.refreshToken(request.getRefreshToken());
+        System.out.println("✅ Refresh token exitoso");
+        return ResponseEntity.ok(response);
     }
 }

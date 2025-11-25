@@ -2,6 +2,7 @@ package com.choccoDelight.dto;
 
 public class AuthResponse {
     private String token;
+    private String refreshToken;
     private String email;
     private Long id;      
     private String nombre;
@@ -18,6 +19,8 @@ public class AuthResponse {
 
     public String getToken() { return token; }
     public void setToken(String token) { this.token = token; }
+    public String getRefreshToken() { return refreshToken; }
+    public void setRefreshToken(String refreshToken) { this.refreshToken = refreshToken; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
     public String getNombre() { return nombre; }
