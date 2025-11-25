@@ -3,8 +3,78 @@ import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import axios from 'axios';
 import ProductSkeleton from './skeletons/ProductSkeleton';
-import useScrollAnimation from '../hooks/useScrollAnimation';
 import ProductModal from './ProductModal';
+import useScrollAnimation from '../hooks/useScrollAnimation';
+
+// Componente de Card con animación
+const ProductCard = ({ producto, index, onAddToCart, onViewDetail, getTipoProducto, getColorCategoria, getIconoCategoria }) => {
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.1, triggerOnce: false });
+  const tipo = getTipoProducto(producto);
+
+  return (
+    <div
+      ref={ref}
+      className={`bg-white rounded-3xl shadow-card overflow-hidden transition-all duration-700 ease-out transform hover:shadow-hover hover:-translate-y-2 group border border-neutral-100 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+      }`}
+      style={{ transitionDelay: `${(index % 3) * 100}ms` }}
+    >
+      {/* Imagen del Producto con efecto zoom */}
+      <div 
+        className="relative h-64 overflow-hidden bg-neutral-50 cursor-pointer"
+        onClick={onViewDetail}
+      >
+        <img
+          src={`http://localhost:8080${producto.imagen}`}
+          alt={producto.nombre}
+          className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
+          onError={(e) => {
+            e.target.src = '/img/default.png';
+          }}
+        />
+
+        {/* Badge de Tipo */}
+        <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold flex items-center backdrop-blur-sm ${getColorCategoria(tipo)}`}>
+          <span className="mr-1">{getIconoCategoria(tipo)}</span>
+          {tipo}
+        </div>
+
+        {/* Overlay de "Ver detalle" */}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+          <span className="text-white font-bold text-lg font-title">Ver Detalle</span>
+        </div>
+      </div>
+
+      {/* Contenido de la Tarjeta */}
+      <div className="p-6">
+        <h3 className="text-xl font-bold text-neutral-800 mb-2 font-title group-hover:text-primary transition-colors">
+          {producto.nombre}
+        </h3>
+
+        <p className="text-neutral-500 text-sm mb-4 line-clamp-2 font-body leading-relaxed">
+          {producto.descripcion}
+        </p>
+
+        {/* Precio y Botón */}
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-neutral-50">
+          <span className="text-2xl font-bold text-primary font-title">
+            S/ {Number(producto.precio).toFixed(2)}
+          </span>
+
+          <button
+            onClick={() => onAddToCart(producto)}
+            className="px-5 py-2.5 bg-neutral-900 text-white rounded-full font-bold text-sm transition-all duration-300 flex items-center font-title hover:bg-primary hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+            </svg>
+            Agregar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Menu = () => {
   const [productos, setProductos] = useState([]);
@@ -297,72 +367,21 @@ const Menu = () => {
               </p>
             </div>
           ) : (
-            productosFiltrados.map((producto, index) => {
-              const tipo = getTipoProducto(producto);
-              return (
-                <div
-                  key={producto.id}
-                  className="bg-white rounded-3xl shadow-card overflow-hidden transition-all duration-500 hover:shadow-hover hover:-translate-y-2 group border border-neutral-100"
-                >
-                  {/* Imagen del Producto con efecto zoom */}
-                  <div 
-                    className="relative h-64 overflow-hidden bg-neutral-50 cursor-pointer"
-                    onClick={() => {
-                      setSelectedProduct(producto);
-                      setIsModalOpen(true);
-                    }}
-                  >
-                    <img
-                      src={`http://localhost:8080${producto.imagen}`}
-                      alt={producto.nombre}
-                      className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
-                      onError={(e) => {
-                        e.target.src = '/img/default.png';
-                      }}
-                    />
-
-                    {/* Badge de Tipo */}
-                    <div className={`absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold flex items-center backdrop-blur-sm ${getColorCategoria(tipo)}`}>
-                      <span className="mr-1">{getIconoCategoria(tipo)}</span>
-                      {tipo}
-                    </div>
-
-                    {/* Overlay de "Ver detalle" */}
-                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                      <span className="text-white font-bold text-lg font-title">Ver Detalle</span>
-                    </div>
-                  </div>
-
-                  {/* Contenido de la Tarjeta */}
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-neutral-800 mb-2 font-title group-hover:text-primary transition-colors">
-                      {producto.nombre}
-                    </h3>
-
-                    <p className="text-neutral-500 text-sm mb-4 line-clamp-2 font-body leading-relaxed">
-                      {producto.descripcion}
-                    </p>
-
-                    {/* Precio y Botón */}
-                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-neutral-50">
-                      <span className="text-2xl font-bold text-primary font-title">
-                        S/ {Number(producto.precio).toFixed(2)}
-                      </span>
-
-                      <button
-                        onClick={() => handleAddToCart(producto)}
-                        className="px-5 py-2.5 bg-neutral-900 text-white rounded-full font-bold text-sm transition-all duration-300 flex items-center font-title hover:bg-primary hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                        </svg>
-                        Agregar
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })
+            productosFiltrados.map((producto, index) => (
+              <ProductCard
+                key={producto.id}
+                producto={producto}
+                index={index}
+                onAddToCart={handleAddToCart}
+                onViewDetail={() => {
+                  setSelectedProduct(producto);
+                  setIsModalOpen(true);
+                }}
+                getTipoProducto={getTipoProducto}
+                getColorCategoria={getColorCategoria}
+                getIconoCategoria={getIconoCategoria}
+              />
+            ))
           )}
         </div>
 

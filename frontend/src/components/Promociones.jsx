@@ -4,6 +4,103 @@ import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import PromoSkeleton from './skeletons/PromoSkeleton';
 import PromoModal from './PromoModal';
+import useScrollAnimation from '../hooks/useScrollAnimation';
+
+// Componente de Card con animación
+const PromoCard = ({ promo, index, onAddPromo, onViewDetail }) => {
+  const { ref, isVisible } = useScrollAnimation({ threshold: 0.1, triggerOnce: false });
+
+  return (
+    <div
+      ref={ref}
+      className={`bg-white rounded-3xl shadow-card overflow-hidden transition-all duration-700 ease-out transform hover:shadow-hover hover:-translate-y-2 group flex flex-col border border-neutral-100 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
+      }`}
+      style={{ transitionDelay: `${(index % 3) * 100}ms` }}
+    >
+      {/* Imagen de la Promoción con efecto zoom */}
+      <div 
+        className="relative h-64 overflow-hidden flex-shrink-0 bg-neutral-50 cursor-pointer"
+        onClick={onViewDetail}
+      >
+        <img
+          src={promo.imagenUrl ? `http://localhost:8080${promo.imagenUrl}` : "/img/promociones/default.png"}
+          alt={promo.nombrePromo}
+          className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
+          onError={(e) => {
+            e.target.src = "/img/promociones/default.png";
+          }}
+        />
+
+        {/* Badge de Descuento */}
+        <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg font-title">
+          {promo.descuento}% OFF
+        </div>
+
+        {/* Badge de Promoción */}
+        <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-primary px-3 py-1 rounded-full text-xs font-bold flex items-center shadow-sm font-title">
+          <span className="mr-1">🎁</span>
+          Promoción
+        </div>
+
+        {/* Overlay de "Ver detalle" */}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+          <span className="text-white font-bold text-lg font-title">Ver Detalle</span>
+        </div>
+      </div>
+
+      {/* Contenido de la Tarjeta */}
+      <div className="p-6 flex flex-col flex-grow">
+        <h3 className="text-xl font-bold text-neutral-800 mb-2 font-title group-hover:text-primary transition-colors">
+          {promo.nombrePromo}
+        </h3>
+
+        <p className="text-neutral-500 text-sm mb-4 line-clamp-2 font-body leading-relaxed">
+          {promo.descripcion}
+        </p>
+
+        {/* Productos incluidos en la promoción */}
+        {promo.productos && promo.productos.length > 0 && (
+          <div className="mb-4 p-4 bg-neutral-50 rounded-2xl border border-neutral-100">
+            <p className="text-xs text-neutral-400 font-bold mb-2 font-title uppercase tracking-wider">Incluye:</p>
+            <ul className="space-y-2">
+              {promo.productos.map((prod, idx) => (
+                <li key={idx} className="text-sm text-neutral-600 flex items-center font-body">
+                  <span className="mr-2 text-primary">🍦</span>
+                  <span className="font-bold mr-1">{prod.cantidad}x</span> {prod.nombre}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        {/* Precio y Botón - Centrados */}
+        <div className="mt-auto text-center pt-4 border-t border-neutral-50">
+          <div className="mb-4">
+            {promo.precioRegular && (
+              <span className="text-sm text-neutral-400 line-through block font-body">
+                S/ {Number(promo.precioRegular).toFixed(2)}
+              </span>
+            )}
+            <span className="text-3xl font-bold text-primary font-title block">
+              S/ {Number(promo.precioTotal).toFixed(2)}
+            </span>
+          </div>
+
+          <button
+            onClick={() => onAddPromo(promo)}
+            className="w-full px-6 py-3 bg-neutral-900 text-white rounded-full font-bold transition-all duration-300 flex items-center justify-center font-title hover:bg-primary hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
+            </svg>
+            Agregar al Carrito
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Promociones = () => {
   const [promociones, setPromociones] = useState([]);
@@ -88,94 +185,16 @@ const Promociones = () => {
             </div>
           ) : (
             promociones.map((promo, index) => (
-              <div
+              <PromoCard
                 key={promo.id}
-                className="bg-white rounded-3xl shadow-card overflow-hidden transition-all duration-500 hover:shadow-hover hover:-translate-y-2 group flex flex-col border border-neutral-100"
-              >
-                {/* Imagen de la Promoción con efecto zoom */}
-                <div 
-                  className="relative h-64 overflow-hidden flex-shrink-0 bg-neutral-50 cursor-pointer"
-                  onClick={() => {
-                    setSelectedPromo(promo);
-                    setIsModalOpen(true);
-                  }}
-                >
-                  <img
-                    src={promo.imagenUrl ? `http://localhost:8080${promo.imagenUrl}` : "/img/promociones/default.png"}
-                    alt={promo.nombrePromo}
-                    className="w-full h-full object-cover transition-transform duration-700 ease-in-out group-hover:scale-110"
-                    onError={(e) => {
-                      e.target.src = "/img/promociones/default.png";
-                    }}
-                  />
-
-                  {/* Badge de Descuento */}
-                  <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg font-title">
-                    {promo.descuento}% OFF
-                  </div>
-
-                  {/* Badge de Promoción */}
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm text-primary px-3 py-1 rounded-full text-xs font-bold flex items-center shadow-sm font-title">
-                    <span className="mr-1">🎁</span>
-                    Promoción
-                  </div>
-
-                  {/* Overlay de "Ver detalle" */}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                    <span className="text-white font-bold text-lg font-title">Ver Detalle</span>
-                  </div>
-                </div>
-
-                {/* Contenido de la Tarjeta */}
-                <div className="p-6 flex flex-col flex-grow">
-                  <h3 className="text-xl font-bold text-neutral-800 mb-2 font-title group-hover:text-primary transition-colors">
-                    {promo.nombrePromo}
-                  </h3>
-
-                  <p className="text-neutral-500 text-sm mb-4 line-clamp-2 font-body leading-relaxed">
-                    {promo.descripcion}
-                  </p>
-
-                  {/* Productos incluidos en la promoción */}
-                  {promo.productos && promo.productos.length > 0 && (
-                    <div className="mb-4 p-4 bg-neutral-50 rounded-2xl border border-neutral-100">
-                      <p className="text-xs text-neutral-400 font-bold mb-2 font-title uppercase tracking-wider">Incluye:</p>
-                      <ul className="space-y-2">
-                        {promo.productos.map((prod, idx) => (
-                          <li key={idx} className="text-sm text-neutral-600 flex items-center font-body">
-                            <span className="mr-2 text-primary">🍦</span>
-                            <span className="font-bold mr-1">{prod.cantidad}x</span> {prod.nombre}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-
-                  {/* Precio y Botón - Centrados */}
-                  <div className="mt-auto text-center pt-4 border-t border-neutral-50">
-                    <div className="mb-4">
-                      {promo.precioRegular && (
-                        <span className="text-sm text-neutral-400 line-through block font-body">
-                          S/ {Number(promo.precioRegular).toFixed(2)}
-                        </span>
-                      )}
-                      <span className="text-3xl font-bold text-primary font-title block">
-                        S/ {Number(promo.precioTotal).toFixed(2)}
-                      </span>
-                    </div>
-
-                    <button
-                      onClick={() => handleAddPromo(promo)}
-                      className="w-full px-6 py-3 bg-neutral-900 text-white rounded-full font-bold transition-all duration-300 flex items-center justify-center font-title hover:bg-primary hover:shadow-lg hover:-translate-y-0.5 active:translate-y-0"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                        <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3zM16 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM6.5 18a1.5 1.5 0 100-3 1.5 1.5 0 000 3z" />
-                      </svg>
-                      Agregar al Carrito
-                    </button>
-                  </div>
-                </div>
-              </div>
+                promo={promo}
+                index={index}
+                onAddPromo={handleAddPromo}
+                onViewDetail={() => {
+                  setSelectedPromo(promo);
+                  setIsModalOpen(true);
+                }}
+              />
             ))
           )}
         </div>

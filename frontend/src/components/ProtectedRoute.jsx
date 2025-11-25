@@ -26,7 +26,6 @@ const ProtectedRoute = ({ children, requiredRole = 'ADMIN' }) => {
 
   // Si no se pide rol, basta con estar autenticado
   if (!requiredRole) {
-    console.log('✅ Acceso permitido sin restricción de rol');
     return children;
   }
 
@@ -43,10 +42,9 @@ const ProtectedRoute = ({ children, requiredRole = 'ADMIN' }) => {
   // Si es string, validar igualdad
   if (userRoleNormalized !== requiredRole) {
     console.warn(`❌ Rol insuficiente. Requerido: ${requiredRole}, Actual: ${user.rol}`);
-    return <Navigate to="/" />;
+    return <Navigate to="/" replace />;
   }
 
-  console.log('✅ Acceso permitido');
   return children;
 };
 

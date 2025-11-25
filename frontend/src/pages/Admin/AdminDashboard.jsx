@@ -28,10 +28,6 @@ const AdminDashboard = () => {
   }, [notification.show]);
 
   useEffect(() => {
-    console.log('📊 AdminDashboard montado');
-    console.log('👤 Usuario:', user);
-    console.log('🔑 Token:', !!token);
-    console.log('👮 Rol:', user?.rol);
 
     // Verificar que sea admin
     if (!user || user.rol !== 'ADMIN') {
@@ -53,6 +49,9 @@ const AdminDashboard = () => {
       setLoading(true);
       setError(null);
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+      
+      console.log('🔐 Usuario actual:', user);
+      console.log('🔑 Token:', token ? 'Presente' : 'Ausente');
       
       console.log('📡 Fetching stats desde:', `${api}/api/admin/dashboard/stats`);
       

@@ -14,6 +14,8 @@ const MisPedidos = ({ embedded = false }) => {
   const [loading, setLoading] = useState(true);
   const [animate, setAnimate] = useState(false);
   const [detalleModal, setDetalleModal] = useState(null);
+  const [confirmCancelModal, setConfirmCancelModal] = useState(null);
+  const [cancelandoPedido, setCancelandoPedido] = useState(false);
 
   // Activar animación
   useEffect(() => {
@@ -58,13 +60,13 @@ const MisPedidos = ({ embedded = false }) => {
     if (!pedido) return false;
     
     const estadosPermitidos = ['PENDIENTE', 'PENDIENTE_PAGO', 'CONFIRMADO'];
-    const tiempoLimite = 30 * 60 * 1000; // 30 minutos en milisegundos
+    const tiempoLimite = 10 * 60 * 1000; // 10 minutos en milisegundos
     
     // Validar estado
     const estadoValido = estadosPermitidos.includes(pedido.estado);
     
-    // Validar tiempo (si la fecha no existe o es inválida, permitir cancelación)
-    let dentroDelTiempo = true;
+    // Validar tiempo
+    let dentroDelTiempo = false;
     if (pedido.fecha) {
       try {
         const fechaPedido = new Date(pedido.fecha);
@@ -78,11 +80,30 @@ const MisPedidos = ({ embedded = false }) => {
     return estadoValido && dentroDelTiempo;
   };
 
+  // Obtener tiempo restante para cancelar
+  const getTiempoRestante = (pedido) => {
+    if (!pedido || !pedido.fecha) return null;
+    
+    try {
+      const tiempoLimite = 10 * 60 * 1000; // 10 minutos
+      const fechaPedido = new Date(pedido.fecha);
+      const tiempoTranscurrido = Date.now() - fechaPedido.getTime();
+      const tiempoRestante = tiempoLimite - tiempoTranscurrido;
+      
+      if (tiempoRestante <= 0) return null;
+      
+      const minutosRestantes = Math.floor(tiempoRestante / 60000);
+      const segundosRestantes = Math.floor((tiempoRestante % 60000) / 1000);
+      
+      return { minutos: minutosRestantes, segundos: segundosRestantes };
+    } catch (e) {
+      return null;
+    }
+  };
+
   // Cancelar pedido
   const handleCancelarPedido = async (pedidoId) => {
-    if (!window.confirm('¿Estás seguro de que deseas cancelar este pedido? Esta acción no se puede deshacer.')) {
-      return;
-    }
+    setCancelandoPedido(true);
 
     try {
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
@@ -95,15 +116,18 @@ const MisPedidos = ({ embedded = false }) => {
       toast?.success?.('Pedido cancelado exitosamente');
 
       // Actualizar la lista de pedidos
-      fetchPedidos();
+      await fetchPedidos();
       
-      // Cerrar el modal si está abierto
+      // Cerrar modales
+      setConfirmCancelModal(null);
       if (detalleModal && detalleModal.id === pedidoId) {
         setDetalleModal(null);
       }
     } catch (error) {
       console.error('Error al cancelar pedido:', error);
       toast?.error?.(error.response?.data?.message || 'Error al cancelar el pedido. Inténtalo de nuevo.');
+    } finally {
+      setCancelandoPedido(false);
     }
   };
 
@@ -214,6 +238,18 @@ const MisPedidos = ({ embedded = false }) => {
                       minute: '2-digit'
                     })}
                   </p>
+                  {puedeCancelar(detalleModal) && getTiempoRestante(detalleModal) && (
+                    <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-2">
+                      <div className="flex items-center gap-2 text-amber-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="text-xs font-medium font-body">
+                          Puedes cancelar en los próximos {getTiempoRestante(detalleModal).minutos}m {getTiempoRestante(detalleModal).segundos}s
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <div className="mb-6 pb-6 border-b border-neutral-200">
                   <h3 className="text-base font-bold text-neutral-800 mb-4 font-title">Progreso del Pedido</h3>
@@ -268,7 +304,7 @@ const MisPedidos = ({ embedded = false }) => {
                 <div className="flex gap-3">
                   {puedeCancelar(detalleModal) && (
                     <button
-                      onClick={() => handleCancelarPedido(detalleModal.id)}
+                      onClick={() => setConfirmCancelModal(detalleModal)}
                       className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-title flex items-center justify-center gap-2"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -282,6 +318,77 @@ const MisPedidos = ({ embedded = false }) => {
                     className={`${puedeCancelar(detalleModal) ? 'flex-1' : 'w-full'} bg-neutral-900 hover:bg-neutral-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-title`}
                   >
                     Cerrar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+        {/* Modal de Confirmación de Cancelación */}
+        {confirmCancelModal && ReactDOM.createPortal(
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in" style={{ zIndex: 10000 }}>
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
+              {/* Header con icono de advertencia */}
+              <div className="bg-gradient-to-br from-red-500 to-red-600 p-6 text-center">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-white font-title">¿Cancelar Pedido?</h3>
+              </div>
+
+              {/* Contenido */}
+              <div className="p-6">
+                <div className="mb-6">
+                  <p className="text-neutral-700 font-body text-center mb-4">
+                    Estás a punto de cancelar el <span className="font-bold">Pedido #{confirmCancelModal.id}</span>
+                  </p>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div className="text-sm text-red-800 font-body">
+                        <p className="font-semibold mb-1">Esta acción no se puede deshacer</p>
+                        <p>Una vez cancelado, no podrás recuperar este pedido.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Botones */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setConfirmCancelModal(null)}
+                    disabled={cancelandoPedido}
+                    className="flex-1 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-title disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    No, mantener
+                  </button>
+                  <button
+                    onClick={() => handleCancelarPedido(confirmCancelModal.id)}
+                    disabled={cancelandoPedido}
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-title disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {cancelandoPedido ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Cancelando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        <span>Sí, cancelar</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
@@ -511,7 +618,7 @@ const MisPedidos = ({ embedded = false }) => {
                 <div className="flex gap-3">
                   {puedeCancelar(detalleModal) && (
                     <button
-                      onClick={() => handleCancelarPedido(detalleModal.id)}
+                      onClick={() => setConfirmCancelModal(detalleModal)}
                       className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-title flex items-center justify-center gap-2"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -525,6 +632,77 @@ const MisPedidos = ({ embedded = false }) => {
                     className={`${puedeCancelar(detalleModal) ? 'flex-1' : 'w-full'} bg-neutral-900 hover:bg-neutral-800 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-title`}
                   >
                     Cerrar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
+
+        {/* Modal de Confirmación de Cancelación */}
+        {confirmCancelModal && ReactDOM.createPortal(
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 animate-fade-in" style={{ zIndex: 10000 }}>
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all">
+              {/* Header con icono de advertencia */}
+              <div className="bg-gradient-to-br from-red-500 to-red-600 p-6 text-center">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-white font-title">¿Cancelar Pedido?</h3>
+              </div>
+
+              {/* Contenido */}
+              <div className="p-6">
+                <div className="mb-6">
+                  <p className="text-neutral-700 font-body text-center mb-4">
+                    Estás a punto de cancelar el <span className="font-bold">Pedido #{confirmCancelModal.id}</span>
+                  </p>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <div className="text-sm text-red-800 font-body">
+                        <p className="font-semibold mb-1">Esta acción no se puede deshacer</p>
+                        <p>Una vez cancelado, no podrás recuperar este pedido.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Botones */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setConfirmCancelModal(null)}
+                    disabled={cancelandoPedido}
+                    className="flex-1 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-title disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    No, mantener
+                  </button>
+                  <button
+                    onClick={() => handleCancelarPedido(confirmCancelModal.id)}
+                    disabled={cancelandoPedido}
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-title disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {cancelandoPedido ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Cancelando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                        <span>Sí, cancelar</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

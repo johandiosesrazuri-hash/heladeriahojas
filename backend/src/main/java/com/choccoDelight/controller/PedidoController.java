@@ -138,6 +138,53 @@ public class PedidoController {
         return ResponseEntity.ok(pedidoService.listarPedidosPorUsuario(usuarioId));
     }
 
+    @PutMapping("/{id}/estado")
+    public ResponseEntity<?> cambiarEstado(
+            @PathVariable Long id,
+            @RequestBody EstadoRequest body,
+            Authentication authentication) {
+        
+        // Validar autenticación
+        if (authentication == null || authentication.getName() == null) {
+            return ResponseEntity.status(401).body("No autenticado");
+        }
+
+        // Buscar pedido
+        Pedido pedido = pedidoService.obtenerPorId(id)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+
+        // Buscar usuario actual
+        Usuario usuario = usuarioRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        // Verificar que el pedido pertenece al usuario (salvo que sea admin)
+        boolean esAdmin = usuario.getRol() == Usuario.Role.ADMIN;
+        boolean esPropietario = pedido.getUsuario().getId().equals(usuario.getId());
+        
+        if (!esAdmin && !esPropietario) {
+            return ResponseEntity.status(403).body("No tienes permiso para modificar este pedido");
+        }
+
+        // Solo permitir cancelación si está en estados iniciales
+        if ("CANCELADO".equals(body.getEstado())) {
+            if (pedido.getEstado() == Pedido.EstadoPedido.ENTREGADO || 
+                pedido.getEstado() == Pedido.EstadoPedido.CANCELADO) {
+                return ResponseEntity.badRequest()
+                    .body("No se puede cancelar un pedido que ya fue entregado o cancelado");
+            }
+        }
+
+        // Cambiar estado
+        try {
+            Pedido.EstadoPedido nuevoEstado = Pedido.EstadoPedido.valueOf(body.getEstado());
+            pedido.setEstado(nuevoEstado);
+            pedidoService.actualizarPedido(pedido);
+            return ResponseEntity.ok(pedido);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body("Estado inválido: " + body.getEstado());
+        }
+    }
+
     // DTOs
 
     public static class PedidoRequest {
@@ -198,6 +245,18 @@ public class PedidoController {
 
         public void setCantidad(Integer cantidad) {
             this.cantidad = cantidad;
+        }
+    }
+
+    public static class EstadoRequest {
+        private String estado;
+
+        public String getEstado() {
+            return estado;
+        }
+
+        public void setEstado(String estado) {
+            this.estado = estado;
         }
     }
 }

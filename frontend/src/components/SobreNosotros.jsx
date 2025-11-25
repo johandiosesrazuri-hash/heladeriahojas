@@ -71,7 +71,7 @@ const SobreNosotros = () => {
     <div className="bg-gradient-to-br from-[#DDD4CE] to-[#DDD4CE]">
 
       {/* 🎨 Hero Section - Impactante */}
-      <section className="relative h-[85vh] overflow-hidden">
+      <section className="relative h-screen overflow-hidden">
         {/* Fondo degradado base para fallback */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#C1583B] via-[#904939] to-[#E19D7E]"></div>
         {/* Video de fondo si está disponible */}

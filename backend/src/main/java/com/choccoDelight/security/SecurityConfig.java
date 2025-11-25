@@ -71,12 +71,6 @@ public class SecurityConfig {
 
                         // PERMITIR /api/auth/** SIN AUTENTICACIÓN
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/auth/login").permitAll()
-                        .requestMatchers("/api/auth/register").permitAll()
-                        .requestMatchers("/api/auth/forgot-password").permitAll()
-                        .requestMatchers("/api/auth/validate-token").permitAll()
-                        .requestMatchers("/api/auth/reset-password").permitAll()
-                        .requestMatchers("/api/perfil").permitAll()
 
                         // PERMITIR PRODUCTOS Y PROMOCIONES
                         .requestMatchers(HttpMethod.GET, "/api/productos").permitAll()

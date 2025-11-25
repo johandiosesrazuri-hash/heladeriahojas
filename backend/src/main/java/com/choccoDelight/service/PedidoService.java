@@ -80,4 +80,13 @@ public class PedidoService {
     public List<Pedido> listarPedidosPorUsuario(Long usuarioId) {
         return pedidoRepository.findByUsuarioId(usuarioId);
     }
+
+    public java.util.Optional<Pedido> obtenerPorId(Long id) {
+        return pedidoRepository.findById(id);
+    }
+
+    @Transactional
+    public Pedido actualizarPedido(Pedido pedido) {
+        return pedidoRepository.save(pedido);
+    }
 }

@@ -10,6 +10,8 @@ const GestionPedidos = () => {
   const [detallesModal, setDetallesModal] = useState(null);
   const [animate, setAnimate] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: "", type: "" });
+  const [confirmDeleteModal, setConfirmDeleteModal] = useState(null);
+  const [deletingPedido, setDeletingPedido] = useState(false);
 
   // Activar animación después de que el componente se monte
   useEffect(() => {
@@ -33,7 +35,6 @@ const GestionPedidos = () => {
   const fetchPedidos = async () => {
     try {
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      // ✅ CORRECTO: sin /{id} para obtener todos los pedidos
       const response = await axios.get(`${api}/api/admin/dashboard/pedidos`, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -75,8 +76,7 @@ const GestionPedidos = () => {
   };
 
   const handleEliminarPedido = async (id) => {
-    const confirmar = window.confirm(`¿Eliminar el pedido #${id}? Esta acción no se puede deshacer.`);
-    if (!confirmar) return;
+    setDeletingPedido(true);
 
     try {
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
@@ -93,6 +93,7 @@ const GestionPedidos = () => {
       if (detallesModal?.id === id) {
         setDetallesModal(null);
       }
+      setConfirmDeleteModal(null);
       fetchPedidos();
     } catch (error) {
       console.error('Error eliminando pedido:', error);
@@ -101,6 +102,8 @@ const GestionPedidos = () => {
         message: "No se pudo eliminar el pedido. Inténtalo de nuevo.",
         type: "error"
       });
+    } finally {
+      setDeletingPedido(false);
     }
   };
 
@@ -303,16 +306,16 @@ const GestionPedidos = () => {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 items-center">
                           <button
                             onClick={() => setDetallesModal(pedido)}
-                            className="px-3 py-2 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] hover:brightness-110 transition-all shadow-sm"
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-gradient-to-r from-[#E19D7E] to-[#3aa38f] hover:brightness-110 transition-all shadow-sm whitespace-nowrap"
                           >
                             Ver Detalles
                           </button>
                           <button
-                            onClick={() => handleEliminarPedido(pedido.id)}
-                            className="px-3 py-2 rounded-lg text-sm font-semibold text-white bg-rose-500 hover:bg-rose-600 transition-all shadow-sm"
+                            onClick={() => setConfirmDeleteModal(pedido)}
+                            className="px-3 py-1.5 rounded-lg text-xs font-semibold text-white bg-rose-500 hover:bg-rose-600 transition-all shadow-sm whitespace-nowrap"
                           >
                             Eliminar
                           </button>
@@ -323,7 +326,7 @@ const GestionPedidos = () => {
                                 e.target.value = '';
                               }
                             }}
-                            className="text-sm border border-[#E19D7E] rounded-lg px-3 py-2 text-[#904939] bg-white hover:border-[#904939] transition-all"
+                            className="text-xs border border-[#E19D7E] rounded-lg px-2 py-1.5 text-[#904939] bg-white hover:border-[#904939] transition-all"
                             defaultValue=""
                           >
                             <option value="">Cambiar estado...</option>
@@ -342,6 +345,80 @@ const GestionPedidos = () => {
             </table>
           </div>
         </div>
+
+        {/* Modal de Confirmación de Eliminación */}
+        {confirmDeleteModal && (
+          <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-[60] animate-fade-in">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden transform transition-all animate-scale-in">
+              {/* Header con icono de advertencia */}
+              <div className="bg-gradient-to-br from-rose-500 to-rose-600 p-6 text-center">
+                <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-white font-cinzel">¿Eliminar Pedido?</h3>
+              </div>
+
+              {/* Contenido */}
+              <div className="p-6">
+                <div className="mb-6">
+                  <p className="text-neutral-700 font-quicksand text-center mb-2">
+                    Estás a punto de eliminar el <span className="font-bold">Pedido #{confirmDeleteModal.id}</span>
+                  </p>
+                  <p className="text-sm text-neutral-600 font-quicksand text-center mb-4">
+                    Cliente: <span className="font-semibold">{confirmDeleteModal.usuarioNombre}</span>
+                  </p>
+                  
+                  <div className="bg-rose-50 border border-rose-200 rounded-lg p-4">
+                    <div className="flex items-start gap-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-rose-600 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                      </svg>
+                      <div className="text-sm text-rose-800 font-quicksand">
+                        <p className="font-semibold mb-1">⚠️ Esta acción no se puede deshacer</p>
+                        <p>El pedido y toda su información asociada se eliminarán permanentemente del sistema.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Botones */}
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => setConfirmDeleteModal(null)}
+                    disabled={deletingPedido}
+                    className="flex-1 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-montserrat disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={() => handleEliminarPedido(confirmDeleteModal.id)}
+                    disabled={deletingPedido}
+                    className="flex-1 bg-rose-600 hover:bg-rose-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 font-montserrat disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  >
+                    {deletingPedido ? (
+                      <>
+                        <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>Eliminando...</span>
+                      </>
+                    ) : (
+                      <>
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        <span>Sí, eliminar</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Modal de Detalles */}
         {detallesModal && (
