@@ -36,7 +36,7 @@ const Perfil = lazy(() => import('./pages/Perfil'))
 
 import './App.css'
 
-// Componente de carga mientras se cargan componentes lazy
+// Componente de carga mientras se cargan componentes
 const LoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-neutral-50">
     <div className="text-center">

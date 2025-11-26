@@ -36,7 +36,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
         String username = null;
         String jwt = null;
-
+        // 1. Extraer token del header "Authorization: Bearer {token}"
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7); // Extrae el token
             try {
@@ -49,12 +49,13 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             System.out.println("⚠️ No se encontró token Bearer en el header Authorization");
         }
 
+        // 2. Validar token y establecer autenticación
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
             System.out.println("👤 Usuario cargado: " + username);
             System.out.println("🔑 Authorities: " + userDetails.getAuthorities());
 
-            // Verificar si el token es válido
+            // 3. Verificar si el token es válido
             if (jwtTokenUtil.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
