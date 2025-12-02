@@ -101,6 +101,8 @@ public class PerfilService {
         existente.setRegion(dir.getRegion());
         existente.setCp(dir.getCp());
         existente.setReferencias(dir.getReferencias());
+        existente.setLatitud(dir.getLatitud());
+        existente.setLongitud(dir.getLongitud());
         existente.setPrincipal(dir.getPrincipal());
         existente.setActivo(dir.getActivo());
         if (Boolean.TRUE.equals(dir.getPrincipal())) {

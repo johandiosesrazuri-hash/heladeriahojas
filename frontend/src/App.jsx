@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 import { ToastProvider } from './context/ToastContext'
+import { NotificationProvider } from './context/NotificationContext'
 import { lazy, Suspense } from 'react'
 import ProtectedRoute from './components/ProtectedRoute'
 import Navbar from './components/Navbar'
@@ -32,6 +33,7 @@ const GestionPedidos = lazy(() => import('./pages/Admin/GestionPedidos'))
 const GestionContactos = lazy(() => import('./pages/Admin/GestionContactos'))
 const GestionPromociones = lazy(() => import('./pages/Admin/GestionPromociones'))
 const GestionSobreNosotros = lazy(() => import('./pages/Admin/GestionSobreNosotros'))
+const GestionPagos = lazy(() => import('./pages/Admin/GestionPagos'))
 const Perfil = lazy(() => import('./pages/Perfil'))
 
 import './App.css'
@@ -50,34 +52,35 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <CartProvider>
-          <ToastProvider>
-            <Navbar />
-            <CartModal />
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                {/* Rutas públicas */}
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                {/* Rutas protegidas para usuarios autenticados */}
-                <Route path="/menu" element={<Menu />} />
-                <Route path="/pedidos" element={<Pedido />} />
-                <Route path="/promociones" element={<Promociones />} />
-                <Route path="/contacto" element={<Contacto />} />
-                <Route path="/testimonios" element={<Testimonios />} />
-                <Route path="/sobre-nosotros" element={<SobreNosotros />} />
-                <Route path="/mis-pedidos" element={<MisPedidos />} />
-                <Route
-                  path="/perfil"
-                  element={
-                    <ProtectedRoute requiredRole={['CLIENTE', 'ADMIN']}>
-                      <Perfil />
-                    </ProtectedRoute>
-                  }
-                />
-                <Route path="/" element={<Inicio />} />
+        <NotificationProvider>
+          <CartProvider>
+            <ToastProvider>
+              <Navbar />
+              <CartModal />
+              <Suspense fallback={<LoadingFallback />}>
+                <Routes>
+                  {/* Rutas públicas */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                  {/* Rutas protegidas para usuarios autenticados */}
+                  <Route path="/menu" element={<Menu />} />
+                  <Route path="/pedidos" element={<Pedido />} />
+                  <Route path="/promociones" element={<Promociones />} />
+                  <Route path="/contacto" element={<Contacto />} />
+                  <Route path="/testimonios" element={<Testimonios />} />
+                  <Route path="/sobre-nosotros" element={<SobreNosotros />} />
+                  <Route path="/mis-pedidos" element={<MisPedidos />} />
+                  <Route
+                    path="/perfil"
+                    element={
+                      <ProtectedRoute requiredRole={['CLIENTE', 'ADMIN']}>
+                        <Perfil />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route path="/" element={<Inicio />} />
 
                 {/* Rutas protegidas - Admin */}
                 <Route
@@ -113,6 +116,14 @@ function App() {
                   }
                 />
                 <Route
+                  path="/admin/pagos"
+                  element={
+                    <ProtectedRoute requiredRole="ADMIN">
+                      <GestionPagos />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/admin/contactos"
                   element={
                     <ProtectedRoute requiredRole="ADMIN">
@@ -144,9 +155,10 @@ function App() {
             <Footer />
           </ToastProvider>
         </CartProvider>
-      </AuthProvider>
-    </Router>
-  )
+      </NotificationProvider>
+    </AuthProvider>
+  </Router>
+)
 }
 
 export default App

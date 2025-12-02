@@ -44,10 +44,10 @@ public class DashboardController {
     @Autowired
     private DeliveryRepository deliveryRepository;
 
-    // 📊 Estadísticas generales
+    //  Estadísticas generales
     @GetMapping("/stats")
     public Map<String, Object> getStats() {
-        System.out.println("📊 GET /api/admin/dashboard/stats");
+        System.out.println(" GET /api/admin/dashboard/stats");
 
         Map<String, Object> stats = new HashMap<>();
         stats.put("totalUsuarios", usuarioRepository.count());
@@ -55,18 +55,48 @@ public class DashboardController {
         stats.put("totalPedidos", pedidoRepository.count());
         stats.put("ingresosTotales", calcularIngresos());
         stats.put("totalPromociones", promocionRepository.count());
+        
+        // Nuevas estadísticas de pedidos
+        stats.put("pedidosPendientesValidacion", 
+            pedidoRepository.findByComprobantePagoIsNotNullAndPagadoFalse().size());
+        stats.put("pedidosPorEstado", obtenerPedidosPorEstado());
+        stats.put("ingresosMesActual", calcularIngresosMesActual());
 
-        System.out.println("✅ Stats: " + stats);
+        System.out.println(" Stats: " + stats);
         return stats;
+    }
+    
+    private Map<String, Long> obtenerPedidosPorEstado() {
+        List<Pedido> pedidos = pedidoRepository.findAll();
+        return pedidos.stream()
+            .collect(Collectors.groupingBy(
+                p -> p.getEstado().toString(),
+                Collectors.counting()
+            ));
+    }
+    
+    private BigDecimal calcularIngresosMesActual() {
+        java.time.LocalDateTime inicioMes = java.time.LocalDateTime.now()
+            .withDayOfMonth(1)
+            .withHour(0)
+            .withMinute(0)
+            .withSecond(0);
+            
+        return pedidoRepository.findAll().stream()
+            .filter(p -> p.getFecha() != null && 
+                        p.getFecha().isAfter(inicioMes) &&
+                        p.getEstado() == Pedido.EstadoPedido.ENTREGADO)
+            .map(Pedido::getTotal)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
     // GESTIÓN DE USUARIOS
 
     @GetMapping("/usuarios")
     public List<Usuario> obtenerUsuarios() {
-        System.out.println("📝 GET /api/admin/dashboard/usuarios");
+        System.out.println(" GET /api/admin/dashboard/usuarios");
         List<Usuario> usuarios = usuarioRepository.findAll();
-        System.out.println("✅ Usuarios encontrados: " + usuarios.size());
+        System.out.println(" Usuarios encontrados: " + usuarios.size());
         return usuarios;
     }
 
@@ -87,9 +117,9 @@ public class DashboardController {
 
     @DeleteMapping("/usuarios/{id}")
     public Map<String, String> eliminarUsuario(@PathVariable Long id) {
-        System.out.println("🗑️ DELETE /api/admin/dashboard/usuarios/" + id);
+        System.out.println(" DELETE /api/admin/dashboard/usuarios/" + id);
         usuarioRepository.deleteById(id);
-        System.out.println("✅ Usuario eliminado: " + id);
+        System.out.println(" Usuario eliminado: " + id);
         return Map.of("mensaje", "Usuario eliminado correctamente", "id", id.toString());
     }
 
@@ -97,9 +127,9 @@ public class DashboardController {
 
     @GetMapping("/productos")
     public List<Producto> obtenerProductos() {
-        System.out.println("📦 GET /api/admin/dashboard/productos");
+        System.out.println(" GET /api/admin/dashboard/productos");
         List<Producto> productos = productoRepository.findAll();
-        System.out.println("✅ Productos encontrados: " + productos.size());
+        System.out.println(" Productos encontrados: " + productos.size());
         for (Producto p : productos) {
             System.out.println("  - ID: " + p.getId() +
                     ", Nombre: " + p.getNombre() +
@@ -151,7 +181,7 @@ public class DashboardController {
                         "No hay suficiente stock para eliminar. Stock disponible: " + producto.getStockDisponible());
             }
 
-            System.out.println("📦 Eliminando " + cantidad + " unidades del producto: " + producto.getNombre() +
+            System.out.println(" Eliminando " + cantidad + " unidades del producto: " + producto.getNombre() +
                     " (Stock inicial: " + producto.getStockDisponible() + ")");
 
             producto.setStockDisponible(producto.getStockDisponible() - cantidad);
@@ -160,10 +190,10 @@ public class DashboardController {
             // Eliminar las promociones asociadas si el stock llega a 0
             if (producto.getStockDisponible() == 0) {
                 promocionProductoRepository.deleteById(id);
-                System.out.println("🔥 Promociones asociadas eliminadas");
+                System.out.println(" Promociones asociadas eliminadas");
             }
 
-            System.out.println("✅ Producto actualizado correctamente");
+            System.out.println(" Producto actualizado correctamente");
 
             return ResponseEntity.ok(Map.of(
                     "mensaje", "Stock actualizado correctamente",
@@ -171,7 +201,7 @@ public class DashboardController {
                     "producto", producto.getNombre(),
                     "stockRestante", String.valueOf(producto.getStockDisponible())));
         } catch (Exception e) {
-            System.err.println("❌ Error eliminando producto: " + e.getMessage());
+            System.err.println(" Error eliminando producto: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.status(500).body(Map.of(
                     "error", "Error al eliminar el producto",
@@ -183,9 +213,9 @@ public class DashboardController {
 
     @GetMapping("/pedidos")
     public List<PedidoDTO> obtenerPedidos() {
-        System.out.println("📋 GET /api/admin/dashboard/pedidos");
+        System.out.println(" GET /api/admin/dashboard/pedidos");
         List<Pedido> pedidos = pedidoRepository.findAll();
-        System.out.println("✅ Pedidos encontrados: " + pedidos.size());
+        System.out.println(" Pedidos encontrados: " + pedidos.size());
 
         // Convertir a DTOs para evitar referencias circulares
         return pedidos.stream()
@@ -203,7 +233,7 @@ public class DashboardController {
     @DeleteMapping("/pedidos/{id}")
     @Transactional
     public Map<String, String> eliminarPedido(@PathVariable Long id) {
-        System.out.println("🗑️ DELETE /api/admin/dashboard/pedidos/" + id);
+        System.out.println(" DELETE /api/admin/dashboard/pedidos/" + id);
 
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
@@ -221,7 +251,7 @@ public class DashboardController {
         // Eliminar pedido
         pedidoRepository.delete(pedido);
 
-        System.out.println("✅ Pedido eliminado: " + id);
+        System.out.println(" Pedido eliminado: " + id);
         return Map.of("mensaje", "Pedido eliminado correctamente", "id", id.toString());
     }
 
@@ -229,7 +259,7 @@ public class DashboardController {
     public PedidoDTO actualizarEstadoPedido(
             @PathVariable Long id,
             @RequestParam String nuevoEstado) {
-        System.out.println("🔄 PUT /api/admin/dashboard/pedidos/" + id + "/estado - " + nuevoEstado);
+        System.out.println(" PUT /api/admin/dashboard/pedidos/" + id + "/estado - " + nuevoEstado);
 
         Pedido pedido = pedidoRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
@@ -237,10 +267,10 @@ public class DashboardController {
         try {
             pedido.setEstado(Pedido.EstadoPedido.valueOf(nuevoEstado));
             Pedido actualizado = pedidoRepository.save(pedido);
-            System.out.println("✅ Estado actualizado a: " + nuevoEstado);
+            System.out.println(" Estado actualizado a: " + nuevoEstado);
             return new PedidoDTO(actualizado);
         } catch (IllegalArgumentException e) {
-            System.out.println("❌ Estado inválido: " + nuevoEstado);
+            System.out.println(" Estado inválido: " + nuevoEstado);
             throw new RuntimeException("Estado de pedido inválido: " + nuevoEstado);
         }
     }
@@ -248,9 +278,9 @@ public class DashboardController {
 
     @GetMapping("/contactos")
     public List<Contacto> obtenerContactos() {
-        System.out.println("📧 GET /api/admin/dashboard/contactos");
+        System.out.println(" GET /api/admin/dashboard/contactos");
         List<Contacto> contactos = contactoRepository.findAll();
-        System.out.println("✅ Contactos encontrados: " + contactos.size());
+        System.out.println(" Contactos encontrados: " + contactos.size());
         return contactos;
     }
 
@@ -262,18 +292,18 @@ public class DashboardController {
 
     @DeleteMapping("/contactos/{id}")
     public Map<String, String> eliminarContacto(@PathVariable Long id) {
-        System.out.println("🗑️ DELETE /api/admin/dashboard/contactos/" + id);
+        System.out.println("  DELETE /api/admin/dashboard/contactos/" + id);
         contactoRepository.deleteById(id);
-        System.out.println("✅ Contacto eliminado: " + id);
+        System.out.println(" Contacto eliminado: " + id);
         return Map.of("mensaje", "Contacto eliminado correctamente", "id", id.toString());
     }
 
     // PROMOCIONES
     @GetMapping("/promociones")
     public List<PromocionDTO> obtenerPromociones() {
-        System.out.println("🎁 GET /api/admin/dashboard/promociones");
+        System.out.println(" GET /api/admin/dashboard/promociones");
         List<Promocion> promociones = promocionRepository.findAll();
-        System.out.println("✅ Promociones encontradas: " + promociones.size());
+        System.out.println(" Promociones encontradas: " + promociones.size());
         return promociones.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
@@ -287,16 +317,16 @@ public class DashboardController {
     @DeleteMapping("/promociones/{id}")
     @Transactional
     public Map<String, String> eliminarPromocion(@PathVariable Long id) {
-        System.out.println("🗑️ DELETE /api/admin/dashboard/promociones/" + id);
+        System.out.println("  DELETE /api/admin/dashboard/promociones/" + id);
         promocionProductoRepository.deleteByPromocionId(id);
         promocionRepository.deleteById(id);
-        System.out.println("✅ Promoción eliminada: " + id);
+        System.out.println(" Promoción eliminada: " + id);
         return Map.of("mensaje", "Promoción eliminada correctamente", "id", id.toString());
     }
 
     @PostMapping("/promociones")
     public PromocionDTO crearPromocion(@RequestBody PromocionDTO promocionDTO) {
-        System.out.println("➕ POST /api/admin/dashboard/promociones - " + promocionDTO.getNombrePromo());
+        System.out.println("  POST /api/admin/dashboard/promociones - " + promocionDTO.getNombrePromo());
         Promocion nueva = promocionService.crearPromocion(convertToEntity(promocionDTO), promocionDTO.getProductos());
         return convertToDTO(nueva);
     }

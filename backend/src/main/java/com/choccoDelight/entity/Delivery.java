@@ -43,6 +43,12 @@ public class Delivery {
     @Column
     private Double longitud;
 
+    @Column(name = "costo_delivery", nullable = false)
+    private java.math.BigDecimal costoDelivery = java.math.BigDecimal.ZERO;
+
+    @Column(name = "distancia_km")
+    private Double distanciaKm;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EstadoDelivery estado;
@@ -149,6 +155,22 @@ public class Delivery {
 
     public void setLongitud(Double longitud) {
         this.longitud = longitud;
+    }
+
+    public java.math.BigDecimal getCostoDelivery() {
+        return costoDelivery;
+    }
+
+    public void setCostoDelivery(java.math.BigDecimal costoDelivery) {
+        this.costoDelivery = costoDelivery;
+    }
+
+    public Double getDistanciaKm() {
+        return distanciaKm;
+    }
+
+    public void setDistanciaKm(Double distanciaKm) {
+        this.distanciaKm = distanciaKm;
     }
 
     public EstadoDelivery getEstado() {

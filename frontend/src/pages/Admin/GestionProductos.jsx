@@ -12,8 +12,10 @@ const GestionProductos = () => {
     precio: '',
     imagen: '',
     categoria: '',
-    stockDisponible: ''
+    stockDisponible: '',
+    activo: true
   });
+  const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [animate, setAnimate] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
@@ -66,32 +68,67 @@ const GestionProductos = () => {
     e.preventDefault();
     try {
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-      await axios.post(`${api}/api/admin/dashboard/productos`, formData, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setNotification({
-        show: true,
-        message: 'Producto creado exitosamente',
-        type: 'success'
-      });
-      setFormData({ 
-        nombre: '', 
-        descripcion: '', 
-        precio: '', 
-        imagen: '', 
-        categoria: '',
-        stockDisponible: ''
-      });
-      setShowForm(false);
+      
+      if (editingId) {
+        // Actualizar producto existente
+        await axios.put(`${api}/api/admin/dashboard/productos/${editingId}`, formData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setNotification({
+          show: true,
+          message: 'Producto actualizado exitosamente',
+          type: 'success'
+        });
+      } else {
+        // Crear nuevo producto
+        await axios.post(`${api}/api/admin/dashboard/productos`, formData, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setNotification({
+          show: true,
+          message: 'Producto creado exitosamente',
+          type: 'success'
+        });
+      }
+      
+      resetForm();
       fetchProductos();
     } catch (error) {
-      console.error('Error creando producto:', error);
+      console.error('Error guardando producto:', error);
       setNotification({
         show: true,
         message: 'Error: ' + (error.response?.data?.message || error.message),
         type: 'error'
       });
     }
+  };
+
+  const handleEdit = (producto) => {
+    setFormData({
+      nombre: producto.nombre,
+      descripcion: producto.descripcion,
+      precio: producto.precio,
+      imagen: producto.imagen,
+      categoria: producto.categoria,
+      stockDisponible: producto.stockDisponible,
+      activo: producto.activo ?? true
+    });
+    setEditingId(producto.id);
+    setShowForm(true);
+  };
+
+  const resetForm = () => {
+    setFormData({ 
+      nombre: '', 
+      descripcion: '', 
+      precio: '', 
+      imagen: '', 
+      categoria: '',
+      stockDisponible: '',
+      activo: true
+    });
+    setEditingId(null);
+    setShowForm(false);
   };
 
   const handleDelete = async () => {
@@ -243,7 +280,7 @@ const GestionProductos = () => {
               opacity: animate ? 1 : 0
             }}
           >
-            <h2 className="text-2xl font-bold text-[#904939] mb-6 font-cinzel">Crear Nuevo Producto</h2>
+            <h2 className="text-2xl font-bold text-[#904939] mb-6 font-cinzel">{editingId ? 'Editar Producto' : 'Crear Nuevo Producto'}</h2>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -303,11 +340,22 @@ const GestionProductos = () => {
                     className="w-full px-4 py-3 rounded-lg border border-[#E19D7E] focus:outline-none focus:ring-2 focus:ring-[#904939] focus:border-transparent transition-all"
                   />
                 </div>
+                <div>
+                  <label className="flex items-center gap-3 p-3 rounded-lg border border-[#E19D7E] hover:bg-[#DDD4CE]/30 cursor-pointer transition">
+                    <input 
+                      type="checkbox" 
+                      checked={formData.activo} 
+                      onChange={(e) => setFormData({...formData, activo: e.target.checked})} 
+                      className="w-4 h-4 text-[#904939] rounded border-[#E19D7E] focus:ring-[#904939]"
+                    />
+                    <span className="text-sm font-medium text-[#C1583B] font-montserrat">Activo</span>
+                  </label>
+                </div>
               </div>
               <div className="flex justify-end gap-4 mt-8">
                 <button 
                   type="button"
-                  onClick={() => setShowForm(false)}
+                  onClick={resetForm}
                   className="px-6 py-3 rounded-lg font-medium text-[#C1583B] bg-[#DDD4CE] hover:bg-[#E19D7E] transition-colors duration-300"
                 >
                   Cancelar
@@ -316,7 +364,7 @@ const GestionProductos = () => {
                   type="submit"
                   className="px-6 py-3 rounded-lg font-medium text-white bg-gradient-to-r from-[#904939] to-[#E19D7E] hover:shadow-lg transition-all duration-300"
                 >
-                  Guardar Producto
+                  {editingId ? 'Actualizar Producto' : 'Guardar Producto'}
                 </button>
               </div>
             </form>
@@ -384,15 +432,26 @@ const GestionProductos = () => {
                       </div>
                     )}
                     
-                    <button
-                      onClick={() => abrirModalEliminar(producto)}
-                      className="w-full py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-[#e57373] to-[#ef5350] hover:from-[#ef5350] hover:to-[#e53935] transition-all duration-300 flex items-center justify-center"
-                    >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m0 0v-2m0 0h3m-3 0h3" />
-                      </svg>
-                      Eliminar Stock
-                    </button>
+                    <div className="flex gap-3">
+                      <button
+                        onClick={() => handleEdit(producto)}
+                        className="flex-1 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-[#64b5f6] to-[#42a5f5] hover:from-[#42a5f5] hover:to-[#2196f3] transition-all duration-300 flex items-center justify-center"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                        Editar
+                      </button>
+                      <button
+                        onClick={() => abrirModalEliminar(producto)}
+                        className="flex-1 py-3 rounded-lg font-semibold text-white bg-gradient-to-r from-[#e57373] to-[#ef5350] hover:from-[#ef5350] hover:to-[#e53935] transition-all duration-300 flex items-center justify-center"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m0 0v-2m0 0h3m-3 0h3" />
+                        </svg>
+                        Stock
+                      </button>
+                    </div>
                   </div>
                 </div>
               );

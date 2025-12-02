@@ -7,6 +7,7 @@ const AdminDashboard = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState(null);
+  const [pedidosRecientes, setPedidosRecientes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [animate, setAnimate] = useState(false);
@@ -42,6 +43,15 @@ const AdminDashboard = () => {
     }
 
     fetchStats();
+    fetchPedidosRecientes();
+
+    // Actualizar cada 30 segundos
+    const interval = setInterval(() => {
+      fetchStats();
+      fetchPedidosRecientes();
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, [user, token, navigate]);
 
   const fetchStats = async () => {
@@ -71,6 +81,18 @@ const AdminDashboard = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPedidosRecientes = async () => {
+    try {
+      const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+      const response = await axios.get(`${api}/api/admin/pedidos/recientes`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPedidosRecientes(response.data);
+    } catch (error) {
+      console.error('❌ Error cargando pedidos recientes:', error);
     }
   };
 
@@ -265,6 +287,7 @@ const AdminDashboard = () => {
             <NavButton to="/admin/contactos" label="Contactos" icon="✉️" delay={0.4} />
             <NavButton to="/admin/promociones" label="Promociones" icon="🎁" delay={0.5} />
             <NavButton to="/admin/sobre-nosotros" label="Sobre Nosotros" icon="📖" delay={0.6} />
+            <NavButton to="/admin/pagos" label="Validar Pagos" icon="💳" delay={0.7} />
           </div>
         </div>
       </div>

@@ -32,6 +32,21 @@ public class Pedido {
     @Column(nullable = false)
     private Boolean pagado = false;
 
+    @Column(name = "numero_pedido")
+    private Integer numeroPedido;
+
+    @Column(name = "comprobante_pago")
+    private String comprobantePago;
+
+    @Column(name = "fecha_validacion_pago")
+    private LocalDateTime fechaValidacionPago;
+
+    @Column(name = "pago_rechazado")
+    private Boolean pagoRechazado = false;
+
+    @Column(name = "motivo_rechazo")
+    private String motivoRechazo;
+
     @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL)
     private Delivery delivery;
 
@@ -78,4 +93,19 @@ public class Pedido {
 
     public Boolean getPagado() { return pagado; }
     public void setPagado(Boolean pagado) { this.pagado = pagado; }
+
+    public String getComprobantePago() { return comprobantePago; }
+    public void setComprobantePago(String comprobantePago) { this.comprobantePago = comprobantePago; }
+
+    public LocalDateTime getFechaValidacionPago() { return fechaValidacionPago; }
+    public void setFechaValidacionPago(LocalDateTime fechaValidacionPago) { this.fechaValidacionPago = fechaValidacionPago; }
+
+    public Integer getNumeroPedido() { return numeroPedido; }
+    public void setNumeroPedido(Integer numeroPedido) { this.numeroPedido = numeroPedido; }
+
+    public Boolean getPagoRechazado() { return pagoRechazado; }
+    public void setPagoRechazado(Boolean pagoRechazado) { this.pagoRechazado = pagoRechazado; }
+
+    public String getMotivoRechazo() { return motivoRechazo; }
+    public void setMotivoRechazo(String motivoRechazo) { this.motivoRechazo = motivoRechazo; }
 }

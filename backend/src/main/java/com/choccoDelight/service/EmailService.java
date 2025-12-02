@@ -18,15 +18,18 @@ import jakarta.mail.Session;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.codec.binary.Base64;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class EmailService {
@@ -62,18 +65,89 @@ public class EmailService {
                 .build();
     }
 
-    public void sendEmail(String to, String subject, String bodyText) {
-        try {
-            Gmail service = getGmailService();
-            MimeMessage mimeMessage = createEmail(to, "me", subject, bodyText);
-            Message message = createMessageWithEmail(mimeMessage);
-            service.users().messages().send("me", message).execute();
-            System.out.println("Email sent to " + to);
-        } catch (Exception e) {
-            System.err.println("Error sending email: " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException("Error sending email: " + e.getMessage(), e);
-        }
+    @Async
+    public CompletableFuture<Boolean> sendEmail(String to, String subject, String bodyText) {
+        return CompletableFuture.supplyAsync(() -> {
+            System.out.println("━".repeat(80));
+            System.out.println("📧 INICIANDO ENVÍO DE EMAIL");
+            System.out.println("   Para: " + to);
+            System.out.println("   Asunto: " + subject);
+            System.out.println("━".repeat(80));
+            
+            try {
+                // Verificar que existe el archivo de credenciales
+                InputStream credentialsCheck = EmailService.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
+                if (credentialsCheck == null) {
+                    System.err.println("❌ No se encontró el archivo credentials.json");
+                    return false;
+                }
+                credentialsCheck.close();
+                System.out.println("✓ Archivo credentials.json encontrado");
+                
+                // Verificar que existe la carpeta de tokens
+                File tokensDir = new File(TOKENS_DIRECTORY_PATH);
+                if (!tokensDir.exists()) {
+                    System.out.println("⚠️  Carpeta 'tokens/' no existe, se creará automáticamente");
+                }
+                
+                System.out.println("🔄 Obteniendo servicio de Gmail...");
+                Gmail service = getGmailService();
+                System.out.println("✓ Servicio de Gmail obtenido correctamente");
+                
+                System.out.println("📝 Creando mensaje...");
+                MimeMessage mimeMessage = createEmail(to, "me", subject, bodyText);
+                Message message = createMessageWithEmail(mimeMessage);
+                System.out.println("✓ Mensaje creado");
+                
+                System.out.println("📤 Enviando email...");
+                Message sentMessage = service.users().messages().send("me", message).execute();
+                System.out.println("━".repeat(80));
+                System.out.println("✅ EMAIL ENVIADO EXITOSAMENTE");
+                System.out.println("   ID del mensaje: " + sentMessage.getId());
+                System.out.println("   Destinatario: " + to);
+                System.out.println("━".repeat(80));
+                return true;
+                
+            } catch (Exception e) {
+                System.err.println("━".repeat(80));
+                System.err.println("❌ ERROR AL ENVIAR EMAIL");
+                System.err.println("   Tipo: " + e.getClass().getSimpleName());
+                System.err.println("   Mensaje: " + e.getMessage());
+                System.err.println("━".repeat(80));
+                e.printStackTrace();
+                
+                // Si el error es por token expirado, sugerir solución
+                String errorMsg = e.getMessage() != null ? e.getMessage().toLowerCase() : "";
+                if (errorMsg.contains("invalid_grant") || errorMsg.contains("expired") || errorMsg.contains("revoked") || errorMsg.contains("401")) {
+                    System.err.println("━".repeat(80));
+                    System.err.println("⚠️  TOKEN DE GOOGLE EXPIRADO O REVOCADO");
+                    System.err.println("━".repeat(80));
+                    System.err.println("Solución:");
+                    System.err.println("1. Ejecuta: Remove-Item -Path 'tokens' -Recurse -Force");
+                    System.err.println("2. Reinicia el backend");
+                    System.err.println("3. Autoriza nuevamente en el navegador");
+                    System.err.println("━".repeat(80));
+                    
+                    // Intentar eliminar el token automáticamente
+                    try {
+                        File tokenDir = new File(TOKENS_DIRECTORY_PATH);
+                        if (tokenDir.exists()) {
+                            File[] files = tokenDir.listFiles();
+                            if (files != null) {
+                                for (File file : files) {
+                                    file.delete();
+                                }
+                            }
+                            System.out.println("🗑️  Tokens eliminados. Reinicia el backend.");
+                        }
+                    } catch (Exception deleteEx) {
+                        System.err.println("⚠️  No se pudieron eliminar los tokens automáticamente");
+                    }
+                }
+                
+                return false;
+            }
+        });
     }
 
     private MimeMessage createEmail(String to, String from, String subject, String bodyText) throws MessagingException {

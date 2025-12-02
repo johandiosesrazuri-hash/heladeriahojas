@@ -29,11 +29,11 @@ public class PasswordResetService {
     private PasswordEncoder passwordEncoder;
 
     @Transactional
-    public void createPasswordResetTokenForUser(String email) {
+    public String createPasswordResetTokenForUser(String email) {
         Optional<Usuario> userOptional = usuarioRepository.findByEmail(email);
         if (userOptional.isEmpty()) {
             // Don't reveal if user exists or not
-            return;
+            return null;
         }
         Usuario user = userOptional.get();
 
@@ -81,7 +81,38 @@ public class PasswordResetService {
                 "</div>" +
                 "</div>";
 
-        emailService.sendEmail(user.getEmail(), "Restablecer Contraseña - ChoccoDelight", message);
+        // Enviar email de forma asíncrona - no esperar respuesta
+        System.out.println("🔐 Token de recuperación generado: " + token);
+        System.out.println("🔗 Link de recuperación: " + resetLink);
+        System.out.println("👤 Usuario: " + user.getNombre() + " (" + user.getEmail() + ")");
+        
+        emailService.sendEmail(user.getEmail(), "Restablecer Contraseña - ChoccoDelight", message)
+                .thenAccept(success -> {
+                    if (success) {
+                        System.out.println("━".repeat(80));
+                        System.out.println("✉️  PROCESO COMPLETADO");
+                        System.out.println("   Email de recuperación enviado a: " + user.getEmail());
+                        System.out.println("   El usuario debería recibirlo en unos momentos");
+                        System.out.println("━".repeat(80));
+                    } else {
+                        System.err.println("━".repeat(80));
+                        System.err.println("⚠️  PROCESO FALLIDO");
+                        System.err.println("   No se pudo enviar email a: " + user.getEmail());
+                        System.err.println("   El token sigue siendo válido: " + token);
+                        System.err.println("━".repeat(80));
+                    }
+                })
+                .exceptionally(ex -> {
+                    System.err.println("━".repeat(80));
+                    System.err.println("❌ ERROR INESPERADO EN ENVÍO ASÍNCRONO");
+                    System.err.println("   " + ex.getMessage());
+                    System.err.println("━".repeat(80));
+                    ex.printStackTrace();
+                    return null;
+                });
+        
+        // Retornar el token generado
+        return token;
     }
 
     public boolean validatePasswordResetToken(String token) {

@@ -34,6 +34,12 @@ public class Direccion {
     @Column(columnDefinition = "TEXT")
     private String referencias;
 
+    @Column
+    private Double latitud;
+
+    @Column
+    private Double longitud;
+
     @Column(nullable = false)
     private Boolean principal = false;
 
@@ -58,6 +64,10 @@ public class Direccion {
     public void setCp(String cp) { this.cp = cp; }
     public String getReferencias() { return referencias; }
     public void setReferencias(String referencias) { this.referencias = referencias; }
+    public Double getLatitud() { return latitud; }
+    public void setLatitud(Double latitud) { this.latitud = latitud; }
+    public Double getLongitud() { return longitud; }
+    public void setLongitud(Double longitud) { this.longitud = longitud; }
     public Boolean getPrincipal() { return principal; }
     public void setPrincipal(Boolean principal) { this.principal = principal; }
     public Boolean getActivo() { return activo; }

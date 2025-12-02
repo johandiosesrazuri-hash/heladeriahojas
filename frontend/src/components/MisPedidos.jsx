@@ -173,7 +173,7 @@ const MisPedidos = ({ embedded = false }) => {
                 <div key={pedido.id} className="bg-neutral-50 rounded-xl p-4 hover:bg-neutral-100 transition-colors border border-neutral-200">
                   <div className="flex justify-between items-start mb-3">
                     <div>
-                      <p className="text-base font-bold text-neutral-800 font-title">Pedido #{pedido.id}</p>
+                      <p className="text-base font-bold text-neutral-800 font-title">Pedido #{pedido.numeroPedido || pedido.id}</p>
                       <p className="text-xs text-neutral-500 font-body mt-0.5">
                         {new Date(pedido.fecha).toLocaleDateString('es-ES', {
                           year: 'numeric',
@@ -463,7 +463,7 @@ const MisPedidos = ({ embedded = false }) => {
                     <div className="flex flex-wrap justify-between items-start mb-4 gap-4">
                       <div>
                         <h3 className="text-lg font-bold text-neutral-800 font-title mb-1">
-                          Pedido #{pedido.id}
+                          Pedido #{pedido.numeroPedido || pedido.id}
                         </h3>
                         <p className="text-sm text-neutral-500 font-body">
                           {new Date(pedido.fecha).toLocaleDateString('es-ES', {

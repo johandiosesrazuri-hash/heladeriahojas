@@ -6,17 +6,14 @@ import com.choccoDelight.entity.Pedido;
 import com.choccoDelight.entity.Producto;
 import com.choccoDelight.entity.Usuario;
 import com.choccoDelight.entity.Promocion;
-import com.choccoDelight.repository.ProductoRepository;
-import com.choccoDelight.repository.PromocionRepository;
 import com.choccoDelight.repository.UsuarioRepository;
-import com.choccoDelight.service.DeliveryService;
+import com.choccoDelight.repository.PedidoRepository;
 import com.choccoDelight.service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,13 +29,7 @@ public class PedidoController {
     private UsuarioRepository usuarioRepository;
 
     @Autowired
-    private ProductoRepository productoRepository;
-
-    @Autowired
-    private PromocionRepository promocionRepository;
-
-    @Autowired
-    private DeliveryService deliveryService;
+    private PedidoRepository pedidoRepository;
 
     @PostMapping
     public ResponseEntity<?> crearPedido(@RequestBody PedidoRequest body, Authentication authentication) {
@@ -52,9 +43,13 @@ public class PedidoController {
         Usuario usuario = usuarioRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
+        // Calcular número de pedido secuencial por usuario
+        int numeroPedido = pedidoRepository.findByUsuarioId(usuario.getId()).size() + 1;
+
         // Crear pedido
         Pedido pedido = new Pedido();
         pedido.setUsuario(usuario);
+        pedido.setNumeroPedido(numeroPedido);
 
         String metodoPago = body.getMetodoPago() != null ? body.getMetodoPago() : "efectivo";
         pedido.setMetodoPago(metodoPago);
@@ -64,6 +59,7 @@ public class PedidoController {
                 pedido.setEstado(Pedido.EstadoPedido.PENDIENTE);
                 pedido.setPagado(false); // Se paga al recibir
                 break;
+            case "yape":
             case "transferencia":
                 pedido.setEstado(Pedido.EstadoPedido.PENDIENTE_PAGO);
                 pedido.setPagado(false); // Esperando confirmación
@@ -77,10 +73,8 @@ public class PedidoController {
                 pedido.setPagado(false);
         }
 
+        // Crear lista de detalles básicos
         List<DetallePedido> detalles = new ArrayList<>();
-        BigDecimal total = BigDecimal.ZERO;
-
-        // Procesar los items enviados desde React (producto o promocion)
         for (Item it : body.getItems()) {
             if (it.getProductoId() == null && it.getPromocionId() == null) {
                 throw new RuntimeException("Cada item debe tener productoId o promocionId");
@@ -90,45 +84,25 @@ public class PedidoController {
             det.setCantidad(it.getCantidad());
 
             if (it.getProductoId() != null) {
-                // Producto individual
-                Producto producto = productoRepository.findById(it.getProductoId())
-                        .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+                Producto producto = new Producto();
+                producto.setId(it.getProductoId());
                 det.setProducto(producto);
-                det.setPrecioUnitario(producto.getPrecio());
-                BigDecimal subtotal = producto.getPrecio()
-                        .multiply(BigDecimal.valueOf(it.getCantidad()));
-                det.setSubtotal(subtotal);
-                total = total.add(subtotal);
             } else {
-                // Promoción completa
-                Promocion promo = promocionRepository.findById(it.getPromocionId())
-                        .orElseThrow(() -> new RuntimeException("Promoción no encontrada"));
+                Promocion promo = new Promocion();
+                promo.setId(it.getPromocionId());
                 det.setPromocion(promo);
-
-                BigDecimal precioPromo = promo.getPrecioTotal() != null
-                        ? promo.getPrecioTotal()
-                        : BigDecimal.ZERO;
-
-                det.setPrecioUnitario(precioPromo);
-                BigDecimal subtotal = precioPromo.multiply(BigDecimal.valueOf(it.getCantidad()));
-                det.setSubtotal(subtotal);
-                total = total.add(subtotal);
             }
 
             detalles.add(det);
         }
 
-        pedido.setTotal(total);
-
-        // Guardar pedido y detalles
-        Pedido creado = pedidoService.crearPedido(pedido, detalles);
-
-        // Guardar delivery si viene desde React
+        // Agregar delivery al pedido antes de crear
         if (body.getDelivery() != null) {
-            Delivery d = body.getDelivery();
-            d.setPedido(creado);
-            deliveryService.guardarDelivery(d);
+            pedido.setDelivery(body.getDelivery());
         }
+
+        // El servicio calculará el total incluyendo delivery
+        Pedido creado = pedidoService.crearPedido(pedido, detalles);
 
         return ResponseEntity.ok(creado);
     }
@@ -136,6 +110,11 @@ public class PedidoController {
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<List<Pedido>> listarPorUsuario(@PathVariable Long usuarioId) {
         return ResponseEntity.ok(pedidoService.listarPedidosPorUsuario(usuarioId));
+    }
+
+    @GetMapping("/pendientes")
+    public ResponseEntity<List<Pedido>> listarPedidosPendientesDeValidacion() {
+        return ResponseEntity.ok(pedidoRepository.findByComprobantePagoIsNotNullAndPagadoFalse());
     }
 
     @PutMapping("/{id}/estado")

@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import MisPedidos from '../components/MisPedidos';
+import ForgotPassword from '../components/ForgotPassword';
+import MapaSelector from '../components/MapaSelector';
 
 const tabs = [
   {
@@ -35,9 +37,11 @@ const Perfil = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState(null);
   const [form, setForm] = useState({ nombre: '', email: '', telefono: '', avatarUrl: '' });
-  const [newDir, setNewDir] = useState({ alias: '', linea1: '', linea2: '', ciudad: '', region: '', cp: '', referencias: '', principal: false, activo: true });
+  const [newDir, setNewDir] = useState({ alias: '', linea1: '', linea2: '', ciudad: '', region: '', cp: '', referencias: '', latitud: null, longitud: null, principal: false, activo: true });
   const [passwordForm, setPasswordForm] = useState({ passwordActual: '', nuevaPassword: '' });
   const [notification, setNotification] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [direccionToDelete, setDireccionToDelete] = useState(null);
 
   useEffect(() => {
     fetchPerfil();
@@ -90,11 +94,18 @@ const Perfil = () => {
 
   const addDireccion = async (e) => {
     e.preventDefault();
+    
+    // Validar que tenga coordenadas
+    if (!newDir.latitud || !newDir.longitud) {
+      notify('Por favor selecciona una ubicación en el mapa', 'error');
+      return;
+    }
+    
     try {
       await axios.post(`${api}/api/perfil/direcciones`, newDir, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setNewDir({ alias: '', linea1: '', linea2: '', ciudad: '', region: '', cp: '', referencias: '', principal: false, activo: true });
+      setNewDir({ alias: '', linea1: '', linea2: '', ciudad: '', region: '', cp: '', referencias: '', latitud: null, longitud: null, principal: false, activo: true });
       notify('Dirección guardada exitosamente');
       fetchPerfil();
     } catch (err) {
@@ -102,16 +113,43 @@ const Perfil = () => {
     }
   };
 
-  const deleteDireccion = async (id) => {
-    if (!window.confirm('¿Estás seguro de eliminar esta dirección?')) return;
+  const openDeleteModal = (id) => {
+    setDireccionToDelete(id);
+    setShowDeleteModal(true);
+  };
+
+  const deleteDireccion = async () => {
+    if (!direccionToDelete) return;
+    
     try {
-      await axios.delete(`${api}/api/perfil/direcciones/${id}`, {
+      await axios.delete(`${api}/api/perfil/direcciones/${direccionToDelete}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       notify('Dirección eliminada');
       fetchPerfil();
     } catch (err) {
       notify('Error al eliminar la dirección', 'error');
+    } finally {
+      setShowDeleteModal(false);
+      setDireccionToDelete(null);
+    }
+  };
+
+  const marcarComoPrincipal = async (id) => {
+    try {
+      // Obtener la dirección actual
+      const direccionActual = data.direcciones.find(d => d.id === id);
+      if (!direccionActual) return;
+      
+      // Actualizar marcándola como principal
+      await axios.put(`${api}/api/perfil/direcciones/${id}`, 
+        { ...direccionActual, principal: true },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      notify('Dirección principal actualizada');
+      fetchPerfil();
+    } catch (err) {
+      notify('Error al marcar como principal', 'error');
     }
   };
 
@@ -267,6 +305,34 @@ const Perfil = () => {
                     <InputGroup label="Alias (ej. Casa)" value={newDir.alias} onChange={(v) => setNewDir({ ...newDir, alias: v })} small />
                     <InputGroup label="Dirección" value={newDir.linea1} onChange={(v) => setNewDir({ ...newDir, linea1: v })} required small />
                     <InputGroup label="Detalles" value={newDir.linea2} onChange={(v) => setNewDir({ ...newDir, linea2: v })} small />
+                    
+                    {/* Selector de ubicación en el mapa */}
+                    <div className="space-y-2">
+                      <label className="block text-xs font-bold text-neutral-800 font-title">
+                        Ubicación en el Mapa <span className="text-red-400">*</span>
+                      </label>
+                      <MapaSelector
+                        onLocationSelect={(data) => {
+                          setNewDir(prev => ({
+                            ...prev,
+                            latitud: data.lat,
+                            longitud: data.lng,
+                            linea1: data.direccion || prev.linea1,
+                            ciudad: data.ciudad || prev.ciudad,
+                            cp: data.codigoPostal || prev.cp
+                          }));
+                        }}
+                      />
+                      {newDir.latitud && newDir.longitud && (
+                        <p className="text-xs text-green-600 flex items-center gap-1 font-body">
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                          </svg>
+                          Ubicación guardada
+                        </p>
+                      )}
+                    </div>
+
                     <div className="grid grid-cols-2 gap-3">
                       <InputGroup label="Ciudad" value={newDir.ciudad} onChange={(v) => setNewDir({ ...newDir, ciudad: v })} small />
                       <InputGroup label="CP" value={newDir.cp} onChange={(v) => setNewDir({ ...newDir, cp: v })} small />
@@ -293,28 +359,43 @@ const Perfil = () => {
                   </div>
                 ) : (
                   data.direcciones?.map((d) => (
-                    <div key={d.id} className="bg-white rounded-2xl p-6 shadow-sm border border-neutral-100 flex justify-between items-start group hover:border-primary/30 transition-all duration-300 hover:shadow-md animate-fade-in">
-                      <div className="flex gap-4">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300 ${d.principal ? 'bg-primary/10 text-primary' : 'bg-neutral-100 text-neutral-500 group-hover:bg-primary/10 group-hover:text-primary'}`}>
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-bold text-neutral-800 font-title">{d.alias || 'Dirección'}</h4>
-                            {d.principal && <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-primary text-white uppercase animate-pulse font-title">Principal</span>}
+                    <div key={d.id} className="bg-white rounded-2xl p-6 shadow-sm border border-neutral-100 group hover:border-primary/30 transition-all duration-300 hover:shadow-md animate-fade-in">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="flex gap-4">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300 ${d.principal ? 'bg-primary/10 text-primary' : 'bg-neutral-100 text-neutral-500 group-hover:bg-primary/10 group-hover:text-primary'}`}>
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
                           </div>
-                          <p className="text-neutral-600 text-sm font-body">{d.linea1}</p>
-                          {d.linea2 && <p className="text-neutral-500 text-xs mt-0.5 font-body">{d.linea2}</p>}
-                          <p className="text-neutral-400 text-xs mt-1 font-body">{d.ciudad}, {d.cp}</p>
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h4 className="font-bold text-neutral-800 font-title">{d.alias || 'Dirección'}</h4>
+                              {d.principal && <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-primary text-white uppercase animate-pulse font-title">Principal</span>}
+                            </div>
+                            <p className="text-neutral-600 text-sm font-body">{d.linea1}</p>
+                            {d.linea2 && <p className="text-neutral-500 text-xs mt-0.5 font-body">{d.linea2}</p>}
+                            <p className="text-neutral-400 text-xs mt-1 font-body">{d.ciudad}, {d.cp}</p>
+                          </div>
                         </div>
+                        <button
+                          onClick={() => openDeleteModal(d.id)}
+                          className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200"
+                          title="Eliminar dirección"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                        </button>
                       </div>
-                      <button
-                        onClick={() => deleteDireccion(d.id)}
-                        className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all duration-200"
-                        title="Eliminar dirección"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                      </button>
+                      
+                      {/* Botón para marcar como principal */}
+                      {!d.principal && (
+                        <button
+                          onClick={() => marcarComoPrincipal(d.id)}
+                          className="w-full py-2.5 px-4 bg-gradient-to-r from-primary/5 to-secondary/5 hover:from-primary hover:to-secondary text-primary hover:text-white rounded-xl font-bold text-sm transition-all duration-300 flex items-center justify-center gap-2 group/btn border border-primary/20 hover:border-transparent shadow-sm hover:shadow-md"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 group-hover/btn:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                          </svg>
+                          Marcar como principal
+                        </button>
+                      )}
                     </div>
                   ))
                 )}
@@ -324,20 +405,35 @@ const Perfil = () => {
 
           {activeTab === 'seguridad' && (
             <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
+              {/* Sección de Recuperar Contraseña */}
+              <div className="bg-white rounded-3xl shadow-card border border-neutral-100 overflow-hidden">
+                <div className="bg-gradient-to-r from-primary/10 via-secondary/10 to-primary/10 px-6 py-4 border-b border-neutral-100">
+                  <h2 className="text-xl font-bold text-neutral-900 flex items-center gap-2 font-title">
+                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" /></svg>
+                    Actualizar Contraseña
+                  </h2>
+                  <p className="text-neutral-600 text-sm mt-1 font-body">Cambia tu contraseña de forma segura</p>
+                </div>
+                <div className="p-6">
+                  <ForgotPassword embedded onSuccess={() => notify('Revisa tu correo para actualizar tu contraseña')} />
+                </div>
+              </div>
+
+              {/* Sección de Cambio Directo (Opcional - con contraseña actual) */}
               <div className="bg-white rounded-3xl shadow-card border border-neutral-100 p-8 transition-all duration-300 hover:shadow-hover">
                 <div className="mb-6">
                   <h2 className="text-xl font-bold text-neutral-900 flex items-center gap-2 font-title">
                     <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
-                    Cambiar Contraseña
+                    Cambio Rápido de Contraseña
                   </h2>
-                  <p className="text-neutral-500 text-sm font-body">Asegura tu cuenta actualizando tu contraseña periódicamente.</p>
+                  <p className="text-neutral-500 text-sm font-body">Si conoces tu contraseña actual, cámbiala directamente aquí.</p>
                 </div>
                 <form onSubmit={changePassword} className="space-y-4">
                   <InputGroup label="Contraseña Actual" type="password" value={passwordForm.passwordActual} onChange={(v) => setPasswordForm({ ...passwordForm, passwordActual: v })} required />
                   <InputGroup label="Nueva Contraseña" type="password" value={passwordForm.nuevaPassword} onChange={(v) => setPasswordForm({ ...passwordForm, nuevaPassword: v })} required />
                   <div className="pt-2">
                     <button className="w-full py-3 bg-neutral-800 text-white rounded-full font-bold shadow hover:bg-black transition-all duration-300 hover:-translate-y-0.5 font-title">
-                      Actualizar Seguridad
+                      Actualizar Contraseña
                     </button>
                   </div>
                 </form>
@@ -369,6 +465,46 @@ const Perfil = () => {
           )}
         </div>
       </div>
+
+      {/* Modal de confirmación para eliminar dirección */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl shadow-2xl max-w-md w-full p-8 animate-scale-in">
+            <div className="flex items-center justify-center mb-6">
+              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center">
+                <svg className="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+              </div>
+            </div>
+
+            <h3 className="text-2xl font-bold text-neutral-900 text-center mb-3 font-title">
+              ¿Eliminar dirección?
+            </h3>
+            <p className="text-neutral-600 text-center mb-8 font-body">
+              Esta acción no se puede deshacer. ¿Estás seguro de que deseas eliminar esta dirección?
+            </p>
+
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setDireccionToDelete(null);
+                }}
+                className="flex-1 px-6 py-3 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 rounded-xl font-bold transition-all duration-200 font-title"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={deleteDireccion}
+                className="flex-1 px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl font-bold transition-all duration-200 shadow-lg hover:shadow-xl font-title"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

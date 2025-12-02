@@ -22,7 +22,24 @@ public class PasswordResetController {
             return ResponseEntity.badRequest().body(Map.of("error", "El email es obligatorio"));
         }
         try {
-            passwordResetService.createPasswordResetTokenForUser(email);
+            String token = passwordResetService.createPasswordResetTokenForUser(email);
+            
+            // En desarrollo, también retornar el link en la respuesta (SOLO PARA DESARROLLO)
+            if (token != null) {
+                String resetLink = "http://localhost:5173/reset-password?token=" + token;
+                System.out.println("━".repeat(80));
+                System.out.println("🔗 LINK DE RECUPERACIÓN GENERADO:");
+                System.out.println("   " + resetLink);
+                System.out.println("━".repeat(80));
+                
+                // TEMPORAL: incluir el token en la respuesta para desarrollo
+                return ResponseEntity.ok(Map.of(
+                    "message", "Si el email existe, se ha enviado un enlace de recuperación.",
+                    "devToken", token,
+                    "devLink", resetLink
+                ));
+            }
+            
             return ResponseEntity.ok(Map.of("message", "Si el email existe, se ha enviado un enlace de recuperación."));
         } catch (Exception e) {
             e.printStackTrace();

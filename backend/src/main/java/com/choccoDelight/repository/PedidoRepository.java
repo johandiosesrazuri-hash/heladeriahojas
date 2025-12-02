@@ -8,4 +8,6 @@ import java.util.List;
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     List<Pedido> findByUsuarioId(Long usuarioId);
     List<Pedido> findByUsuarioIdOrderByFechaDesc(Long usuarioId);
+    // Pedidos que requieren validación de pago (tienen comprobante y no están pagados)
+    List<Pedido> findByComprobantePagoIsNotNullAndPagadoFalse();
 }

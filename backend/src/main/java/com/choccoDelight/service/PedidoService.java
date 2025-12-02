@@ -35,6 +35,9 @@ public class PedidoService {
     @Autowired
     private PromocionRepository promocionRepository;
 
+    @Autowired
+    private DeliveryService deliveryService;
+
     @Transactional
     public Pedido crearPedido(Pedido pedido, List<DetallePedido> detalles) {
         // Asociar usuario existente
@@ -66,7 +69,32 @@ public class PedidoService {
 
             total = total.add(d.getSubtotal());
         }
+
+        // Calcular y agregar costo de delivery si hay información de ubicación
+        if (pedido.getDelivery() != null && 
+            pedido.getDelivery().getLatitud() != null && 
+            pedido.getDelivery().getLongitud() != null) {
+            
+            var costoInfo = deliveryService.calcularCostoDelivery(
+                pedido.getDelivery().getLatitud(), 
+                pedido.getDelivery().getLongitud()
+            );
+            
+            if (!costoInfo.isDentroDelRadio()) {
+                throw new RuntimeException(costoInfo.getMensaje());
+            }
+            
+            pedido.getDelivery().setCostoDelivery(costoInfo.getCostoDelivery());
+            pedido.getDelivery().setDistanciaKm(costoInfo.getDistanciaKm());
+            total = total.add(costoInfo.getCostoDelivery());
+        }
+
         pedido.setTotal(total);
+
+        // Establecer relación bidireccional con delivery
+        if (pedido.getDelivery() != null) {
+            pedido.getDelivery().setPedido(pedido);
+        }
 
         Pedido pedidoGuardado = pedidoRepository.save(pedido);
         for (DetallePedido d : detalles) {

@@ -94,8 +94,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/pedidos/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/pedidos/**").authenticated()
 
-                        // USUARIO AUTENTICADO
+                        // DELIVERY - permitir calcular costo sin autenticación
+                        .requestMatchers(HttpMethod.POST, "/api/delivery/calcular-costo").permitAll()
                         .requestMatchers("/api/delivery/**").authenticated()
+
+                        // PAYMENT - permitir obtener info de pago sin autenticación
+                        .requestMatchers(HttpMethod.GET, "/api/payment/info").permitAll()
+                        .requestMatchers("/api/payment/**").authenticated()
+                        
+                        // USUARIO AUTENTICADO
                         .requestMatchers("/api/usuarios/**").authenticated()
 
                         .anyRequest().authenticated())

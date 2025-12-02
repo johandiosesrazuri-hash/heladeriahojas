@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import MapaSelector from './MapaSelector';
+import PaymentModal from './PaymentModal';
 
 const Pedido = () => {
   const { items, total, clearCart } = useCart();
@@ -19,7 +20,7 @@ const Pedido = () => {
 
   const [formData, setFormData] = useState({
     direccion: '',
-    telefono: '',
+    telefono: user?.telefono || '',
     ciudad: '',
     codigoPostal: '',
     instrucciones: '',
@@ -29,7 +30,22 @@ const Pedido = () => {
     longitud: null
   });
 
+  const [deliveryCost, setDeliveryCost] = useState({
+    costo: 0,
+    distancia: 0,
+    calculado: false,
+    mensaje: ''
+  });
+
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [createdPedidoId, setCreatedPedidoId] = useState(null);
+
   const [isProcessing, setIsProcessing] = useState(false);
+
+  // Estados para direcciones guardadas
+  const [direcciones, setDirecciones] = useState([]);
+  const [direccionPrincipal, setDireccionPrincipal] = useState(null);
+  const [modoUbicacion, setModoUbicacion] = useState('principal'); // 'principal' o 'mapa'
 
   // Verificar autenticación al cargar
   useEffect(() => {
@@ -42,6 +58,105 @@ const Pedido = () => {
       setTimeout(() => navigate('/login'), 1500);
     }
   }, [user, token, navigate]);
+
+  // Cargar direcciones del usuario
+  useEffect(() => {
+    const cargarDirecciones = async () => {
+      if (!user || !token) return;
+
+      try {
+        const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+        const response = await axios.get(`${api}/api/perfil`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const dirs = response.data.direcciones || [];
+        setDirecciones(dirs);
+
+        // Buscar dirección principal
+        const principal = dirs.find(d => d.principal);
+        if (principal) {
+          setDireccionPrincipal(principal);
+          setModoUbicacion('principal');
+          // Pre-llenar el formulario con la dirección principal y teléfono
+          setFormData(prev => ({
+            ...prev,
+            direccion: principal.linea1,
+            ciudad: principal.ciudad || '',
+            codigoPostal: principal.cp || '',
+            telefono: response.data.telefono || prev.telefono
+          }));
+        } else {
+          setModoUbicacion('mapa'); // Si no hay principal, usar mapa
+          // Solo llenar el teléfono si no hay dirección principal
+          setFormData(prev => ({
+            ...prev,
+            telefono: response.data.telefono || prev.telefono
+          }));
+        }
+      } catch (error) {
+        console.error('Error al cargar direcciones:', error);
+      }
+    };
+
+    cargarDirecciones();
+  }, [user, token]);
+
+  // Calcular delivery cuando se usa dirección principal
+  useEffect(() => {
+    const calcularDeliveryPrincipal = async () => {
+      if (modoUbicacion === 'principal' && direccionPrincipal && direccionPrincipal.latitud && direccionPrincipal.longitud) {
+        try {
+          const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+          const response = await axios.post(`${api}/api/delivery/calcular-costo`, {
+            latitud: direccionPrincipal.latitud,
+            longitud: direccionPrincipal.longitud
+          });
+
+          const costoData = response.data;
+          setDeliveryCost({
+            costo: costoData.costoDelivery,
+            distancia: costoData.distanciaKm,
+            calculado: true,
+            mensaje: costoData.mensaje
+          });
+
+          // Actualizar latitud y longitud en formData
+          setFormData(prev => ({
+            ...prev,
+            latitud: direccionPrincipal.latitud,
+            longitud: direccionPrincipal.longitud
+          }));
+
+          if (!costoData.dentroDelRadio) {
+            setNotification({
+              show: true,
+              message: costoData.mensaje,
+              type: 'error'
+            });
+          }
+        } catch (error) {
+          console.error('Error al calcular costo de delivery:', error);
+          setDeliveryCost({
+            costo: 0,
+            distancia: 0,
+            calculado: false,
+            mensaje: 'Error al calcular el costo'
+          });
+        }
+      } else if (modoUbicacion === 'mapa') {
+        // Resetear delivery si cambia a modo mapa
+        setDeliveryCost({
+          costo: 0,
+          distancia: 0,
+          calculado: false,
+          mensaje: ''
+        });
+      }
+    };
+
+    calcularDeliveryPrincipal();
+  }, [modoUbicacion, direccionPrincipal]);
 
   // Animación de entrada
   useEffect(() => {
@@ -121,17 +236,26 @@ const Pedido = () => {
         metodoPago: formData.metodoPago
       };
 
-      await axios.post(`${api}/api/pedidos`, pedidoData, {
+      const response = await axios.post(`${api}/api/pedidos`, pedidoData, {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      clearCart();
-      setNotification({
-        show: true,
-        message: '¡Pedido realizado con éxito!',
-        type: 'success'
-      });
-      setTimeout(() => navigate('/mis-pedidos'), 1500);
+      const pedidoCreado = response.data;
+
+      // Si es Yape o Transferencia, mostrar modal de pago
+      if (formData.metodoPago === 'yape' || formData.metodoPago === 'transferencia') {
+        setCreatedPedidoId(pedidoCreado.id);
+        setShowPaymentModal(true);
+      } else {
+        // Si es efectivo, limpiar carrito y redirigir
+        clearCart();
+        setNotification({
+          show: true,
+          message: '¡Pedido realizado con éxito!',
+          type: 'success'
+        });
+        setTimeout(() => navigate('/mis-pedidos'), 1500);
+      }
     } catch (error) {
       console.error('Error al crear el pedido:', error.response?.data || error);
       setNotification({
@@ -141,6 +265,19 @@ const Pedido = () => {
       });
     } finally {
       setIsProcessing(false);
+    }
+  };
+
+  const handlePaymentModalClose = (uploaded) => {
+    setShowPaymentModal(false);
+    if (uploaded) {
+      clearCart();
+      setNotification({
+        show: true,
+        message: '¡Comprobante subido! Validaremos tu pago pronto.',
+        type: 'success'
+      });
+      setTimeout(() => navigate('/mis-pedidos'), 1500);
     }
   };
 
@@ -243,7 +380,7 @@ const Pedido = () => {
   }
 
   /* ---------- UI PRINCIPAL ---------- */
-  return (
+  return (<>
     <section className="py-16 px-4 md:px-8 lg:px-16 min-h-screen relative overflow-hidden bg-neutral-50">
       {/* Fondo decorativo */}
       <div className="absolute inset-0 z-0">
@@ -376,13 +513,36 @@ const Pedido = () => {
                 ))}
               </div>
 
-              <div className="mt-6 pt-6 border-t border-neutral-100">
+              <div className="mt-6 pt-6 border-t border-neutral-100 space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-lg font-medium text-neutral-600 font-body">
+                  <span className="text-base font-medium text-neutral-600 font-body">
+                    Subtotal Productos:
+                  </span>
+                  <span className="text-lg font-bold text-neutral-700 font-body">
+                    S/ {(total || 0).toFixed(2)}
+                  </span>
+                </div>
+
+                {deliveryCost.calculado && (
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-neutral-600 font-body flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-secondary-dark" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                      </svg>
+                      Delivery ({deliveryCost.distancia.toFixed(2)} km):
+                    </span>
+                    <span className="font-semibold text-secondary-dark font-body">
+                      S/ {deliveryCost.costo.toFixed(2)}
+                    </span>
+                  </div>
+                )}
+
+                <div className="flex justify-between items-center pt-3 border-t border-neutral-200">
+                  <span className="text-lg font-bold text-neutral-800 font-body">
                     Total a Pagar:
                   </span>
                   <span className="text-3xl font-bold text-primary font-title">
-                    S/ {(total || 0).toFixed(2)}
+                    S/ {((total || 0) + (deliveryCost.calculado ? deliveryCost.costo : 0)).toFixed(2)}
                   </span>
                 </div>
               </div>
@@ -485,13 +645,82 @@ const Pedido = () => {
                   />
                 </div>
 
-                {/* Mapa */}
-                <div>
-                  <label className="block text-sm font-bold text-neutral-700 mb-2 font-body">
-                    Ubicación en el Mapa <span className="text-red-400">*</span>
-                  </label>
-                  <MapaSelector
-                    onLocationSelect={data => {
+                {/* Selector de modo de ubicación */}
+                {direccionPrincipal && (
+                  <div className="mb-4">
+                    <label className="block text-sm font-bold text-neutral-700 mb-3 font-body">
+                      Opciones de Ubicación
+                    </label>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setModoUbicacion('principal');
+                          setFormData(prev => ({
+                            ...prev,
+                            direccion: direccionPrincipal.linea1,
+                            ciudad: direccionPrincipal.ciudad || '',
+                            codigoPostal: direccionPrincipal.cp || '',
+                            latitud: direccionPrincipal.latitud,
+                            longitud: direccionPrincipal.longitud
+                          }));
+                        }}
+                        className={`p-4 rounded-xl border-2 transition-all duration-200 font-body text-left ${
+                          modoUbicacion === 'principal'
+                            ? 'border-primary bg-primary/5 shadow-md'
+                            : 'border-neutral-200 hover:border-primary/50'
+                        }`}
+                      >
+                        <div className="flex items-start">
+                          <div className={`p-2 rounded-lg mr-3 ${
+                            modoUbicacion === 'principal' ? 'bg-primary text-white' : 'bg-neutral-100 text-neutral-600'
+                          }`}>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-bold text-neutral-800 mb-1">Usar dirección principal</p>
+                            <p className="text-xs text-neutral-500">{direccionPrincipal.linea1}</p>
+                          </div>
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setModoUbicacion('mapa')}
+                        className={`p-4 rounded-xl border-2 transition-all duration-200 font-body text-left ${
+                          modoUbicacion === 'mapa'
+                            ? 'border-primary bg-primary/5 shadow-md'
+                            : 'border-neutral-200 hover:border-primary/50'
+                        }`}
+                      >
+                        <div className="flex items-start">
+                          <div className={`p-2 rounded-lg mr-3 ${
+                            modoUbicacion === 'mapa' ? 'bg-primary text-white' : 'bg-neutral-100 text-neutral-600'
+                          }`}>
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                            </svg>
+                          </div>
+                          <div className="flex-1">
+                            <p className="font-bold text-neutral-800 mb-1">Seleccionar en el mapa</p>
+                            <p className="text-xs text-neutral-500">Elige una ubicación diferente</p>
+                          </div>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Mapa - solo mostrar si está en modo mapa */}
+                {modoUbicacion === 'mapa' && (
+                  <div>
+                    <label className="block text-sm font-bold text-neutral-700 mb-2 font-body">
+                      Ubicación en el Mapa <span className="text-red-400">*</span>
+                    </label>
+                    <MapaSelector
+                      onLocationSelect={async data => {
                       setFormData(prev => ({
                         ...prev,
                         latitud: data.lat,
@@ -500,9 +729,43 @@ const Pedido = () => {
                         ciudad: data.ciudad || prev.ciudad,
                         codigoPostal: data.codigoPostal || prev.codigoPostal
                       }));
+
+                      // Calcular costo de delivery
+                      try {
+                        const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+                        const response = await axios.post(`${api}/api/delivery/calcular-costo`, {
+                          latitud: data.lat,
+                          longitud: data.lng
+                        });
+
+                        const costoData = response.data;
+                        setDeliveryCost({
+                          costo: costoData.costoDelivery,
+                          distancia: costoData.distanciaKm,
+                          calculado: true,
+                          mensaje: costoData.mensaje
+                        });
+
+                        if (!costoData.dentroDelRadio) {
+                          setNotification({
+                            show: true,
+                            message: costoData.mensaje,
+                            type: 'error'
+                          });
+                        }
+                      } catch (error) {
+                        console.error('Error al calcular costo de delivery:', error);
+                        setDeliveryCost({
+                          costo: 0,
+                          distancia: 0,
+                          calculado: false,
+                          mensaje: 'Error al calcular el costo'
+                        });
+                      }
                     }}
                   />
-                </div>
+                  </div>
+                )}
 
                 {/* Ciudad y Código Postal */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -580,10 +843,8 @@ const Pedido = () => {
                     className="w-full px-4 py-3 border border-neutral-200 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all duration-200 font-body bg-white"
                   >
                     <option value="efectivo">💵 Efectivo (Pago contra entrega)</option>
-                    <option value="transferencia">🏦 Transferencia bancaria</option>
-                    <option value="tarjeta" disabled>
-                      💳 Tarjeta (Próximamente)
-                    </option>
+                    <option value="yape">📱 Yape/Plin (Con QR)</option>
+                    <option value="transferencia">🏦 Transferencia Bancaria</option>
                   </select>
                 </div>
 
@@ -631,7 +892,18 @@ const Pedido = () => {
         </div>
       </div>
     </section>
-  );
+    
+    {/* Payment modal */}
+    {showPaymentModal && (
+      <PaymentModal
+        isOpen={showPaymentModal}
+        onClose={handlePaymentModalClose}
+        metodoPago={formData.metodoPago}
+        pedidoId={createdPedidoId}
+        montoTotal={((total || 0) + (deliveryCost.calculado ? deliveryCost.costo : 0))}
+      />
+    )}
+  </> );
 };
 
 export default Pedido;

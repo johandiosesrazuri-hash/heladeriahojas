@@ -31,7 +31,7 @@ const Inicio = () => {
   }, []);
 
   return (
-    <div className="bg-neutral-50 min-h-screen">
+    <div className="min-h-screen">
       {/* Hero Section */}
       <HeroSection />
 
@@ -39,7 +39,7 @@ const Inicio = () => {
       <div 
         ref={sobreNosotrosAnim.ref}
         id="sobre-nosotros" 
-        className={`scroll-mt-20 transition-all duration-700 ${
+        className={`scroll-mt-20 transition-all duration-700 bg-neutral-50 ${
           sobreNosotrosAnim.isVisible 
             ? 'translate-y-0' 
             : 'translate-y-4'
