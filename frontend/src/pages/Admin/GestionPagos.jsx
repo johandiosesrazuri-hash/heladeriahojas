@@ -17,7 +17,7 @@ const GestionPagos = () => {
 
   useEffect(() => {
     fetchPedidos();
-    const interval = setInterval(fetchPedidos, 10000); // Actualizar cada 10 segundos
+    const interval = setInterval(fetchPedidos, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -27,9 +27,9 @@ const GestionPagos = () => {
       const res = await axios.get(`${api}/api/pedidos/pendientes`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      // Filtrar solo los que tienen comprobante y no están pagados
+      // El backend ya filtra correctamente, pero verificamos por seguridad
       const pedidosConComprobante = res.data.filter(p => 
-        p.comprobantePago && !p.pagado && p.estado === 'PENDIENTE_PAGO'
+        p.comprobantePago && !p.pagado
       );
       setPedidos(pedidosConComprobante);
     } catch (error) {

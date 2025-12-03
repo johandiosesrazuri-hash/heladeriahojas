@@ -19,18 +19,14 @@ const GestionProductos = () => {
   const [loading, setLoading] = useState(true);
   const [animate, setAnimate] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: '', type: '' });
-  
-  // Estados para el modal de eliminación
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [cantidadEliminar, setCantidadEliminar] = useState('');
   const [productoAEliminar, setProductoAEliminar] = useState(null);
 
-  // Activar animación después de que el componente se monte
   useEffect(() => {
     setTimeout(() => setAnimate(true), 10);
   }, []);
 
-  // Ocultar notificación después de 3 segundos
   useEffect(() => {
     if (notification.show) {
       const timer = setTimeout(() => {
@@ -70,7 +66,6 @@ const GestionProductos = () => {
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       
       if (editingId) {
-        // Actualizar producto existente
         await axios.put(`${api}/api/admin/dashboard/productos/${editingId}`, formData, {
           headers: { Authorization: `Bearer ${token}` }
         });
@@ -80,7 +75,6 @@ const GestionProductos = () => {
           type: 'success'
         });
       } else {
-        // Crear nuevo producto
         await axios.post(`${api}/api/admin/dashboard/productos`, formData, {
           headers: { Authorization: `Bearer ${token}` }
         });

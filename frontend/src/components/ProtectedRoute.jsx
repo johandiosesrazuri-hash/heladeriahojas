@@ -17,25 +17,19 @@ const ProtectedRoute = ({ children, requiredRole = 'ADMIN' }) => {
 
   // Verifica si no hay usuario
   if (!user) {
-    console.warn('⚠️ Sin usuario, redirigiendo a login');
     return <Navigate to="/login" state={{ from: location }} />;
   }
 
-  // Normaliza rol
   const userRoleNormalized = user.rol?.startsWith('ROLE_') ? user.rol.replace('ROLE_', '') : user.rol;
 
-  // Si no se pide rol, basta con estar autenticado
   if (!requiredRole) {
     return children;
   }
 
-  // Si requiredRole es un arreglo, validar inclusión
   if (Array.isArray(requiredRole)) {
     if (!requiredRole.includes(userRoleNormalized)) {
-      console.warn(`❌ Rol insuficiente. Requerido: ${requiredRole.join(', ')}, Actual: ${user.rol}`);
       return <Navigate to="/" />;
     }
-    console.log('✅ Acceso permitido (rol dentro de la lista)');
     return children;
   }
 

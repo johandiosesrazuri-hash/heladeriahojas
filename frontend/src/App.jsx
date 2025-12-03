@@ -14,7 +14,6 @@ import Login from './components/Login'
 import Register from './components/Register'
 import Inicio from './components/Inicio'
 
-// Lazy loading para páginas menos críticas
 const ForgotPassword = lazy(() => import('./components/ForgotPassword'))
 const ResetPassword = lazy(() => import('./components/ResetPassword'))
 const Menu = lazy(() => import('./components/Menu'))
@@ -25,7 +24,6 @@ const Testimonios = lazy(() => import('./components/Testimonios'))
 const SobreNosotros = lazy(() => import('./components/SobreNosotros'))
 const MisPedidos = lazy(() => import('./components/MisPedidos'))
 
-// Lazy loading para páginas Admin (code splitting)
 const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'))
 const GestionUsuarios = lazy(() => import('./pages/Admin/GestionUsuarios'))
 const GestionProductos = lazy(() => import('./pages/Admin/GestionProductos'))
@@ -38,7 +36,6 @@ const Perfil = lazy(() => import('./pages/Perfil'))
 
 import './App.css'
 
-// Componente de carga mientras se cargan componentes
 const LoadingFallback = () => (
   <div className="min-h-screen flex items-center justify-center bg-neutral-50">
     <div className="text-center">

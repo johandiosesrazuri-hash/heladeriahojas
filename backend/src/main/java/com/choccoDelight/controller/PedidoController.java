@@ -114,7 +114,7 @@ public class PedidoController {
 
     @GetMapping("/pendientes")
     public ResponseEntity<List<Pedido>> listarPedidosPendientesDeValidacion() {
-        return ResponseEntity.ok(pedidoRepository.findByComprobantePagoIsNotNullAndPagadoFalse());
+        return ResponseEntity.ok(pedidoRepository.findPedidosPendientesValidacion());
     }
 
     @PutMapping("/{id}/estado")
@@ -187,7 +187,6 @@ public class PedidoController {
             this.delivery = delivery;
         }
 
-        // ✅ AGREGAR GETTER Y SETTER
         public String getMetodoPago() {
             return metodoPago;
         }

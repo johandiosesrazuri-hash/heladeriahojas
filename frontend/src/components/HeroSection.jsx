@@ -30,9 +30,6 @@ const HeroSection = () => {
     }
   ];
 
-
-
-  // Auto-advance slides
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slides.length);

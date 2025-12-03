@@ -72,7 +72,6 @@ public class PromocionController {
         return ResponseEntity.noContent().build();
     }
 
-    // ✅ CONVERSIÓN MEJORADA DE ENTITY A DTO
     private PromocionDTO convertToDTO(Promocion p) {
         PromocionDTO dto = new PromocionDTO();
         dto.setId(p.getId());
@@ -85,7 +84,6 @@ public class PromocionController {
             dto.setPrecioTotal(p.getPrecioTotal().doubleValue());
         }
         
-        // ✅ MAPEAR MÚLTIPLES PRODUCTOS
         List<PromocionDTO.ProductoPromoDTO> productosDTO = p.getProductos().stream()
             .map(pp -> {
                 PromocionDTO.ProductoPromoDTO prodDTO = new PromocionDTO.ProductoPromoDTO();

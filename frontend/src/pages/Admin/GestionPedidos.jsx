@@ -13,12 +13,10 @@ const GestionPedidos = () => {
   const [confirmDeleteModal, setConfirmDeleteModal] = useState(null);
   const [deletingPedido, setDeletingPedido] = useState(false);
 
-  // Activar animación después de que el componente se monte
   useEffect(() => {
     setTimeout(() => setAnimate(true), 10);
   }, []);
 
-  // Ocultar notificación después de 3 segundos
   useEffect(() => {
     if (notification.show) {
       const timer = setTimeout(() => {
@@ -89,7 +87,6 @@ const GestionPedidos = () => {
         message: `Pedido #${id} eliminado correctamente.`,
         type: "success"
       });
-      // Si el modal estaba abierto para este pedido, ciérralo
       if (detallesModal?.id === id) {
         setDetallesModal(null);
       }
@@ -190,8 +187,7 @@ const GestionPedidos = () => {
         {/* Encabezado */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-[#904939] font-semibold">Panel Admin</p>
-            <h1
+              <h1
               className="text-3xl md:text-4xl font-bold text-[#904939] font-cinzel mt-1"
               style={{ animation: animate ? `fadeInUp 0.6s ease-out 0.1s both` : 'none' }}
             >

@@ -8,18 +8,12 @@ const GestionUsuarios = () => {
   const [loading, setLoading] = useState(true);
   const [animate, setAnimate] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: "", type: "" });
-  
-  // Estados para modales
   const [showEditModal, setShowEditModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
-  
-  // Estados para formularios
   const [editForm, setEditForm] = useState({ nombre: '', email: '', rol: 'CLIENTE' });
   const [createForm, setCreateForm] = useState({ nombre: '', email: '', password: '', rol: 'CLIENTE' });
-  
-  // Estados para filtros
   const [busqueda, setBusqueda] = useState('');
   const [filtroRol, setFiltroRol] = useState('TODOS');
 
@@ -65,14 +59,12 @@ const GestionUsuarios = () => {
     try {
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
       
-      // Usar el endpoint de registro público con el rol especificado
       await axios.post(`${api}/api/auth/register`, {
         nombre: createForm.nombre,
         email: createForm.email,
         password: createForm.password
       });
       
-      // Si el rol NO es CLIENTE, actualizar el usuario recién creado
       if (createForm.rol !== 'CLIENTE') {
         const usuarios = await axios.get(`${api}/api/admin/dashboard/usuarios`, {
           headers: { Authorization: `Bearer ${token}` }
@@ -144,7 +136,6 @@ const GestionUsuarios = () => {
     }
   };
 
-  // ========== ELIMINAR USUARIO ==========
   const openDeleteModal = (usuario) => {
     setSelectedUser(usuario);
     setShowDeleteModal(true);
@@ -174,13 +165,12 @@ const GestionUsuarios = () => {
     }
   };
 
-  // ========== FILTROS ==========
-  const usuariosFiltrados = usuarios.filter(u => {
+  const usuariosFiltrados = usuarios.filter(usuario => {
     const coincideBusqueda = 
-      u.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
-      u.email?.toLowerCase().includes(busqueda.toLowerCase());
+      usuario.nombre?.toLowerCase().includes(busqueda.toLowerCase()) ||
+      usuario.email?.toLowerCase().includes(busqueda.toLowerCase());
     
-    const coincideRol = filtroRol === 'TODOS' || u.rol === filtroRol;
+    const coincideRol = filtroRol === 'TODOS' || usuario.rol === filtroRol;
     
     return coincideBusqueda && coincideRol;
   });

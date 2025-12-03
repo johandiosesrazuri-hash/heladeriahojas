@@ -95,7 +95,6 @@ const Perfil = () => {
   const addDireccion = async (e) => {
     e.preventDefault();
     
-    // Validar que tenga coordenadas
     if (!newDir.latitud || !newDir.longitud) {
       notify('Por favor selecciona una ubicación en el mapa', 'error');
       return;
@@ -137,11 +136,9 @@ const Perfil = () => {
 
   const marcarComoPrincipal = async (id) => {
     try {
-      // Obtener la dirección actual
       const direccionActual = data.direcciones.find(d => d.id === id);
       if (!direccionActual) return;
       
-      // Actualizar marcándola como principal
       await axios.put(`${api}/api/perfil/direcciones/${id}`, 
         { ...direccionActual, principal: true },
         { headers: { Authorization: `Bearer ${token}` } }
@@ -437,19 +434,6 @@ const Perfil = () => {
                     </button>
                   </div>
                 </form>
-              </div>
-
-              <div className="bg-red-50 rounded-3xl p-6 border border-red-100 flex items-start gap-4 transition-all duration-300 hover:bg-red-100/50">
-                <div className="p-3 bg-red-100 text-red-600 rounded-full">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
-                </div>
-                <div>
-                  <h3 className="text-red-800 font-bold font-title">Zona de Peligro</h3>
-                  <p className="text-red-600 text-sm mt-1 mb-3 font-body">La eliminación de la cuenta es irreversible. Todos tus datos serán borrados permanentemente.</p>
-                  <button className="px-4 py-2 bg-red-600 text-white text-sm font-bold rounded-lg opacity-50 cursor-not-allowed font-title" title="Contacta a soporte para eliminar tu cuenta">
-                    Eliminar Cuenta
-                  </button>
-                </div>
               </div>
 
               {/* Botón Logout Móvil */}

@@ -29,11 +29,9 @@ const Testimonios = () => {
       setLoading(true);
       const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 
-      // Obtener todos los testimonios (público)
       const response = await axios.get(`${api}/api/testimonios`);
       setTestimonios(response.data);
 
-      // Si está logueado, buscar su testimonio
       if (user && token) {
         try {
           const miTestimonioResponse = await axios.get(
@@ -61,7 +59,6 @@ const Testimonios = () => {
       }
     } finally {
       setLoading(false);
-      // Activar animación después de cargar los datos
       setTimeout(() => setAnimate(true), 5);
     }
   };
@@ -127,7 +124,6 @@ const Testimonios = () => {
     }
   };
 
-  // Ocultar notificación después de 3 segundos
   useEffect(() => {
     if (notification.show) {
       const timer = setTimeout(() => {
@@ -137,7 +133,6 @@ const Testimonios = () => {
     }
   }, [notification.show]);
 
-  // Funciones para el carrusel
   const nextTestimonio = () => {
     setCurrentIndex((prevIndex) =>
       prevIndex === testimonios.length - 1 ? 0 : prevIndex + 1
@@ -150,7 +145,6 @@ const Testimonios = () => {
     );
   };
 
-  // Auto-avanzar el carrusel cada 5 segundos
   useEffect(() => {
     if (testimonios.length > 0) {
       const interval = setInterval(() => {

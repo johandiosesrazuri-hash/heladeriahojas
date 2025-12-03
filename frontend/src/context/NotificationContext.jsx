@@ -28,7 +28,6 @@ export const NotificationProvider = ({ children }) => {
         const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
         
         if (user.rol === 'ADMIN') {
-          // Admin: verificar pedidos nuevos y pendientes de pago
           const res = await axios.get(`${api}/api/pedidos/pendientes`, {
             headers: { Authorization: `Bearer ${token}` }
           });
@@ -43,25 +42,22 @@ export const NotificationProvider = ({ children }) => {
           setNotifications(pendientes);
           setUnreadCount(pendientes.length);
         } else {
-          // Cliente: verificar estado de sus pedidos
           const res = await axios.get(`${api}/api/pedidos/usuario/${user.id}`, {
             headers: { Authorization: `Bearer ${token}` }
           });
           
           const pedidos = res.data || [];
           
-          // Detectar pedidos validados recientemente
           const pedidosValidados = pedidos.filter(p => 
             p.pagado && 
             p.fechaValidacionPago && 
-            new Date(p.fechaValidacionPago) > new Date(Date.now() - 60000) // Último minuto
+            new Date(p.fechaValidacionPago) > new Date(Date.now() - 60000)
           );
           
           if (pedidosValidados.length > 0) {
             showNotification(`✅ Tu pago fue validado! Pedido #${pedidosValidados[0].id}`);
           }
           
-          // Detectar pedidos en camino
           const pedidosEnCamino = pedidos.filter(p => 
             p.estado === 'EN_CAMINO' && 
             !localStorage.getItem(`notified_encamino_${p.id}`)
@@ -82,8 +78,8 @@ export const NotificationProvider = ({ children }) => {
       }
     };
 
-    fetchNotifications(); // Inicial
-    const interval = setInterval(fetchNotifications, 30000); // Cada 30 seg
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 30000);
 
     return () => clearInterval(interval);
   }, [user, token, unreadCount]);
@@ -92,12 +88,10 @@ export const NotificationProvider = ({ children }) => {
     setToastMessage(message);
     setShowToast(true);
     
-    // Auto-hide después de 5 segundos
     setTimeout(() => {
       setShowToast(false);
     }, 5000);
 
-    // Notificación del navegador si tiene permiso
     if ('Notification' in window && Notification.permission === 'granted') {
       new Notification('ChoccoDelight', {
         body: message,

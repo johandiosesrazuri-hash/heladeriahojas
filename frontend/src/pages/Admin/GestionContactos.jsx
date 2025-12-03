@@ -12,12 +12,10 @@ const GestionContactos = () => {
   const [animate, setAnimate] = useState(false);
   const [notification, setNotification] = useState({ show: false, message: "", type: "" });
 
-  // Activar animación después de que el componente se monte
   useEffect(() => {
     setTimeout(() => setAnimate(true), 10);
   }, []);
 
-  // Ocultar notificación después de 3 segundos
   useEffect(() => {
     if (notification.show) {
       const timer = setTimeout(() => {

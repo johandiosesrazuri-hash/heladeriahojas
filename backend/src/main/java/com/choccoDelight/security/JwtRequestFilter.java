@@ -5,6 +5,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,6 +20,8 @@ import java.io.IOException;
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
+    private static final Logger logger = LoggerFactory.getLogger(JwtRequestFilter.class);
+
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
@@ -29,46 +33,31 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String authorizationHeader = request.getHeader("Authorization");
-        String requestURI = request.getRequestURI();
-        String method = request.getMethod();
-
-        System.out.println("🔐 JWT Filter - " + method + " " + requestURI);
 
         String username = null;
         String jwt = null;
-        // 1. Extraer token del header "Authorization: Bearer {token}"
+
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7); // Extrae el token
+            jwt = authorizationHeader.substring(7);
             try {
-                username = jwtTokenUtil.extractUsername(jwt); // Extrae el nombre de usuario del token
-                System.out.println("✅ Token válido para usuario: " + username);
+                username = jwtTokenUtil.extractUsername(jwt);
             } catch (Exception e) {
-                System.out.println("❌ Error extrayendo username del token: " + e.getMessage());
+                logger.debug("Error al extraer username del token: {}", e.getMessage());
             }
-        } else {
-            System.out.println("⚠️ No se encontró token Bearer en el header Authorization");
         }
 
-        // 2. Validar token y establecer autenticación
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-            System.out.println("👤 Usuario cargado: " + username);
-            System.out.println("🔑 Authorities: " + userDetails.getAuthorities());
 
-            // 3. Verificar si el token es válido
             if (jwtTokenUtil.validateToken(jwt, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authToken);
-                System.out.println("✅ Autenticación establecida para: " + username + " con roles: "
-                        + userDetails.getAuthorities());
-            } else {
-                System.out.println("❌ Token inválido para usuario: " + username);
             }
         }
 
-        chain.doFilter(request, response); // Continúa con el filtro
+        chain.doFilter(request, response);
     }
 }

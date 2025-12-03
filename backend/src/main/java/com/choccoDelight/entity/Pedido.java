@@ -25,7 +25,6 @@ public class Pedido {
     @Column(nullable = false)
     private EstadoPedido estado;
 
-    // ✅ AGREGAR ESTAS DOS LÍNEAS
     @Column(name = "metodo_pago", nullable = false)
     private String metodoPago = "efectivo";
 
@@ -60,7 +59,7 @@ public class Pedido {
 
     public enum EstadoPedido {
         PENDIENTE,
-        PENDIENTE_PAGO,  // ✅ AGREGAR ESTE
+        PENDIENTE_PAGO,
         CONFIRMADO,
         EN_PREPARACION,
         EN_CAMINO,
@@ -87,7 +86,6 @@ public class Pedido {
     public Delivery getDelivery() { return delivery; }
     public void setDelivery(Delivery delivery) { this.delivery = delivery; }
 
-    // ✅ AGREGAR ESTOS GETTERS Y SETTERS
     public String getMetodoPago() { return metodoPago; }
     public void setMetodoPago(String metodoPago) { this.metodoPago = metodoPago; }
 

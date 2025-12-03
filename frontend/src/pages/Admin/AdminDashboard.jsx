@@ -11,14 +11,12 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [animate, setAnimate] = useState(false);
-  const [notification, setNotification] = useState({ show: false, message: "", type: "" });
+  const [notification, setNotification] = useState({ show: false, message: '', type: '' });
 
-  // Activar animación después de que el componente se monte
   useEffect(() => {
     setTimeout(() => setAnimate(true), 10);
   }, []);
 
-  // Ocultar notificación después de 3 segundos
   useEffect(() => {
     if (notification.show) {
       const timer = setTimeout(() => {

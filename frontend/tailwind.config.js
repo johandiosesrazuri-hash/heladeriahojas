@@ -19,29 +19,28 @@ const config = {
         gray: colors.gray,
         // Paleta "Heladería Moderna"
         primary: {
-          light: '#FFC1CC', // Pastel Pink
-          DEFAULT: '#FF8FA3', // Strawberry
-          dark: '#FF6B81', // Deep Strawberry
+          light: '#FFC1CC',
+          DEFAULT: '#FF8FA3',
+          dark: '#FF6B81',
         },
         secondary: {
-          light: '#C7F9CC', // Mint Light
-          DEFAULT: '#80ED99', // Mint
-          dark: '#57CC99', // Deep Mint
+          light: '#C7F9CC',
+          DEFAULT: '#80ED99',
+          dark: '#57CC99',
         },
         accent: {
-          blue: '#A2D2FF', // Pastel Blue
-          yellow: '#FEE440', // Soft Yellow
-          purple: '#CDB4DB', // Soft Purple
-          rose: '#FF8FA3',   // Alias for compatibility
+          blue: '#A2D2FF',
+          yellow: '#FEE440',
+          purple: '#CDB4DB',
+          rose: '#FF8FA3',
         },
         neutral: {
-          50: '#F9F7F2', // Cream White (Background)
+          50: '#F9F7F2',
           100: '#F0EFEB',
           200: '#E2E2DF',
-          800: '#4A4E69', // Dark Text
-          900: '#22223B', // Darker Text
+          800: '#4A4E69',
+          900: '#22223B',
         },
-        // Alias para compatibilidad con componentes existentes (mapeados a la nueva paleta)
         chocolate: {
           dark: '#22223B',
           medium: '#4A4E69',

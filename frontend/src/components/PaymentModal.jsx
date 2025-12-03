@@ -45,6 +45,17 @@ const PaymentModal = ({ isOpen, onClose, metodoPago, pedidoId, montoTotal }) => 
         return;
       }
       
+      // Validar tamaño (10MB máximo)
+      const maxSize = 10 * 1024 * 1024; // 10MB en bytes
+      if (file.size > maxSize) {
+        setNotification({
+          show: true,
+          message: 'El archivo es demasiado pesado (máx. 10MB). Intenta con una imagen más ligera.',
+          type: 'error'
+        });
+        return;
+      }
+      
       setSelectedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -266,6 +277,9 @@ const PaymentModal = ({ isOpen, onClose, metodoPago, pedidoId, montoTotal }) => 
                   </p>
                   <p className="text-sm text-neutral-500 font-body">
                     PNG, JPG hasta 10MB
+                  </p>
+                  <p className="text-xs text-green-600 font-body mt-1">
+                    ✅ Imágenes de alta resolución serán redimensionadas automáticamente
                   </p>
                 </div>
               </label>

@@ -14,7 +14,6 @@ const SobreNosotros = () => {
         const api = import.meta.env.VITE_API_URL || 'http://localhost:8080';
         const response = await axios.get(`${api}/api/sobre-nosotros`);
         setData(response.data);
-        // Activar animación después de cargar los datos
         setTimeout(() => setAnimate(true), 10);
       } catch (error) {
         console.error('Error al cargar información:', error);
@@ -70,7 +69,7 @@ const SobreNosotros = () => {
   return (
     <div className="bg-gradient-to-br from-[#DDD4CE] to-[#DDD4CE]">
 
-      {/* 🎨 Hero Section - Impactante */}
+      {/*  Hero Section - Impactante */}
       <section className="relative h-screen overflow-hidden">
         {/* Fondo degradado base para fallback */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#C1583B] via-[#904939] to-[#E19D7E]"></div>
@@ -133,7 +132,7 @@ const SobreNosotros = () => {
         </div>
       </section>
 
-      {/* 📖 Story Section - Historia con imagen */}
+      {/* Story Section - Historia con imagen */}
       <section
         className="py-20 px-4"
         style={{
@@ -222,7 +221,7 @@ const SobreNosotros = () => {
         </div>
       </section>
 
-      {/* 📊 Statistics Section - Estadísticas impactantes */}
+      {/*  Statistics Section - Estadísticas impactantes */}
       <section
         className="py-20 bg-gradient-to-br from-[#C1583B] to-[#904939] relative overflow-hidden"
         style={{
@@ -303,7 +302,7 @@ const SobreNosotros = () => {
         </div>
       </section>
 
-      {/* 🖼️ Gallery Section - Galería con efectos parallax */}
+      {/* Gallery Section - Galería con efectos parallax */}
       {galeria && galeria.length > 0 && (
         <section
           className="py-20 px-4 bg-white/50"
@@ -355,7 +354,7 @@ const SobreNosotros = () => {
         </section>
       )}
 
-      {/* 🎥 Video Section */}
+      {/*  Video Section */}
       {informacionPrincipal.videoUrl && (
         <section
           className="py-20 px-4"

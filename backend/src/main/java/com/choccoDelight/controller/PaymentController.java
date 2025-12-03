@@ -12,6 +12,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -35,7 +40,13 @@ public class PaymentController {
     @Autowired
     private UsuarioRepository usuarioRepository;
 
-    private static final String UPLOAD_DIR = "backend/src/main/resources/static/img/comprobantes/";
+    // Usar ruta absoluta basada en el directorio de trabajo actual
+    private static final String UPLOAD_DIR = "src/main/resources/static/img/comprobantes/";
+    // Tamaño máximo: 10MB
+    private static final long MAX_FILE_SIZE = 10 * 1024 * 1024;
+    // Resolución máxima para redimensionar (ancho máximo en píxeles)
+    private static final int MAX_WIDTH = 1920;
+    private static final int MAX_HEIGHT = 1920;
 
     @GetMapping("/info")
     public ResponseEntity<PaymentInfoDTO> getPaymentInfo() {
@@ -83,6 +94,11 @@ public class PaymentController {
             return ResponseEntity.badRequest().body("Archivo vacío");
         }
 
+        // Validar tamaño de archivo (máximo 10MB)
+        if (file.getSize() > MAX_FILE_SIZE) {
+            return ResponseEntity.badRequest().body("El archivo es demasiado grande. Tamaño máximo: 10MB. Por favor, usa una imagen con menor resolución.");
+        }
+
         // Validar tipo de archivo (solo imágenes)
         String contentType = file.getContentType();
         if (contentType == null || !contentType.startsWith("image/")) {
@@ -97,11 +113,29 @@ public class PaymentController {
             }
 
             // Generar nombre único
-            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            String originalFileName = file.getOriginalFilename();
+            String extension = originalFileName != null && originalFileName.contains(".")
+                    ? originalFileName.substring(originalFileName.lastIndexOf("."))
+                    : ".jpg";
+            String fileName = UUID.randomUUID().toString() + extension;
             Path filePath = uploadPath.resolve(fileName);
 
-            // Guardar archivo
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+            // Leer la imagen
+            BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(file.getBytes()));
+            
+            if (originalImage == null) {
+                return ResponseEntity.badRequest().body("No se pudo procesar la imagen");
+            }
+
+            // Redimensionar si excede las dimensiones máximas
+            BufferedImage imageToSave = resizeImageIfNeeded(originalImage, MAX_WIDTH, MAX_HEIGHT);
+
+            // Guardar la imagen (original o redimensionada)
+            String formatName = extension.substring(1).toLowerCase();
+            if (formatName.equals("jpg")) {
+                formatName = "jpeg";
+            }
+            ImageIO.write(imageToSave, formatName, filePath.toFile());
 
             // Actualizar pedido
             String urlComprobante = "/img/comprobantes/" + fileName;
@@ -200,6 +234,41 @@ public class PaymentController {
         return ResponseEntity.ok().body(motivo != null ? 
             "Pago rechazado y pedido cancelado: " + motivo : 
             "Pago rechazado. El pedido ha sido cancelado.");
+    }
+
+    /**
+     * Redimensiona una imagen si excede las dimensiones máximas, manteniendo la relación de aspecto
+     */
+    private BufferedImage resizeImageIfNeeded(BufferedImage originalImage, int maxWidth, int maxHeight) {
+        int originalWidth = originalImage.getWidth();
+        int originalHeight = originalImage.getHeight();
+
+        // Si la imagen ya es más pequeña que el máximo, retornarla sin cambios
+        if (originalWidth <= maxWidth && originalHeight <= maxHeight) {
+            return originalImage;
+        }
+
+        // Calcular nuevas dimensiones manteniendo la relación de aspecto
+        double widthRatio = (double) maxWidth / originalWidth;
+        double heightRatio = (double) maxHeight / originalHeight;
+        double ratio = Math.min(widthRatio, heightRatio);
+
+        int newWidth = (int) (originalWidth * ratio);
+        int newHeight = (int) (originalHeight * ratio);
+
+        // Crear nueva imagen redimensionada con mejor calidad
+        BufferedImage resizedImage = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = resizedImage.createGraphics();
+        
+        // Configurar para mejor calidad
+        graphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        
+        graphics.drawImage(originalImage, 0, 0, newWidth, newHeight, null);
+        graphics.dispose();
+
+        return resizedImage;
     }
 
     // DTO para respuesta

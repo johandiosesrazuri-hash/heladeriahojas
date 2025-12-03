@@ -58,7 +58,6 @@ const ForgotPassword = ({ embedded = false, onSuccess }) => {
         }
     };
 
-    // Si está en modo embebido, renderizar solo el formulario
     if (embedded) {
         return (
             <div className="space-y-4">

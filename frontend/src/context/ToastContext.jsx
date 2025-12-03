@@ -32,7 +32,6 @@ const icons = {
   ),
 };
 
-// Estilos para cada tipo
 const typeStyles = {
   success: 'bg-gradient-to-r from-secondary to-secondary-dark text-white',
   error: 'bg-gradient-to-r from-red-500 to-red-600 text-white',
@@ -41,7 +40,6 @@ const typeStyles = {
   cart: 'bg-gradient-to-r from-primary to-primary-dark text-white',
 };
 
-// Componente Toast individual
 const Toast = ({ toast, onRemove }) => {
   const [isExiting, setIsExiting] = useState(false);
 
@@ -67,12 +65,10 @@ const Toast = ({ toast, onRemove }) => {
         animation: isExiting ? '' : 'slideInRight 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)'
       }}
     >
-      {/* Icono con fondo */}
       <div className="flex-shrink-0 p-2 bg-white/20 rounded-xl">
         {icons[toast.type] || icons.info}
       </div>
 
-      {/* Contenido */}
       <div className="flex-1 min-w-0">
         {toast.title && (
           <p className="font-bold font-title text-sm">{toast.title}</p>
@@ -80,7 +76,6 @@ const Toast = ({ toast, onRemove }) => {
         <p className="font-medium font-body text-sm truncate">{toast.message}</p>
       </div>
 
-      {/* Botón cerrar */}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -93,7 +88,6 @@ const Toast = ({ toast, onRemove }) => {
         </svg>
       </button>
 
-      {/* Barra de progreso animada */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-black/10">
         <div 
           className="h-full bg-white/40"
@@ -113,7 +107,6 @@ export const ToastProvider = ({ children }) => {
     const id = Date.now() + Math.random();
     setToasts(prev => [...prev, { id, message, type, title }]);
     
-    // Auto-remover después de 4 segundos
     setTimeout(() => {
       removeToast(id);
     }, 4000);

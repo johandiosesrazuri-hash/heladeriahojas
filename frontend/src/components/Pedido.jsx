@@ -242,10 +242,18 @@ const Pedido = () => {
 
       const pedidoCreado = response.data;
 
+      // Mostrar notificación de éxito
+      setNotification({
+        show: true,
+        message: '¡Pedido creado con éxito!',
+        type: 'success'
+      });
+
       // Si es Yape o Transferencia, mostrar modal de pago
       if (formData.metodoPago === 'yape' || formData.metodoPago === 'transferencia') {
         setCreatedPedidoId(pedidoCreado.id);
-        setShowPaymentModal(true);
+        // Pequeño delay para que se vea la notificación antes del modal
+        setTimeout(() => setShowPaymentModal(true), 500);
       } else {
         // Si es efectivo, limpiar carrito y redirigir
         clearCart();
@@ -274,10 +282,19 @@ const Pedido = () => {
       clearCart();
       setNotification({
         show: true,
-        message: '¡Comprobante subido! Validaremos tu pago pronto.',
+        message: '✅ ¡Comprobante enviado! Tu pedido será validado pronto.',
         type: 'success'
       });
-      setTimeout(() => navigate('/mis-pedidos'), 1500);
+      setTimeout(() => navigate('/mis-pedidos'), 2000);
+    } else {
+      // Si cierra sin subir, limpiar carrito de todos modos y redirigir
+      clearCart();
+      setNotification({
+        show: true,
+        message: 'Pedido creado. Recuerda subir tu comprobante desde Mis Pedidos.',
+        type: 'info'
+      });
+      setTimeout(() => navigate('/mis-pedidos'), 2000);
     }
   };
 
@@ -295,13 +312,19 @@ const Pedido = () => {
               className={`px-6 py-4 rounded-xl shadow-lg flex items-center ${
                 notification.type === 'success'
                   ? 'bg-secondary-light text-secondary-dark'
+                  : notification.type === 'info'
+                  ? 'bg-blue-100 text-blue-800'
                   : 'bg-red-100 text-red-800'
               }`}
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className={`h-6 w-6 mr-3 ${
-                  notification.type === 'success' ? 'text-secondary-dark' : 'text-red-500'
+                  notification.type === 'success' 
+                    ? 'text-secondary-dark' 
+                    : notification.type === 'info'
+                    ? 'text-blue-500'
+                    : 'text-red-500'
                 }`}
                 fill="none"
                 viewBox="0 0 24 24"
@@ -309,6 +332,8 @@ const Pedido = () => {
               >
                 {notification.type === 'success' ? (
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                ) : notification.type === 'info' ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 ) : (
                   <path
                     strokeLinecap="round"
@@ -394,13 +419,19 @@ const Pedido = () => {
             className={`px-6 py-4 rounded-xl shadow-lg flex items-center ${
               notification.type === 'success'
                 ? 'bg-secondary-light text-secondary-dark'
+                : notification.type === 'info'
+                ? 'bg-blue-100 text-blue-800'
                 : 'bg-red-100 text-red-800'
             }`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className={`h-6 w-6 mr-3 ${
-                notification.type === 'success' ? 'text-secondary-dark' : 'text-red-500'
+                notification.type === 'success' 
+                  ? 'text-secondary-dark' 
+                  : notification.type === 'info'
+                  ? 'text-blue-500'
+                  : 'text-red-500'
               }`}
               fill="none"
               viewBox="0 0 24 24"

@@ -15,12 +15,10 @@ const Login = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  // Activar animación después de que el componente se monte
   useEffect(() => {
     setTimeout(() => setAnimate(true), 10);
   }, []);
 
-  // Ocultar notificación después de 3 segundos
   useEffect(() => {
     if (notification.show) {
       const timer = setTimeout(() => {

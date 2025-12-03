@@ -72,7 +72,6 @@ export const AuthProvider = ({ children }) => {
           rol: data.rol
         };
 
-        // Por defecto usamos localStorage para registro (mejor UX)
         localStorage.setItem('token', tokenResp);
         localStorage.setItem('refreshToken', refreshTokenResp);
         localStorage.setItem('user', JSON.stringify(userResp));
@@ -108,14 +107,13 @@ export const AuthProvider = ({ children }) => {
       });
       setUser(response.data);
 
-      // Actualizar el storage correcto dependiendo de dónde esté el token
       if (localStorage.getItem('token')) {
         localStorage.setItem('user', JSON.stringify(response.data));
       } else if (sessionStorage.getItem('token')) {
         sessionStorage.setItem('user', JSON.stringify(response.data));
       }
     } catch (error) {
-      console.error('❌ Error checking auth:', error);
+      console.error('Error checking auth:', error);
       logout();
     }
   };
