@@ -84,7 +84,7 @@ const Menu = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [ordenPrecio, setOrdenPrecio] = useState(''); // '', 'asc', 'desc'
+  const [ordenPrecio, setOrdenPrecio] = useState('');
   const [rangoPrecios, setRangoPrecios] = useState({ min: 0, max: 100 });
   const [showFilters, setShowFilters] = useState(false);
   const { addItem } = useCart();

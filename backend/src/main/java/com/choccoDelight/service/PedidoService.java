@@ -93,7 +93,6 @@ public class PedidoService {
         
         // Establecer estado inicial según método de pago
         if ("yape".equals(pedido.getMetodoPago()) || "transferencia".equals(pedido.getMetodoPago())) {
-            // Para Yape/Transferencia, inicia en PENDIENTE hasta que suban el comprobante
             pedido.setEstado(Pedido.EstadoPedido.PENDIENTE);
         } else {
             // Para efectivo u otros, estado normal

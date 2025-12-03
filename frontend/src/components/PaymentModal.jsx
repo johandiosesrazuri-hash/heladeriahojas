@@ -46,7 +46,7 @@ const PaymentModal = ({ isOpen, onClose, metodoPago, pedidoId, montoTotal }) => 
       }
       
       // Validar tamaño (10MB máximo)
-      const maxSize = 10 * 1024 * 1024; // 10MB en bytes
+      const maxSize = 10 * 1024 * 1024;
       if (file.size > maxSize) {
         setNotification({
           show: true,

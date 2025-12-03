@@ -7,7 +7,6 @@ const containerStyle = {
     borderRadius: '1rem'
 };
 
-// Coordenadas por defecto (Lima, Perú)
 const defaultCenter = {
     lat: -12.046374,
     lng: -77.042793
@@ -107,8 +106,7 @@ const MapaSelector = ({ onLocationSelect }) => {
                 }
             );
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []); // Solo se ejecuta una vez al montar el componente
+    }, []);
 
     const onLoad = useCallback(function callback(map) {
         setMap(map);
