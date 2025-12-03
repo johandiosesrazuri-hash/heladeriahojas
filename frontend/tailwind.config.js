@@ -17,7 +17,7 @@ const config = {
       },
       colors: {
         gray: colors.gray,
-        // Paleta "Heladería Moderna"
+        // Paleta Heladería Moderna
         primary: {
           light: '#FFC1CC',
           DEFAULT: '#FF8FA3',
