@@ -79,30 +79,30 @@ jobs:
           path: frontend/dist
           retention-days: 7
 
-  # Job 3: Security scan (opcional)
-  security:
-    name: Security Scan
-    runs-on: ubuntu-latest
-    needs: [backend, frontend]
-    permissions:
-      contents: read
-      security-events: write
-      actions: read
+  # Job 3: Security scan (opcional - deshabilitado porque requiere Code Scanning habilitado en GitHub)
+  # security:
+  #   name: Security Scan
+  #   runs-on: ubuntu-latest
+  #   needs: [backend, frontend]
+  #   permissions:
+  #     contents: read
+  #     security-events: write
+  #     actions: read
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
 
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
+  #     - name: Run Trivy vulnerability scanner
+  #       uses: aquasecurity/trivy-action@master
+  #       with:
+  #         scan-type: 'fs'
+  #         scan-ref: '.'
+  #         format: 'sarif'
+  #         output: 'trivy-results.sarif'
 
-      - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v4
-        if: always()
-        with:
-          sarif_file: 'trivy-results.sarif'
+  #     - name: Upload Trivy results to GitHub Security
+  #       uses: github/codeql-action/upload-sarif@v4
+  #       if: always()
+  #       with:
+  #         sarif_file: 'trivy-results.sarif'

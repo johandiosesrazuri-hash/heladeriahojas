@@ -20,14 +20,14 @@ import jakarta.mail.internet.MimeMessage;
 import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -41,17 +41,29 @@ public class EmailService {
     private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
     private static final String TOKENS_DIRECTORY_PATH = "tokens";
     private static final List<String> SCOPES = Collections.singletonList(GmailScopes.GMAIL_SEND);
-    private static final String CREDENTIALS_FILE_PATH = "/credentials.json";
+
+    @Value("${gmail.client.id:}")
+    private String clientId;
+
+    @Value("${gmail.client.secret:}")
+    private String clientSecret;
+
+    @Value("${gmail.project.id:}")
+    private String projectId;
 
     private Gmail getGmailService() throws IOException, java.security.GeneralSecurityException {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
+        // Construir el JSON de credenciales desde variables de entorno
+        String credentialsJson = String.format(
+            "{\"installed\":{\"client_id\": \"%s\",\"project_id\": \"%s\",\"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\"token_uri\": \"https://oauth2.googleapis.com/token\",\"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\",\"client_secret\": \"%s\",\"redirect_uris\": [\"http://localhost\"]}}",
+            clientId, projectId, clientSecret
+        );
 
-        InputStream in = EmailService.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
-        if (in == null) {
-            throw new IOException("Resource not found: " + CREDENTIALS_FILE_PATH);
-        }
-        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(in));
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
+            JSON_FACTORY, 
+            new StringReader(credentialsJson)
+        );
 
         GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
                 HTTP_TRANSPORT, JSON_FACTORY, clientSecrets, SCOPES)
@@ -71,12 +83,12 @@ public class EmailService {
     public CompletableFuture<Boolean> sendEmail(String to, String subject, String bodyText) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                InputStream credentialsCheck = EmailService.class.getResourceAsStream(CREDENTIALS_FILE_PATH);
-                if (credentialsCheck == null) {
-                    logger.error("No se encontró el archivo credentials.json");
+                // Validar que las credenciales estén configuradas
+                if (clientId == null || clientId.isEmpty() || 
+                    clientSecret == null || clientSecret.isEmpty()) {
+                    logger.error("Credenciales de Gmail no configuradas. Configure las variables de entorno GMAIL_CLIENT_ID, GMAIL_CLIENT_SECRET y GMAIL_PROJECT_ID");
                     return false;
                 }
-                credentialsCheck.close();
                 
                 Gmail service = getGmailService();
                 MimeMessage mimeMessage = createEmail(to, "me", subject, bodyText);
