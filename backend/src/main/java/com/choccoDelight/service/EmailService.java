@@ -59,7 +59,7 @@ public class EmailService {
                 .setAccessType("offline")
                 .build();
 
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(0).build();
         Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
 
         return new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
