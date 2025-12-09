@@ -54,9 +54,9 @@ public class EmailService {
     private Gmail getGmailService() throws IOException, java.security.GeneralSecurityException {
         final NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
 
-        // Construir el JSON de credenciales desde variables de entorno
+        // Construir el JSON de credenciales desde variables de entorno (tipo web)
         String credentialsJson = String.format(
-            "{\"installed\":{\"client_id\": \"%s\",\"project_id\": \"%s\",\"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\"token_uri\": \"https://oauth2.googleapis.com/token\",\"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\",\"client_secret\": \"%s\",\"redirect_uris\": [\"http://localhost\"]}}",
+            "{\"web\":{\"client_id\": \"%s\",\"project_id\": \"%s\",\"auth_uri\": \"https://accounts.google.com/o/oauth2/auth\",\"token_uri\": \"https://oauth2.googleapis.com/token\",\"auth_provider_x509_cert_url\": \"https://www.googleapis.com/oauth2/v1/certs\",\"client_secret\": \"%s\",\"redirect_uris\": [\"http://localhost:8888/Callback\"]}}",
             clientId, projectId, clientSecret
         );
 
@@ -71,7 +71,7 @@ public class EmailService {
                 .setAccessType("offline")
                 .build();
 
-        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(0).build();
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
         Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
 
         return new Gmail.Builder(HTTP_TRANSPORT, JSON_FACTORY, credential)
